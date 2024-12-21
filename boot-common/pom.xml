@@ -1,0 +1,24 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.boot</groupId>
+        <artifactId>boot-java</artifactId>
+        <version>3.8.5</version>
+    </parent>
+    <artifactId>boot-common</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>boot-common-core</module>
+        <module>boot-common-cache</module>
+        <module>boot-common-mybatis</module>
+        <module>boot-common-security</module>
+        <module>boot-common-log</module>
+        <module>boot-common-notifier</module>
+        <module>boot-common-api</module>
+        <module>boot-common-web</module>
+    </modules>
+
+</project>

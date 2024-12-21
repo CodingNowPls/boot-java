@@ -1,0 +1,23 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.boot</groupId>
+        <artifactId>boot-common</artifactId>
+        <version>3.8.5</version>
+    </parent>
+    <artifactId>boot-common-api</artifactId>
+
+    <description>各模块聚合api</description>
+
+    <dependencies>
+
+        <!-- 核心工具 -->
+        <dependency>
+            <groupId>com.boot</groupId>
+            <artifactId>boot-common-core</artifactId>
+        </dependency>
+
+    </dependencies>
+</project>

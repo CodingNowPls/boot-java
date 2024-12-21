@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.boot</groupId>
+    <artifactId>boot-java</artifactId>
+    <version>3.8.5</version>
+
+    <name>boot</name>
+
+    <modules>
+        <module>boot-common</module>
+        <module>boot-admin</module>
+        <module>boot-system</module>
+        <module>boot-quartz</module>
+        <module>boot-generator</module>
+        <module>boot-demo</module>
+    </modules>
+    <packaging>pom</packaging>
+
+    <properties>
+        <boot.version>3.8.5</boot.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>11</java.version>
+        <springboot.version>2.5.14</springboot.version>
+        <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
+        <druid.version>1.2.16</druid.version>
+        <bitwalker.version>1.21</bitwalker.version>
+        <knife4j.version>3.0.3</knife4j.version>
+        <easy-captcha.version>1.6.2</easy-captcha.version>
+        <pagehelper.boot.version>1.4.6</pagehelper.boot.version>
+        <mybatis-plus.version>3.5.2</mybatis-plus.version>
+        <mybatisplus-plus.version>1.7.5-RELEASE</mybatisplus-plus.version>
+        <dynamic-datasource.version>3.5.2</dynamic-datasource.version>
+        <fastjson.version>2.0.23</fastjson.version>
+        <oshi.version>6.4.0</oshi.version>
+        <commons.io.version>2.11.0</commons.io.version>
+        <commons.collections.version>3.2.2</commons.collections.version>
+        <poi.version>4.1.2</poi.version>
+        <velocity.version>2.3</velocity.version>
+        <jwt.version>0.9.1</jwt.version>
+        <lombok.version>1.18.22</lombok.version>
+        <hutool.version>5.8.8</hutool.version>
+        <mybatis-plus-join.version>1.5.2</mybatis-plus-join.version>
+        <caffeine.version>3.1.8</caffeine.version>
+        <aspectjweaver.version>1.9.7</aspectjweaver.version>
+        <satoken.version>1.39.0</satoken.version>
+    </properties>
+
+    <!-- 依赖声明 -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- SpringBoot的依赖配置-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${springboot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
+            </dependency>
+
+            <!-- 阿里数据库连接池 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+
+            <!-- 解析客户端操作系统、浏览器等 -->
+            <dependency>
+                <groupId>eu.bitwalker</groupId>
+                <artifactId>UserAgentUtils</artifactId>
+                <version>${bitwalker.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>1.9.7</version>
+            </dependency>
+
+            <!-- pagehelper 分页插件 -->
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>${pagehelper.boot.version}</version>
+            </dependency>
+
+            <!-- mybatis-plus 增强CRUD -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <!--  联合主键-->
+            <dependency>
+                <groupId>com.github.jeffreyning</groupId>
+                <artifactId>mybatisplus-plus</artifactId>
+                <version>${mybatisplus-plus.version}</version>
+            </dependency>
+            <!--连表查询-->
+            <dependency>
+                <groupId>com.github.yulichang</groupId>
+                <artifactId>mybatis-plus-join-boot-starter</artifactId>
+                <version>${mybatis-plus-join.version}</version>
+            </dependency>
+            <!-- 动态数据源 -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+                <version>${dynamic-datasource.version}</version>
+            </dependency>
+
+            <!-- 获取系统信息 -->
+            <dependency>
+                <groupId>com.github.oshi</groupId>
+                <artifactId>oshi-core</artifactId>
+                <version>${oshi.version}</version>
+            </dependency>
+
+            <!-- knife4j -->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+
+            <!-- io常用工具类 -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
+
+            <!-- excel工具 -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+
+            <!-- velocity代码生成使用模板 -->
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity-engine-core</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
+
+            <!-- collections工具类 -->
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons.collections.version}</version>
+            </dependency>
+
+            <!-- 阿里JSON解析器 -->
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <!-- Sa-Token 权限认证, 在线文档： -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-spring-boot-starter</artifactId>
+                <version>${satoken.version}</version>
+            </dependency>
+            <!-- Sa-Token 整合 jwt -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-jwt</artifactId>
+                <version>${satoken.version}</version>
+            </dependency>
+
+            <!-- Token生成与解析-->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jwt.version}</version>
+            </dependency>
+
+            <!-- 图形验证码 -->
+            <dependency>
+                <groupId>com.github.whvcse</groupId>
+                <artifactId>easy-captcha</artifactId>
+                <version>${easy-captcha.version}</version>
+            </dependency>
+
+            <!-- lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+
+            <!-- hutool -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+
+
+
+            <!-- 核心模块 -->
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-core</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-cache</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <!-- 数据库模块 -->
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-mybatis</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+
+            <!-- 日志记录 -->
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-log</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+
+            <!-- 安全认证模块 -->
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-security</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <!-- 通知器 -->
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-notifier</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-notifier-mail</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-notifier-dingTalk</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <!-- web服务模块 -->
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-web</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+
+            <!-- 各模块api -->
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-api</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+
+            <!-- 定时任务-->
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-quartz</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+
+            <!-- 代码生成-->
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-generator</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+
+            <!-- 系统模块-->
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-system</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-demo</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>

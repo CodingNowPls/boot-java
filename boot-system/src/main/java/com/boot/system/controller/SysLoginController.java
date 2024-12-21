@@ -1,0 +1,115 @@
+package com.boot.system.controller;
+
+import cn.dev33.satoken.stp.StpUtil;
+import com.alibaba.fastjson2.JSON;
+import com.boot.common.core.constant.Constants;
+import com.boot.common.core.domain.AjaxResult;
+import com.boot.common.core.domain.entity.SysMenu;
+import com.boot.common.core.domain.entity.SysUser;
+import com.boot.common.core.domain.model.LoginBody;
+import com.boot.common.core.utils.ServletUtils;
+import com.boot.common.core.utils.StringUtils;
+import com.boot.common.log.manager.AsyncManager;
+import com.boot.common.log.manager.factory.AsyncFactory;
+import com.boot.common.security.core.domain.model.LoginUser;
+import com.boot.common.security.service.TokenService;
+import com.boot.common.security.utils.SecurityUtils;
+import com.boot.system.service.ISysMenuService;
+import com.boot.system.service.SysLoginService;
+import com.boot.system.service.SysPermissionService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * 登录验证
+ *
+ * @author boot
+ */
+@Api(value = "用户登录认证", tags = {"用户登录认证"})
+@RestController
+public class SysLoginController {
+    @Autowired
+    private SysLoginService loginService;
+
+    @Autowired
+    private ISysMenuService menuService;
+
+    @Autowired
+    private SysPermissionService permissionService;
+    @Autowired
+    private TokenService tokenService;
+
+    /**
+     * 登录方法
+     *
+     * @param loginBody 登录信息
+     * @return 结果
+     */
+    @ApiOperation("用户登录")
+    @PostMapping("/login")
+    public AjaxResult login(@RequestBody LoginBody loginBody) throws Exception {
+        AjaxResult ajax = AjaxResult.success();
+        // 生成令牌
+        String token = loginService.login(loginBody.getUserName(), loginBody.getPassword(), loginBody.getCode(),
+                loginBody.getUuid());
+        ajax.put(Constants.TOKEN, token);
+        return ajax;
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request,HttpServletResponse response) {
+
+        LoginUser loginUser = tokenService.getLoginUser(request);
+        if (StringUtils.isNotNull(loginUser)) {
+            String userName = loginUser.getUserName();
+            // 删除用户缓存记录
+            tokenService.delLoginUser(loginUser.getToken());
+            // 记录用户退出日志
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(userName, Constants.LOGOUT, "退出成功"));
+        }
+        ServletUtils.renderString(response, JSON.toJSONString(AjaxResult.success("退出成功")));
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @return 用户信息
+     */
+    @ApiOperation("获取用户信息")
+    @GetMapping("/getInfo")
+    public AjaxResult getInfo() {
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        // 角色集合
+        Set<String> roles = permissionService.getRolePermission(user);
+        // 权限集合
+        Set<String> permissions = permissionService.getMenuPermission(user);
+        AjaxResult ajax = AjaxResult.success();
+        ajax.put("user", user);
+        ajax.put("roles", roles);
+        ajax.put("permissions", permissions);
+        return ajax;
+    }
+
+    /**
+     * 获取路由信息
+     *
+     * @return 路由信息
+     */
+    @ApiOperation("获取路由信息")
+    @GetMapping("/getRouters")
+    public AjaxResult getRouters() {
+        Long userId = SecurityUtils.getUserId();
+        List<SysMenu> menus = menuService.selectMenuTreeByUserId(userId);
+        return AjaxResult.success(menuService.buildMenus(menus));
+    }
+}
