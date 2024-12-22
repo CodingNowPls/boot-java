@@ -39,6 +39,7 @@ import java.util.Map;
 @Aspect
 @Component
 public class LogAspect {
+    private static final Logger log = LoggerFactory.getLogger(LogAspect.class);
 
     private final UserContextProvider userContextProvider;
 
@@ -49,12 +50,8 @@ public class LogAspect {
      * 排除敏感属性字段
      */
     public static final String[] EXCLUDE_PROPERTIES = {"password", "oldPassword", "newPassword", "confirmPassword"};
-    private static final Logger log = LoggerFactory.getLogger(LogAspect.class);
-    /**
-     * 计算操作消耗时间
-     */
+    /** 计算操作消耗时间 */
     private static final ThreadLocal<Long> TIME_THREADLOCAL = new NamedThreadLocal<Long>("Cost Time");
-
     /**
      * 处理请求前执行
      */

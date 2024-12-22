@@ -43,6 +43,10 @@ spring:
         min-idle: 5
         maxActive: 20
         maxWait: 60000
+        # 配置连接超时时间
+        connectTimeout: 30000
+        # 配置网络超时时间
+        socketTimeout: 60000
         timeBetweenEvictionRunsMillis: 60000
         minEvictableIdleTimeMillis: 300000
         validationQuery: SELECT 1 FROM DUAL
