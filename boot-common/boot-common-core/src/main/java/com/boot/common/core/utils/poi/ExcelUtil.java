@@ -51,6 +51,12 @@ public class ExcelUtil<T> {
     public static final String FORMULA_REGEX_STR = "=|-|\\+|@";
     public static final String[] FORMULA_STR = {"=", "-", "+", "@"};
     /**
+     * 导出Excel时，如果有大量的字典数据，就会有大量的查询redis(打开、关闭)，导致特别慢。
+     * 于是使用map存储字典数据，相同的key就不需要再次去查询redis
+     */
+    public Map<String,String> sysDictMap = new HashMap<>();
+
+    /**
      * Excel sheet最大行数，默认65536
      */
     public static final int sheetSize = 65536;
@@ -955,7 +961,12 @@ public class ExcelUtil<T> {
                 } else if (StringUtils.isNotEmpty(readConverterExp) && StringUtils.isNotNull(value)) {
                     cell.setCellValue(convertByExp(Convert.toStr(value), readConverterExp, separator));
                 } else if (StringUtils.isNotEmpty(dictType) && StringUtils.isNotNull(value)) {
-                    cell.setCellValue(convertDictByExp(Convert.toStr(value), dictType, separator));
+                    if (!sysDictMap.containsKey(dictType + value)) {
+                        String lable = convertDictByExp(Convert.toStr(value), dictType, separator);
+                        sysDictMap.put(dictType + value, lable);
+                    }
+                    cell.setCellValue(sysDictMap.get(dictType + value));
+
                 } else if (value instanceof BigDecimal && -1 != attr.scale()) {
                     cell.setCellValue((((BigDecimal) value).setScale(attr.scale(), attr.roundingMode())).doubleValue());
                 } else if (!attr.handler().equals(ExcelHandlerAdapter.class)) {
@@ -1192,7 +1203,8 @@ public class ExcelUtil<T> {
                 // 单注解
                 if (field.isAnnotationPresent(Excel.class)) {
                     Excel attr = field.getAnnotation(Excel.class);
-                    if (attr != null && (attr.type() == Type.ALL || attr.type() == type)) {
+                    if (!ArrayUtils.contains(this.excludeFields, field.getName() + "." + attr.targetAttr())
+                            && (attr != null && (attr.type() == Type.ALL || attr.type() == type))) {
                         field.setAccessible(true);
                         fields.add(new Object[]{field, attr});
                     }

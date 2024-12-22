@@ -46,12 +46,16 @@ public class LogAspect {
     public LogAspect(UserContextProvider userContextProvider) {
         this.userContextProvider = userContextProvider;
     }
+
     /**
      * 排除敏感属性字段
      */
     public static final String[] EXCLUDE_PROPERTIES = {"password", "oldPassword", "newPassword", "confirmPassword"};
-    /** 计算操作消耗时间 */
+    /**
+     * 计算操作消耗时间
+     */
     private static final ThreadLocal<Long> TIME_THREADLOCAL = new NamedThreadLocal<Long>("Cost Time");
+
     /**
      * 处理请求前执行
      */
@@ -153,12 +157,13 @@ public class LogAspect {
      * @throws Exception 异常
      */
     private void setRequestValue(JoinPoint joinPoint, SysOperLog operLog, String[] excludeParamNames) throws Exception {
+        Map<?, ?> paramsMap = ServletUtils.getParamMap(ServletUtils.getRequest());
         String requestMethod = operLog.getRequestMethod();
-        if (HttpMethod.PUT.name().equals(requestMethod) || HttpMethod.POST.name().equals(requestMethod)) {
+        if (StringUtils.isEmpty(paramsMap)
+                && (HttpMethod.PUT.name().equals(requestMethod) || HttpMethod.POST.name().equals(requestMethod))) {
             String params = argsArrayToString(joinPoint.getArgs(), excludeParamNames);
             operLog.setOperParam(StringUtils.substring(params, 0, 2000));
         } else {
-            Map<?, ?> paramsMap = ServletUtils.getParamMap(ServletUtils.getRequest());
             operLog.setOperParam(StringUtils.substring(JSON.toJSONString(paramsMap, excludePropertyPreFilter(excludeParamNames)), 0, 2000));
         }
     }

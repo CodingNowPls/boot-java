@@ -35,7 +35,7 @@
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
         <mybatisplus-plus.version>1.7.5-RELEASE</mybatisplus-plus.version>
         <dynamic-datasource.version>3.5.2</dynamic-datasource.version>
-        <fastjson.version>2.0.23</fastjson.version>
+        <fastjson.version>2.0.25</fastjson.version>
         <oshi.version>6.4.0</oshi.version>
         <commons.io.version>2.11.0</commons.io.version>
         <commons.collections.version>3.2.2</commons.collections.version>
