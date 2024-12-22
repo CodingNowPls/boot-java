@@ -1,5 +1,6 @@
 package com.boot.common.web.exception;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import com.boot.common.core.constant.HttpStatus;
 import com.boot.common.core.domain.AjaxResult;
 import com.boot.common.core.exception.CustomException;
@@ -95,12 +96,20 @@ public class GlobalExceptionHandler {
     /**
      * 拦截未知的运行时异常
      */
+    @ExceptionHandler(NotLoginException.class)
+    public AjaxResult notLoginException(NotLoginException e, HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',发生未知异常.", requestURI, e);
+        return AjaxResult.error(NotLoginException.DEFAULT_MESSAGE);
+    }
+
     @ExceptionHandler(RuntimeException.class)
-    public AjaxResult handleRuntimeException(RuntimeException e, HttpServletRequest request) {
+    public AjaxResult handleLoginException(RuntimeException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',发生未知异常.", requestURI, e);
         return AjaxResult.error(e.getMessage());
     }
+
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public AjaxResult handlerNoFoundException(Exception e) {

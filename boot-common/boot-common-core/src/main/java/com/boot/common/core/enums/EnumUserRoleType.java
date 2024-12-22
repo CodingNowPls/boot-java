@@ -12,7 +12,7 @@ import lombok.Getter;
 public enum EnumUserRoleType {
 
     NORMAL("normal", "普通用户"),
-    SYS_USER("admin", "系统用户"),
+    SYS_USER("admin", "超级管理员"),
 
     ADMIN_GROUP("admin_group", "管理组成员"),
 
