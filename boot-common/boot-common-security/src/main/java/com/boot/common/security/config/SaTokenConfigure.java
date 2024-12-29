@@ -62,6 +62,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                 // 排除不需要拦截的路径
                 .excludePathPatterns(
                         "/",
+                        "/httpdoc",
                         "/login",
                         "/logout",
                         "/register",

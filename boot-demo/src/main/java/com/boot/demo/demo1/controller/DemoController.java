@@ -23,6 +23,10 @@ public class DemoController {
         System.out.println("DemoController init");
     }
 
+    /**
+     * 测试接口
+     * @return
+     */
     @SaIgnore
     @GetMapping("/test")
     public String test() {
