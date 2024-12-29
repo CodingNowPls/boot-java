@@ -46,4 +46,7 @@ nbdist/
 !*/build/*.java
 !*/build/*.html
 !*/build/*.xml
+.gigaide
+.jlsp
+.arts
 11.txt
