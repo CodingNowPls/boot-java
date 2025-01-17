@@ -50,3 +50,13 @@ nbdist/
 .jlsp
 .arts
 11.txt
+.arts/*
+.jlsp/
+/.gigaide/
+/.arts/
+/boot-admin/.jlsp/
+/*/.jlsp/
+/**/.jlsp/
+/*/*/.jlsp/
+/.arts/
+/.gigaide/

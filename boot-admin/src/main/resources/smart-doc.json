@@ -1,0 +1,8 @@
+{
+  "outPath": "../../boot-java/boot-admin/src/main/resources/doc",
+  "inlineEnum": false,
+  "serverUrl": "http://127.0.0.1:8080",
+  "serverEnv": "http://127.0.0.1:8080",
+  "allInOne": true,
+  "createDebugPage": true
+}

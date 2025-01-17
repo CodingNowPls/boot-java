@@ -17,6 +17,7 @@
         <module>boot-quartz</module>
         <module>boot-generator</module>
         <module>boot-demo</module>
+        <module>boot-tenant</module>
     </modules>
     <packaging>pom</packaging>
 
