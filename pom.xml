@@ -17,6 +17,8 @@
         <module>boot-quartz</module>
         <module>boot-generator</module>
         <module>boot-demo</module>
+        <module>boot-biz</module>
+        <module>boot-biz/boot-biz-demo</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -118,7 +120,6 @@
                 <artifactId>pagehelper</artifactId>
                 <version>${pagehelper.version}</version>
             </dependency>
-
 
 
             <!--springboot3  mybatis-plus 升级为boot3 -->
@@ -244,7 +245,6 @@
             </dependency>
 
 
-
             <!-- 核心模块 -->
             <dependency>
                 <groupId>com.boot</groupId>
@@ -329,7 +329,7 @@
 
             <dependency>
                 <groupId>com.boot</groupId>
-                <artifactId>boot-demo</artifactId>
+                <artifactId>boot-biz-demo</artifactId>
                 <version>${boot.version}</version>
             </dependency>
         </dependencies>

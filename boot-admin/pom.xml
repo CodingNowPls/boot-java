@@ -76,7 +76,7 @@
         </dependency>
         <dependency>
             <groupId>com.boot</groupId>
-            <artifactId>boot-demo</artifactId>
+            <artifactId>boot-biz-demo</artifactId>
         </dependency>
     </dependencies>
 
