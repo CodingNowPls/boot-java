@@ -3,13 +3,13 @@ package com.boot.common.web.config;
 import com.boot.common.core.filter.RepeatableFilter;
 import com.boot.common.core.filter.XssFilter;
 import com.boot.common.core.utils.StringUtils;
+import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.servlet.DispatcherType;
 import java.util.HashMap;
 import java.util.Map;
 

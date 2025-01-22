@@ -3,7 +3,7 @@ package com.boot.common.web.config;
 import com.boot.common.core.utils.ServletUtils;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 服务相关配置

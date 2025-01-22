@@ -7,7 +7,7 @@ import com.boot.system.service.ISysLogininforService;
 import com.boot.system.service.ISysOperLogService;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 /**
  * 系统管理api接口提供者

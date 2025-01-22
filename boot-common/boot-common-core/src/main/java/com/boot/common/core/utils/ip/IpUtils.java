@@ -3,7 +3,7 @@ package com.boot.common.core.utils.ip;
 import com.boot.common.core.utils.ServletUtils;
 import com.boot.common.core.utils.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
