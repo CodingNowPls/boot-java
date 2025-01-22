@@ -80,34 +80,85 @@
         </dependency>
     </dependencies>
 
+
     <build>
         <plugins>
+            <!-- 打thin瘦包-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${springboot.version}</version>
                 <configuration>
-                    <!--                    <fork>true</fork> &lt;!&ndash; 如果没有该配置，devtools不会生效 &ndash;&gt;-->
+                    <layout>ZIP</layout>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.boot.BootApplication</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <!--打瘦包是将依赖的jar全部放到lib目录-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
+                        <phase>prepare-package</phase>
                         <goals>
-                            <goal>repackage</goal>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 将依赖放到target/lib目录下 -->
+                            <outputDirectory>target/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <!--assembly 将lib目录，demo.jar, config，bin文件等组合成一个发布包-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <!--   这个是assembly 所在位置；${basedir}是指项目的的根路径  -->
+                    <descriptors>
+                        <descriptor>${basedir}/assembly.xml
+                        </descriptor>
+                    </descriptors>
+                    <!--打包解压后的目录名；${project.artifactId}是指：项目的artifactId-->
+                    <finalName>${project.artifactId}</finalName>
+                    <!-- zip包文件名不加上assembly.xml中配置的id属性值 -->
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <!-- 打包压缩包位置-->
+                    <outputDirectory>${project.build.directory}/release</outputDirectory>
+                    <!-- 打包编码 -->
+                    <encoding>UTF-8</encoding>
+                </configuration>
+                <executions>
+                    <execution><!-- 配置执行器 -->
+                        <id>make-assembly</id>
+                        <!-- 绑定到package生命周期阶段上 -->
+                        <phase>package</phase>
+                        <goals>
+                            <!-- 只运行一次 -->
+                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.1.0</version>
-                <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <warName>${project.artifactId}</warName>
-                </configuration>
-            </plugin>
         </plugins>
         <finalName>${project.artifactId}</finalName>
+
     </build>
 
 </project>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.1"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.1 http://maven.apache.org/xsd/assembly-2.1.1.xsd">
+    <id>assembly</id>
+    <formats>
+        <format>dir</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+        <!-- Resources configuration -->
+        <fileSet>
+            <lineEnding>unix</lineEnding>
+            <directory>${project.basedir}/src/main/resources</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>*.properties</include>
+                <include>*.yml</include>
+                <include>*.xml</include>
+            </includes>
+        </fileSet>
+
+        <!-- 启动脚本拷贝 -->
+        <fileSet>
+            <lineEnding>unix</lineEnding>
+            <directory>${project.basedir}</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>*.bat</include>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
+
+
+        <!-- Static and templates -->
+        <fileSet>
+            <lineEnding>unix</lineEnding>
+            <directory>${project.basedir}/src/main/resources</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>static/**</include>
+                <include>templates/**</include>
+                <include>mybatis/**</include>
+            </includes>
+        </fileSet>
+
+        <!-- 启动脚本 -->
+        <fileSet>
+            <lineEnding>unix</lineEnding>
+            <directory>${project.basedir}/build/bin</directory>
+            <outputDirectory>./bin</outputDirectory>
+            <fileMode>0755</fileMode>
+        </fileSet>
+
+        <!-- 把项目自己编译出来的 jar 文件，打包进 zip 文件的根目录 -->
+        <fileSet>
+            <directory>${project.build.directory}/lib</directory>
+            <outputDirectory>./lib</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+
+        <!-- 执行的主 jar 文件 -->
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>./</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>
