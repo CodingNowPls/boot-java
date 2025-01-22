@@ -61,7 +61,6 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 // 排除不需要拦截的路径
                 .excludePathPatterns(
-                        "/",
                         "/login",
                         "/logout",
                         "/register",

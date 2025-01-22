@@ -1,5 +1,6 @@
 package com.boot.system.controller;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.boot.common.core.constant.Constants;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.util.List;
 import java.util.Set;
 
@@ -67,7 +69,7 @@ public class SysLoginController {
     }
 
     @PostMapping("/logout")
-    public void logout(HttpServletRequest request,HttpServletResponse response) {
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
 
         LoginUser loginUser = tokenService.getLoginUser(request);
         if (StringUtils.isNotNull(loginUser)) {
@@ -88,6 +90,9 @@ public class SysLoginController {
     @ApiOperation("获取用户信息")
     @GetMapping("/getInfo")
     public AjaxResult getInfo() {
+        if (!StpUtil.isLogin()) {
+            return AjaxResult.error("登陆状态失效");
+        }
         SysUser user = SecurityUtils.getLoginUser().getUser();
         // 角色集合
         Set<String> roles = permissionService.getRolePermission(user);
