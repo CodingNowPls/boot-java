@@ -17,8 +17,7 @@
         <module>boot-quartz</module>
         <module>boot-generator</module>
         <module>boot-demo</module>
-        <module>boot-biz</module>
-        <module>boot-biz/boot-biz-demo</module>
+
     </modules>
     <packaging>pom</packaging>
 
@@ -326,10 +325,9 @@
                 <artifactId>boot-system</artifactId>
                 <version>${boot.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.boot</groupId>
-                <artifactId>boot-biz-demo</artifactId>
+                <artifactId>boot-demo</artifactId>
                 <version>${boot.version}</version>
             </dependency>
         </dependencies>
