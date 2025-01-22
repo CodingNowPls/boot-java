@@ -15,10 +15,10 @@
             <artifactId>boot-common-security</artifactId>
         </dependency>
 
-        <!-- 动态数据源 -->
+        <!--springboot3  升级 动态数据源  -->
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+            <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
         </dependency>
 
         <!--springboot3 pagehelper 分页插件 -->

@@ -34,7 +34,7 @@
         <pagehelper.version>6.1.0</pagehelper.version>
         <mybatis-plus3.version>3.5.7</mybatis-plus3.version>
         <mybatisplus-plus.version>1.7.5-RELEASE</mybatisplus-plus.version>
-        <dynamic-datasource.version>3.5.2</dynamic-datasource.version>
+        <dynamic-datasource3.version>4.3.1</dynamic-datasource3.version>
         <fastjson.version>2.0.25</fastjson.version>
         <oshi.version>6.4.0</oshi.version>
         <commons.io.version>2.11.0</commons.io.version>
@@ -47,7 +47,7 @@
         <mybatis-plus-join.version>1.5.2</mybatis-plus-join.version>
         <caffeine.version>3.1.8</caffeine.version>
         <aspectjweaver.version>1.9.7</aspectjweaver.version>
-        <satoken.version>1.39.0</satoken.version>
+        <satoken3.version>1.39.0</satoken3.version>
         <jaxb.version>2.3.1</jaxb.version>
         <jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
     </properties>
@@ -146,11 +146,11 @@
                 <artifactId>mybatis-plus-join-boot-starter</artifactId>
                 <version>${mybatis-plus-join.version}</version>
             </dependency>
-            <!-- 动态数据源 -->
+            <!--springboot3  升级 动态数据源 -->
             <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
-                <version>${dynamic-datasource.version}</version>
+                <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+                <version>${dynamic-datasource3.version}</version>
             </dependency>
 
             <!-- 获取系统信息 -->
@@ -202,17 +202,17 @@
                 <version>${fastjson.version}</version>
             </dependency>
 
-            <!-- Sa-Token 权限认证, 在线文档： -->
+            <!-- 升级springboot3  Sa-Token 权限认证, 在线文档： -->
             <dependency>
                 <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-spring-boot-starter</artifactId>
-                <version>${satoken.version}</version>
+                <artifactId>sa-token-spring-boot3-starter</artifactId>
+                <version>${satoken3.version}</version>
             </dependency>
             <!-- Sa-Token 整合 jwt -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-jwt</artifactId>
-                <version>${satoken.version}</version>
+                <version>${satoken3.version}</version>
             </dependency>
 
             <!-- Token生成与解析-->
