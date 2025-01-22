@@ -54,7 +54,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                     if (StringUtils.isNotNull(loginUser)) {
                         tokenService.verifyToken(loginUser);
                     }else {
-                        throw new NotLoginException(NotLoginException.DEFAULT_MESSAGE,"","");
+//                        throw new NotLoginException(NotLoginException.DEFAULT_MESSAGE,"","");
                     }
 
                 }))
