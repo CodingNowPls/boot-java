@@ -16,7 +16,11 @@
         <module>boot-system</module>
         <module>boot-quartz</module>
         <module>boot-generator</module>
-        <module>boot-demo</module>
+        <module>boot-biz</module>
+        <module>boot-biz/boot-biz-demo</module>
+        <module>boot-common/boot-common-workflow</module>
+        <module>boot-workflow</module>
+
     </modules>
     <packaging>pom</packaging>
 
@@ -24,17 +28,19 @@
         <boot.version>3.8.5</boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>11</java.version>
-        <springboot.version>2.5.14</springboot.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <java.version>21</java.version>
+        <springboot.version>3.3.2</springboot.version>
         <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
-        <druid.version>1.2.16</druid.version>
+        <druid3.version>1.2.23</druid3.version>
         <bitwalker.version>1.21</bitwalker.version>
         <knife4j.version>3.0.3</knife4j.version>
         <easy-captcha.version>1.6.2</easy-captcha.version>
-        <pagehelper.boot.version>1.4.6</pagehelper.boot.version>
-        <mybatis-plus.version>3.5.2</mybatis-plus.version>
+        <pagehelper.version>6.1.0</pagehelper.version>
+        <mybatis-plus3.version>3.5.8</mybatis-plus3.version>
         <mybatisplus-plus.version>1.7.5-RELEASE</mybatisplus-plus.version>
-        <dynamic-datasource.version>3.5.2</dynamic-datasource.version>
+        <dynamic-datasource3.version>4.3.1</dynamic-datasource3.version>
         <fastjson.version>2.0.25</fastjson.version>
         <oshi.version>6.4.0</oshi.version>
         <commons.io.version>2.11.0</commons.io.version>
@@ -42,12 +48,15 @@
         <poi.version>4.1.2</poi.version>
         <velocity.version>2.3</velocity.version>
         <jwt.version>0.9.1</jwt.version>
-        <lombok.version>1.18.22</lombok.version>
+        <lombok.version>1.18.36</lombok.version>
         <hutool.version>5.8.8</hutool.version>
         <mybatis-plus-join.version>1.5.2</mybatis-plus-join.version>
         <caffeine.version>3.1.8</caffeine.version>
         <aspectjweaver.version>1.9.7</aspectjweaver.version>
-        <satoken.version>1.39.0</satoken.version>
+        <satoken3.version>1.39.0</satoken3.version>
+        <jaxb.version>2.3.1</jaxb.version>
+        <jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
+        <flowlong.version>1.1.2</flowlong.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -70,11 +79,25 @@
                 <version>${caffeine.version}</version>
             </dependency>
 
-            <!-- 阿里数据库连接池 -->
+            <!--升级springboot3 阿里数据库连接池   -->
             <dependency>
                 <groupId>com.alibaba</groupId>
-                <artifactId>druid-spring-boot-starter</artifactId>
-                <version>${druid.version}</version>
+                <artifactId>druid-spring-boot-3-starter</artifactId>
+                <version>${druid3.version}</version>
+            </dependency>
+
+            <!--springboot3 新增 Jaxb -->
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+
+            <!-- springboot3 servlet 替换 jakarta -->
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>${jakarta.servlet-api.version}</version>
             </dependency>
 
             <!-- 解析客户端操作系统、浏览器等 -->
@@ -90,19 +113,33 @@
                 <version>1.9.7</version>
             </dependency>
 
-            <!-- pagehelper 分页插件 -->
             <dependency>
-                <groupId>com.github.pagehelper</groupId>
-                <artifactId>pagehelper-spring-boot-starter</artifactId>
-                <version>${pagehelper.boot.version}</version>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>8.0.33</version>
             </dependency>
 
-            <!-- mybatis-plus 增强CRUD -->
+            <!--   springboot3     pageHelper插件依赖-->
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper</artifactId>
+                <version>${pagehelper.version}</version>
+            </dependency>
+
+
+            <!--springboot3  mybatis-plus 升级为boot3 -->
             <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-boot-starter</artifactId>
-                <version>${mybatis-plus.version}</version>
+                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <version>${mybatis-plus3.version}</version>
             </dependency>
+            <!-- springboot3 升级 mysql  -->
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>8.1.0</version>
+            </dependency>
+
             <!--  联合主键-->
             <dependency>
                 <groupId>com.github.jeffreyning</groupId>
@@ -115,11 +152,17 @@
                 <artifactId>mybatis-plus-join-boot-starter</artifactId>
                 <version>${mybatis-plus-join.version}</version>
             </dependency>
-            <!-- 动态数据源 -->
+            <!--springboot3  升级 动态数据源 -->
             <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
-                <version>${dynamic-datasource.version}</version>
+                <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+                <version>${dynamic-datasource3.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.aizuda</groupId>
+                <artifactId>flowlong-spring-boot-starter</artifactId>
+                <version>${flowlong.version}</version>
             </dependency>
 
             <!-- 获取系统信息 -->
@@ -171,17 +214,17 @@
                 <version>${fastjson.version}</version>
             </dependency>
 
-            <!-- Sa-Token 权限认证, 在线文档： -->
+            <!-- 升级springboot3  Sa-Token 权限认证, 在线文档： -->
             <dependency>
                 <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-spring-boot-starter</artifactId>
-                <version>${satoken.version}</version>
+                <artifactId>sa-token-spring-boot3-starter</artifactId>
+                <version>${satoken3.version}</version>
             </dependency>
             <!-- Sa-Token 整合 jwt -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-jwt</artifactId>
-                <version>${satoken.version}</version>
+                <version>${satoken3.version}</version>
             </dependency>
 
             <!-- Token生成与解析-->
@@ -211,7 +254,6 @@
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
             </dependency>
-
 
 
             <!-- 核心模块 -->
@@ -298,7 +340,22 @@
 
             <dependency>
                 <groupId>com.boot</groupId>
-                <artifactId>boot-demo</artifactId>
+                <artifactId>boot-biz</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-workflow</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-workflow</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-biz-demo</artifactId>
                 <version>${boot.version}</version>
             </dependency>
         </dependencies>
@@ -325,6 +382,9 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>

@@ -7,12 +7,12 @@ import com.boot.common.core.annotation.Excels;
 import com.boot.common.core.domain.BaseEntity;
 import com.boot.common.core.enums.EnumUserRoleType;
 import com.boot.common.core.xss.Xss;
+import jakarta.validation.constraints.Email;
 import lombok.Data;
 import lombok.ToString;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;

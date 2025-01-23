@@ -10,10 +10,10 @@ import com.boot.common.core.utils.StringUtils;
 import com.boot.system.domain.SysConfig;
 import com.boot.system.mapper.SysConfigMapper;
 import com.boot.system.service.ISysConfigService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.List;
 

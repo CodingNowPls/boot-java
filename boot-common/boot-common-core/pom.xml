@@ -64,7 +64,7 @@
             <artifactId>snakeyaml</artifactId>
         </dependency>
 
-        <!-- Jaxb -->
+        <!--添加 Jaxb -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
@@ -89,10 +89,10 @@
             <version>1.7.2</version>
         </dependency>
 
-        <!-- servlet包 -->
+        <!-- servlet包  替换为jakarta-->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
 
         <!-- hutool -->

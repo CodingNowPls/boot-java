@@ -15,6 +15,7 @@
 11. 考虑添加工作流模块
 12. 考虑添加动态表单模块
 13. 考虑加入AI功能
+14. 已经升级到springboot3 ，在springboot3分支上
  
 
 
@@ -175,7 +176,7 @@
 ~~~
 ## thin包启动命令
 ~~~
-set JAVA_HOME=D:\program\Java\jdk\openjdk-11\jdk-11
+set JAVA_HOME=D:\program\Java\jdk\jdk-21.0.2
 set PATH=%JAVA_HOME%\bin;%PATH%
 
 java -Xms128m -Xmx256m -cp "boot-admin.jar;lib/*" -Dspring.config.location=application.yml,application-dev.yml com.boot.BootApplication

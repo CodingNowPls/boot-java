@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 全局异常处理器
@@ -96,19 +96,19 @@ public class GlobalExceptionHandler {
     /**
      * 拦截未知的运行时异常
      */
-    @ExceptionHandler(NotLoginException.class)
-    public AjaxResult notLoginException(NotLoginException e, HttpServletRequest request) {
-        String requestURI = request.getRequestURI();
-        log.error("请求地址'{}',发生未知异常.", requestURI, e);
-        return AjaxResult.error(NotLoginException.DEFAULT_MESSAGE);
-    }
+//    @ExceptionHandler(NotLoginException.class)
+//    public AjaxResult notLoginException(NotLoginException e, HttpServletRequest request) {
+//        String requestURI = request.getRequestURI();
+//        log.error("请求地址'{}',发生未知异常.", requestURI, e);
+//        return AjaxResult.error("登陆信息已失效");
+//    }
 
-    @ExceptionHandler(RuntimeException.class)
-    public AjaxResult handleLoginException(RuntimeException e, HttpServletRequest request) {
-        String requestURI = request.getRequestURI();
-        log.error("请求地址'{}',发生未知异常.", requestURI, e);
-        return AjaxResult.error(e.getMessage());
-    }
+//    @ExceptionHandler(RuntimeException.class)
+//    public AjaxResult handleLoginException(RuntimeException e, HttpServletRequest request) {
+//        String requestURI = request.getRequestURI();
+//        log.error("请求地址'{}',发生未知异常.", requestURI, e);
+//        return AjaxResult.error(e.getMessage());
+//    }
 
 
     @ExceptionHandler(NoHandlerFoundException.class)

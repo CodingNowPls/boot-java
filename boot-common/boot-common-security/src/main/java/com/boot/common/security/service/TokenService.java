@@ -3,7 +3,7 @@ package com.boot.common.security.service;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import cn.dev33.satoken.context.model.SaRequest;
 import com.boot.common.core.cache.BootCache;

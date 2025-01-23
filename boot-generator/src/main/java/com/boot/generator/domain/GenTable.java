@@ -6,7 +6,7 @@ import com.boot.common.core.utils.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 /**
