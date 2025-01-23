@@ -16,7 +16,7 @@
 11. 考虑添加工作流模块
 12. 考虑添加动态表单模块
 13. 考虑加入AI功能
-14. 已经升级到springboot3 ，在springboot3分支上
+14. 主分支已经升级到springboot3
 15. 已经集成flowlong后端
  
 
