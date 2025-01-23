@@ -62,7 +62,7 @@ public class FlowLongTableInterceptor implements InnerInterceptor {
                             idField.setAccessible(false);
                         }
                     } else {
-                        throw new SQLException("Field '" + keyProperty + "' not found in class: " + tableEntityClazz.getName());
+                        throw new SQLException("字段 '" + keyProperty + "' 未找到: " + tableEntityClazz.getName());
                     }
                 }
             }
