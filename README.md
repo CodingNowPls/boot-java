@@ -1,6 +1,7 @@
 基于[metaee-boot](https://gitee.com/metaee/metaee-boot)
 * 感谢metaee-boot作者
 * 感谢 [RuoYi-Vue](https://gitee.com/y_project/RuoYi-Vue)
+* 感谢 [FlowLong](https://gitee.com/aizuda/flowlong)
 ## 主要改进：
 1. common细化
 2. 依赖优化
@@ -16,6 +17,7 @@
 12. 考虑添加动态表单模块
 13. 考虑加入AI功能
 14. 已经升级到springboot3 ，在springboot3分支上
+15. 已经集成flowlong后端
  
 
 
