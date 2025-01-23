@@ -13,6 +13,7 @@ import com.boot.common.log.context.UserContextProvider;
 import com.boot.common.security.context.SecurityUserContextProvider;
 import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.security.service.TokenService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.io.IOException;
 
 /**
  * @author gao
@@ -43,6 +46,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
 
     /**
      * 注册sa-token的拦截器
+     *
      * @param registry
      */
     @Override
@@ -53,10 +57,9 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                     LoginUser loginUser = tokenService.getLoginUser(request);
                     if (StringUtils.isNotNull(loginUser)) {
                         tokenService.verifyToken(loginUser);
+                    } else {
+                        throw new CustomException("当前会话未登录", HttpStatus.UNAUTHORIZED);
                     }
-//                    else {
-//                        //throw new NotLoginException(NotLoginException.DEFAULT_MESSAGE,"","");
-//                    }
 
                 }))
                 .addPathPatterns("/**")
