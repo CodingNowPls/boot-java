@@ -24,6 +24,13 @@
         <dependency>
             <groupId>com.aizuda</groupId>
             <artifactId>flowlong-spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>mybatis-plus-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+
     </dependencies>
 </project>
