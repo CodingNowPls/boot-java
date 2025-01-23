@@ -13,10 +13,11 @@ import org.apache.ibatis.plugin.Signature;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 /**
- *  FlowLongTable表主键赋值拦截器
+ * FlowLongTable表主键赋值拦截器
  */
 @Intercepts({
         @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class})
@@ -35,14 +36,16 @@ public class FlowLongTableInterceptor implements InnerInterceptor {
         if (SqlCommandType.INSERT != ms.getSqlCommandType()) {
             return;
         }
+        if (CollectionUtils.isEmpty(targetTablesMap)) {
+            return;
+        }
 
         // 获取当前操作的表名
         TableInfo tableInfo = TableInfoHelper.getTableInfo(parameter.getClass());
-        if (tableInfo != null) {
+        if (Objects.nonNull(tableInfo)) {
             String tableName = tableInfo.getTableName();
-
             // 判断是否需要拦截
-            if (CollectionUtils.isNotEmpty(targetTablesMap) && targetTablesMap.containsKey(tableName)) {
+            if (targetTablesMap.containsKey(tableName)) {
                 Class<?> tableEntityClazz = targetTablesMap.get(tableName);
                 // 确保 parameter 是目标实体类对象
                 if (tableEntityClazz.isInstance(parameter)) {
@@ -58,7 +61,7 @@ public class FlowLongTableInterceptor implements InnerInterceptor {
                             }
                         } catch (IllegalAccessException e) {
                             throw new SQLException("设置table的ID出错: " + tableName, e);
-                        }finally {
+                        } finally {
                             idField.setAccessible(false);
                         }
                     } else {
