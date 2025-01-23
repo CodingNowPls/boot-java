@@ -18,6 +18,8 @@
         <module>boot-generator</module>
         <module>boot-biz</module>
         <module>boot-biz/boot-biz-demo</module>
+        <module>boot-common/boot-common-workflow</module>
+        <module>boot-workflow</module>
 
     </modules>
     <packaging>pom</packaging>
@@ -36,7 +38,7 @@
         <knife4j.version>3.0.3</knife4j.version>
         <easy-captcha.version>1.6.2</easy-captcha.version>
         <pagehelper.version>6.1.0</pagehelper.version>
-        <mybatis-plus3.version>3.5.7</mybatis-plus3.version>
+        <mybatis-plus3.version>3.5.8</mybatis-plus3.version>
         <mybatisplus-plus.version>1.7.5-RELEASE</mybatisplus-plus.version>
         <dynamic-datasource3.version>4.3.1</dynamic-datasource3.version>
         <fastjson.version>2.0.25</fastjson.version>
@@ -54,6 +56,7 @@
         <satoken3.version>1.39.0</satoken3.version>
         <jaxb.version>2.3.1</jaxb.version>
         <jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
+        <flowlong.version>1.1.1</flowlong.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -154,6 +157,12 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
                 <version>${dynamic-datasource3.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.aizuda</groupId>
+                <artifactId>flowlong-spring-boot-starter</artifactId>
+                <version>${flowlong.version}</version>
             </dependency>
 
             <!-- 获取系统信息 -->
@@ -332,6 +341,16 @@
             <dependency>
                 <groupId>com.boot</groupId>
                 <artifactId>boot-biz</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-workflow</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-workflow</artifactId>
                 <version>${boot.version}</version>
             </dependency>
             <dependency>

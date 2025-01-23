@@ -162,3 +162,12 @@ xss:
 
 
 
+# FlowLong Config
+flowlong:
+  remind:
+    cron: "*/5 * * * * ?"
+  eventing:
+    task: true
+
+
+
