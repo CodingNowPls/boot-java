@@ -20,7 +20,7 @@ public class IndexController {
 
 
 
-    @GetMapping(value = {"/"})
+    @GetMapping(value = {"/", "/index.html"})
     public String index() {
         return "index.html";
     }

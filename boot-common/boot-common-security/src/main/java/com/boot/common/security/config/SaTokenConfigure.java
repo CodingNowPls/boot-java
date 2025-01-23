@@ -53,8 +53,8 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                     LoginUser loginUser = tokenService.getLoginUser(request);
                     if (StringUtils.isNotNull(loginUser)) {
                         tokenService.verifyToken(loginUser);
-                    }else {
-//                        throw new NotLoginException(NotLoginException.DEFAULT_MESSAGE,"","");
+                    } else {
+                        throw new CustomException("当前会话未登录", HttpStatus.UNAUTHORIZED);
                     }
 
                 }))
