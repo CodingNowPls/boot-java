@@ -23,6 +23,6 @@ public class BootApplication {
 
         System.out.println("boot 启动成功  \n");
         System.out.println("前后端合并打包访问  \n");
-        System.out.println("http://localhost:" + serverPort);
+        System.out.println("http://localhost:" + serverPort+"/index.html");
     }
 }
