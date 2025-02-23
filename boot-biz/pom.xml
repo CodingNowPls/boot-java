@@ -11,6 +11,9 @@
     <packaging>pom</packaging>
 
     <artifactId>boot-biz</artifactId>
+    <modules>
+        <module>boot-biz-demo</module>
+    </modules>
 
     <dependencies>
         <dependency>

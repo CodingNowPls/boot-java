@@ -19,6 +19,7 @@
         <module>boot-common-notifier</module>
         <module>boot-common-api</module>
         <module>boot-common-web</module>
+        <module>boot-common-workflow</module>
     </modules>
 
 </project>

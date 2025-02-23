@@ -5,9 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.boot</groupId>
-        <artifactId>boot-java</artifactId>
+        <artifactId>boot-common</artifactId>
         <version>3.8.5</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
     <description>定义工作流接口</description>
     <artifactId>boot-common-workflow</artifactId>

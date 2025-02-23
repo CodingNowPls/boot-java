@@ -18,7 +18,6 @@
         <module>boot-generator</module>
         <module>boot-biz</module>
         <module>boot-biz/boot-biz-demo</module>
-        <module>boot-common/boot-common-workflow</module>
         <module>boot-workflow</module>
 
     </modules>
