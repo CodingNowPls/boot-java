@@ -310,9 +310,9 @@ CREATE TABLE `sys_menu` (
 -- ----------------------------
 -- Records of sys_menu
 -- ----------------------------
-INSERT INTO `sys_menu` VALUES ('1', '系统管理', '0', '1', 'system', null, '', '1', '0', 'M', '0', '0', '', 'system', 'admin', '2024-12-12 12:22:06', '', null, '系统管理目录');
-INSERT INTO `sys_menu` VALUES ('2', '系统监控', '0', '2', 'monitor', null, '', '1', '0', 'M', '0', '0', '', 'monitor', 'admin', '2024-12-12 12:22:06', '', null, '系统监控目录');
-INSERT INTO `sys_menu` VALUES ('3', '系统工具', '0', '3', 'tool', null, '', '1', '0', 'M', '0', '0', '', 'tool', 'admin', '2024-12-12 12:22:06', '', null, '系统工具目录');
+INSERT INTO `sys_menu` VALUES ('1', '系统管理', '0', '100', 'system', null, '', '1', '0', 'M', '0', '0', '', 'system', 'admin', '2024-12-12 12:22:06', '', null, '系统管理目录');
+INSERT INTO `sys_menu` VALUES ('2', '系统监控', '0', '200', 'monitor', null, '', '1', '0', 'M', '0', '0', '', 'monitor', 'admin', '2024-12-12 12:22:06', '', null, '系统监控目录');
+INSERT INTO `sys_menu` VALUES ('3', '系统工具', '0', '300', 'tool', null, '', '1', '0', 'M', '0', '0', '', 'tool', 'admin', '2024-12-12 12:22:06', '', null, '系统工具目录');
 INSERT INTO `sys_menu` VALUES ('100', '用户管理', '1', '1', 'user', 'system/user/index', '', '1', '0', 'C', '0', '0', 'system:user:list', 'user', 'admin', '2024-12-12 12:22:06', '', null, '用户管理菜单');
 INSERT INTO `sys_menu` VALUES ('101', '角色管理', '1', '2', 'role', 'system/role/index', '', '1', '0', 'C', '0', '0', 'system:role:list', 'peoples', 'admin', '2024-12-12 12:22:06', '', null, '角色管理菜单');
 INSERT INTO `sys_menu` VALUES ('102', '菜单管理', '1', '3', 'menu', 'system/menu/index', '', '1', '0', 'C', '0', '0', 'system:menu:list', 'tree-table', 'admin', '2024-12-12 12:22:06', '', null, '菜单管理菜单');
