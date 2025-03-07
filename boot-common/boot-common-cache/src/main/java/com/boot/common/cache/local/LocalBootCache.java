@@ -27,6 +27,9 @@ public class LocalBootCache implements BootCache {
 
     @Override
     public <T> void setCacheObject(String key, T value) {
+        if (Objects.isNull(value)) {
+            return;
+        }
         cache.put(key, value);
     }
 
