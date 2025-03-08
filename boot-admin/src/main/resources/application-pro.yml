@@ -94,3 +94,10 @@ spring:
 #        max-active: 8
 #        # #连接池最大阻塞等待时间（使用负值表示没有限制）
 #        max-wait: -1ms
+
+magic-api:
+  #  配置web页面入口
+  web: /magic/web
+  resource:
+    #  #配置文件存储位置。当以classpath开头时，为只读模式
+    location: /data/magic-api

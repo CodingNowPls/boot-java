@@ -50,6 +50,7 @@
             <groupId>com.boot</groupId>
             <artifactId>boot-common-cache</artifactId>
         </dependency>
+
     </dependencies>
 
 </project>

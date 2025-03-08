@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.boot</groupId>
+        <artifactId>boot-common</artifactId>
+        <version>3.8.5</version>
+    </parent>
+
+    <artifactId>boot-common-magic-api</artifactId>
+    <properties>
+        <magic-api.version>3.0.0-snapshot</magic-api.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.ssssssss</groupId>
+            <artifactId>magic-api</artifactId>
+            <version>${magic-api.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/magic-api-3.0.0-snapshot.jar</systemPath>
+        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.ssssssss</groupId>-->
+        <!--            <artifactId>magic-api-plugin-cluster</artifactId>-->
+        <!--            <version>${magic-api.version}</version>-->
+        <!--            <scope>system</scope>-->
+        <!--            <systemPath>${project.basedir}/libs/magic-api-3.0.0-snapshot.jar</systemPath>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.ssssssss</groupId>-->
+        <!--            <artifactId>magic-api-plugin-component</artifactId>-->
+        <!--            <version>${magic-api.version}</version>-->
+        <!--            <scope>system</scope>-->
+        <!--            <systemPath>${project.basedir}/libs/magic-api-plugin-component-3.0.0-snapshot.jar</systemPath>-->
+        <!--        </dependency>-->
+
+        <!--        <dependency>-->
+        <!--            <groupId>org.ssssssss</groupId>-->
+        <!--            <artifactId>magic-api-plugin-elasticsearch</artifactId>-->
+        <!--            <version>${magic-api.version}</version>-->
+        <!--            <scope>system</scope>-->
+        <!--            <systemPath>${project.basedir}/libs/magic-api-3.0.0-snapshot.jar</systemPath>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.ssssssss</groupId>-->
+        <!--            <artifactId>magic-api-plugin-git</artifactId>-->
+        <!--            <version>${magic-api.version}</version>-->
+        <!--            <scope>system</scope>-->
+        <!--            <systemPath>${project.basedir}/libs/magic-api-plugin-git-3.0.0-snapshot.jar</systemPath>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.ssssssss</groupId>-->
+        <!--            <artifactId>magic-api-plugin-mongo</artifactId>-->
+        <!--            <version>${magic-api.version}</version>-->
+        <!--            <scope>system</scope>-->
+        <!--            <systemPath>${project.basedir}/libs/magic-api-plugin-mongo-3.0.0-snapshot.jar</systemPath>-->
+        <!--        </dependency>-->
+
+        <!--        <dependency>-->
+        <!--            <groupId>org.ssssssss</groupId>-->
+        <!--            <artifactId>magic-api-plugin-nebula</artifactId>-->
+        <!--            <version>${magic-api.version}</version>-->
+        <!--            <scope>system</scope>-->
+        <!--            <systemPath>${project.basedir}/libs/magic-api-plugin-nebula-3.0.0-snapshot.jar</systemPath>-->
+        <!--        </dependency>-->
+
+        <!--        <dependency>-->
+        <!--            <groupId>org.ssssssss</groupId>-->
+        <!--            <artifactId>magic-api-plugin-redis</artifactId>-->
+        <!--            <version>${magic-api.version}</version>-->
+        <!--            <scope>system</scope>-->
+        <!--            <systemPath>${project.basedir}/libs/magic-api-plugin-redis-3.0.0-snapshot.jar</systemPath>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.ssssssss</groupId>-->
+        <!--            <artifactId>magic-api-plugin-springdoc</artifactId>-->
+        <!--            <version>${magic-api.version}</version>-->
+        <!--            <scope>system</scope>-->
+        <!--            <systemPath>${project.basedir}/libs/magic-api-plugin-springdoc-3.0.0-snapshot.jar</systemPath>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.ssssssss</groupId>-->
+        <!--            <artifactId>magic-api-plugin-swagger</artifactId>-->
+        <!--            <version>${magic-api.version}</version>-->
+        <!--            <scope>system</scope>-->
+        <!--            <systemPath>${project.basedir}/libs/magic-api-plugin-swagger-3.0.0-snapshot.jar</systemPath>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.ssssssss</groupId>-->
+        <!--            <artifactId>magic-api-plugin-task</artifactId>-->
+        <!--            <version>${magic-api.version}</version>-->
+        <!--            <scope>system</scope>-->
+        <!--            <systemPath>${project.basedir}/libs/magic-api-plugin-task-3.0.0-snapshot.jar</systemPath>-->
+        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.ssssssss</groupId>
+            <artifactId>magic-api-servlet-jakarta</artifactId>
+            <version>${magic-api.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/magic-api-servlet-jakarta-3.0.0-snapshot.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.ssssssss</groupId>
+            <artifactId>magic-api-spring-boot-starter</artifactId>
+            <version>${magic-api.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/magic-api-spring-boot-starter-3.0.0-snapshot.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.ssssssss</groupId>
+            <artifactId>magic-editor</artifactId>
+            <version>${magic-api.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/magic-editor-3.0.0-snapshot.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ssssssss</groupId>
+            <artifactId>magic-script</artifactId>
+            <version>1.8.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

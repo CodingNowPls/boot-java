@@ -81,6 +81,16 @@
             <groupId>com.boot</groupId>
             <artifactId>boot-common-notifier-dingTalk</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.boot</groupId>
+            <artifactId>boot-common-magic-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.boot</groupId>
+            <artifactId>boot-common-ai</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

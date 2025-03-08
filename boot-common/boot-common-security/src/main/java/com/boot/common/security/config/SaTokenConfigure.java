@@ -15,6 +15,7 @@ import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.security.service.TokenService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -43,6 +44,10 @@ public class SaTokenConfigure implements WebMvcConfigurer {
     public UserContextProvider userContextProvider() {
         return new SecurityUserContextProvider();
     }
+
+    @Value("${magic-api.web:/magic/web}")
+    private String magicApiWebUrl;
+
 
     /**
      * 注册sa-token的拦截器
@@ -82,6 +87,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                         "/swagger-ui.html",
                         "/swagger-resources/**",
                         "/webjars/**",
+                         magicApiWebUrl+"/**",
                         "/*/api-docs",
                         "/druid/**"
                 );

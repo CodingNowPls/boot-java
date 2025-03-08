@@ -20,6 +20,8 @@
         <module>boot-common-api</module>
         <module>boot-common-web</module>
         <module>boot-common-workflow</module>
+        <module>boot-common-magic-api</module>
+        <module>boot-common-ai</module>
     </modules>
 
 </project>

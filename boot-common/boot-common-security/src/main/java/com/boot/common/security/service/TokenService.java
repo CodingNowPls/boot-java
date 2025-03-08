@@ -3,6 +3,7 @@ package com.boot.common.security.service;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 import cn.dev33.satoken.context.model.SaRequest;
@@ -53,7 +54,7 @@ public class TokenService {
     private static final Long MILLIS_MINUTE_TEN = 20 * 60 * 1000L;
 
     @Autowired
-    private BootCache redisCache;
+    private BootCache bootChche;
 
     /**
      * 获取用户身份信息
@@ -68,10 +69,26 @@ public class TokenService {
             // 解析对应的权限以及用户信息
             String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
             String userKey = getTokenKey(uuid);
-            LoginUser user = redisCache.getCacheObject(userKey);
+            LoginUser user = bootChche.getCacheObject(userKey);
             return user;
         }
         return null;
+    }
+
+    /**
+     * 加这个方法即可
+     *
+     * @return 用户信息
+     */
+    public LoginUser getLoginUser(String authorization) {
+        // 获取请求携带的令牌
+        String token = getToken(authorization);
+        Claims claims = parseToken(token);
+        String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
+        String userKey = getTokenKey(uuid);
+        LoginUser user = bootChche.getCacheObject(userKey);
+        return user;
+
     }
 
     /**
@@ -97,7 +114,7 @@ public class TokenService {
             // 解析对应的权限以及用户信息
             String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
             String userKey = getTokenKey(uuid);
-            LoginUser user = redisCache.getCacheObject(userKey);
+            LoginUser user = bootChche.getCacheObject(userKey);
             return user;
         }
         return null;
@@ -118,7 +135,7 @@ public class TokenService {
     public void delLoginUser(String token) {
         if (StringUtils.isNotEmpty(token)) {
             String userKey = getTokenKey(token);
-            redisCache.deleteObject(userKey);
+            bootChche.deleteObject(userKey);
         }
     }
 
@@ -163,7 +180,7 @@ public class TokenService {
         loginUser.setExpireTime(loginUser.getLoginTime() + expireTime * MILLIS_MINUTE);
         // 根据uuid将loginUser缓存
         String userKey = getTokenKey(loginUser.getToken());
-        redisCache.setCacheObject(userKey, loginUser, expireTime, TimeUnit.MINUTES);
+        bootChche.setCacheObject(userKey, loginUser, expireTime, TimeUnit.MINUTES);
     }
 
     /**
@@ -250,4 +267,13 @@ public class TokenService {
     private String getTokenKey(String uuid) {
         return CacheConstants.LOGIN_TOKEN_KEY + uuid;
     }
+
+
+    private String getToken(String token) {
+        if (StringUtils.isNotEmpty(token) && token.startsWith(Constants.TOKEN_PREFIX)) {
+            token = token.replace(Constants.TOKEN_PREFIX, "");
+        }
+        return token;
+    }
+
 }
