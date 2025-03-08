@@ -18,6 +18,7 @@
 13. 考虑加入AI功能
 14. 主分支已经升级到springboot3
 15. 已经集成flowlong后端
+16. 已集成Magic-api
  
 
 
