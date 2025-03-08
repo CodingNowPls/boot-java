@@ -96,5 +96,5 @@ magic-api:
   #  配置web页面入口
   web: /magic/web
   resource:
-    #  #配置文件存储位置。当以classpath开头时，为只读模式
-    location: /data/magic-api
+    #  #配置文件存储位置。当以classpath开头时，为只读模式 E:/magic-api
+    location: D：/magic-api
