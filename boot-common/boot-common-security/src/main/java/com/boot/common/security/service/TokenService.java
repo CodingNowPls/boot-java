@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 import cn.dev33.satoken.context.model.SaRequest;
@@ -80,14 +81,22 @@ public class TokenService {
      *
      * @return 用户信息
      */
-    public LoginUser getLoginUser(String authorization) {
+    public LoginUser magicApiLoginUser() {
         // 获取请求携带的令牌
-        String token = getToken(authorization);
-        Claims claims = parseToken(token);
-        String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
-        String userKey = getTokenKey(uuid);
-        LoginUser user = bootChche.getCacheObject(userKey);
-        return user;
+        Cookie[] cookies = ServletUtils.getRequest().getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("Admin-Token")) {
+                    String authorization = cookie.getValue();
+                    Claims claims = parseToken(authorization);
+                    String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
+                    String userKey = getTokenKey(uuid);
+                    LoginUser user = bootChche.getCacheObject(userKey);
+                    return user;
+                }
+            }
+        }
+        return null;
 
     }
 
