@@ -4,6 +4,7 @@ import com.boot.common.core.cache.BootCache;
 import com.boot.common.core.constant.CacheConstants;
 import com.boot.common.core.constant.Constants;
 import com.boot.common.core.utils.MessageUtils;
+import com.boot.common.core.utils.ServletUtils;
 import com.boot.common.core.utils.sign.RsaUtils;
 import com.boot.common.log.manager.AsyncManager;
 import com.boot.common.log.manager.factory.AsyncFactory;
@@ -45,9 +46,6 @@ public class MagicLoginAuthorizationInterceptor implements AuthorizationIntercep
 
     @Autowired
     private TokenService tokenService;
-
-    @Autowired
-    private SysPermissionService sysPermissionService;
 
     @Autowired
     private PermissionService permissionService;
@@ -98,13 +96,14 @@ public class MagicLoginAuthorizationInterceptor implements AuthorizationIntercep
         } catch (Exception e) {
             throw new MagicLoginException("登陆失败");
         }
+        MagicUser user = getUserByToken(token);
 //        //需要校验权限
 //        boolean permi = permissionService.hasPermi("magic:api:code");
 //        if (!permi) {
 //            throw new MagicLoginException("无权限");
 //        }
+
         AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
-        MagicUser user = getUserByToken(token);
 
         // 返回登录信息  登录成功后将用户信息封装成magic-api的用户信息
         return new MagicUser(user.getId().toString(), username, token, expireTime);
