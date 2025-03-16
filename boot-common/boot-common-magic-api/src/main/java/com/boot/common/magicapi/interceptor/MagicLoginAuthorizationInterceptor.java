@@ -79,7 +79,7 @@ public class MagicLoginAuthorizationInterceptor implements AuthorizationIntercep
             //ruoyi的框架里边，如果token无效的话，会抛出异常，如果不做处理的话，会被magic-api捕获导致无法进入登录页面
         }
 
-        throw new MagicLoginException("token无效");
+        throw new MagicLoginException("请从网站登录页登陆");
     }
 
     @Override
