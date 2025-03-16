@@ -94,7 +94,9 @@ spring:
 
 magic-api:
   #  配置web页面入口
-  web: /magic/web
+  web: /magicApi
   resource:
     #  #配置文件存储位置。当以classpath开头时，为只读模式 E:/magic-api
-    location: D：/magic-api
+    location: magic-api
+  #编辑器配置
+#  editor-config: classpath:./magic-editor-config.js

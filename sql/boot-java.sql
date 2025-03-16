@@ -395,7 +395,7 @@ INSERT INTO `sys_menu` VALUES ('1058', '导入代码', '116', '4', '#', '', '', 
 INSERT INTO `sys_menu` VALUES ('1059', '预览代码', '116', '5', '#', '', '', '1', '0', 'F', '0', '0', 'tool:gen:preview', '#', 'admin', '2024-12-12 12:22:06', '', null, '');
 INSERT INTO `sys_menu` VALUES ('1060', '生成代码', '116', '6', '#', '', '', '1', '0', 'F', '0', '0', 'tool:gen:code', '#', 'admin', '2024-12-12 12:22:06', '', null, '');
 INSERT INTO `sys_menu` VALUES ('1062', 'MagicApi', '0', '400', 'magicApi', NULL, NULL, '1', '0', 'M', '0', '0', NULL, 'code', 'admin', '2025-03-09 18:13:35', '', NULL, '');
-INSERT INTO `sys_menu` VALUES ('1063', '编写代码', '1062', '10', 'http://localhost:8081/magic/web/index.html', NULL, NULL, '0', '0', 'C', '0', '0', NULL, 'clipboard', 'admin', '2025-03-09 18:15:09', '', NULL, '');
+INSERT INTO `sys_menu` VALUES ('1063', '编写代码', '1062', '10', 'http://localhost:8081/magicApi/index.html', NULL, NULL, '0', '0', 'C', '0', '0', NULL, 'clipboard', 'admin', '2025-03-09 18:15:09', '', NULL, '');
 
 -- ----------------------------
 -- Table structure for sys_notice

@@ -15,6 +15,12 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.boot</groupId>
+            <artifactId>boot-common-security</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.ssssssss</groupId>
             <artifactId>magic-api</artifactId>

@@ -45,7 +45,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
         return new SecurityUserContextProvider();
     }
 
-    @Value("${magic-api.web:/magic/web}")
+    @Value("${magic-api.web}")
     private String magicApiWebUrl;
 
 
