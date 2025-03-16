@@ -1,14 +1,9 @@
 package com.boot.common.magicapi.interceptor;
 
-import cn.hutool.core.util.StrUtil;
 import com.boot.common.core.cache.BootCache;
 import com.boot.common.core.constant.CacheConstants;
 import com.boot.common.core.constant.Constants;
-import com.boot.common.core.domain.entity.SysUser;
-import com.boot.common.core.utils.DateUtils;
 import com.boot.common.core.utils.MessageUtils;
-import com.boot.common.core.utils.ServletUtils;
-import com.boot.common.core.utils.ip.IpUtils;
 import com.boot.common.core.utils.sign.RsaUtils;
 import com.boot.common.log.manager.AsyncManager;
 import com.boot.common.log.manager.factory.AsyncFactory;
@@ -25,6 +20,8 @@ import org.springframework.stereotype.Component;
 import org.ssssssss.magicapi.core.context.MagicUser;
 import org.ssssssss.magicapi.core.exception.MagicLoginException;
 import org.ssssssss.magicapi.core.interceptor.AuthorizationInterceptor;
+
+import java.util.Objects;
 
 @Component
 public class MagicLoginAuthorizationInterceptor implements AuthorizationInterceptor {
@@ -71,14 +68,24 @@ public class MagicLoginAuthorizationInterceptor implements AuthorizationIntercep
         // 从token中获取MagicUser对象
         LoginUser user = tokenService.magicApiLoginUser();
         try {
+            if (Objects.isNull(user)) {
+                //说明未进行登录页登陆，取token校验
+                Claims claims = parseToken(token);
+                if (Objects.isNull(claims)) {
+                    throw new MagicLoginException("请从网站登录页登陆");
+                }
+                // 解析对应的权限以及用户信息
+                String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
+                String userKey = getTokenKey(uuid);
+                user = bootCache.getCacheObject(userKey);
+            }
             //获取到用户之后，封装成magic-api的用户类
             if (user != null) {
                 return new MagicUser(user.getUserId().toString(), user.getUserName(), token, expireTime);
             }
         } catch (Exception e) {
-            //ruoyi的框架里边，如果token无效的话，会抛出异常，如果不做处理的话，会被magic-api捕获导致无法进入登录页面
+            throw new MagicLoginException("请从网站登录页登陆");
         }
-
         throw new MagicLoginException("请从网站登录页登陆");
     }
 
@@ -107,7 +114,6 @@ public class MagicLoginAuthorizationInterceptor implements AuthorizationIntercep
     public void logout(String token) {
 
     }
-
 
 
     private String getTokenKey(String uuid) {
