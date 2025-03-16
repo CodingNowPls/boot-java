@@ -5,7 +5,7 @@ import com.boot.common.core.domain.AjaxResult;
 import com.boot.common.core.domain.model.RegisterBody;
 import com.boot.common.core.utils.StringUtils;
 import com.boot.system.service.ISysConfigService;
-import com.boot.system.service.SysRegisterService;
+import com.boot.system.service.SysRegisterServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SysRegisterController extends BaseController {
     @Autowired
-    private SysRegisterService registerService;
+    private SysRegisterServiceImpl registerService;
 
     @Autowired
     private ISysConfigService configService;

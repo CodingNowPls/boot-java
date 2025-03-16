@@ -9,7 +9,7 @@ import com.boot.common.core.enums.BusinessType;
 import com.boot.common.log.annotation.Log;
 import com.boot.common.core.utils.poi.ExcelUtil;
 import com.boot.system.service.ISysLogininforService;
-import com.boot.system.service.SysPasswordService;
+import com.boot.system.service.SysPasswordServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +29,7 @@ public class SysLogininforController extends BaseController {
     private ISysLogininforService logininforService;
 
     @Autowired
-    private SysPasswordService passwordService;
+    private SysPasswordServiceImpl passwordService;
 
     @SaCheckPermission("monitor:logininfor:list")
     @GetMapping("/list")

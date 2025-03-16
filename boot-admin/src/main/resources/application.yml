@@ -67,6 +67,7 @@ spring:
     basename: i18n/messages
   profiles:
     active: dev
+    include: magicApi
   # 文件上传
   servlet:
      multipart:

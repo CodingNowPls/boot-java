@@ -1,0 +1,13 @@
+magic-api:
+  web: /magicApi
+  show-sql: true #配置打印SQL
+  #是否需要单独的登录
+  needLogin: true
+  sql-column-case: camel
+  editor-config: classpath:./magic/magic-editor-config.js
+  response-code:
+    success: 200 #执行成功的code值
+    invalid: 400 #参数验证未通过的code值
+    exception: 500 #执行出现异常的code值
+  resource:
+    location: /data/magic-api

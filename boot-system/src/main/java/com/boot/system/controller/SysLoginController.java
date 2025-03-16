@@ -1,6 +1,5 @@
 package com.boot.system.controller;
 
-import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.boot.common.core.constant.Constants;
@@ -16,8 +15,8 @@ import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.security.service.TokenService;
 import com.boot.common.security.utils.SecurityUtils;
 import com.boot.system.service.ISysMenuService;
-import com.boot.system.service.SysLoginService;
-import com.boot.system.service.SysPermissionService;
+import com.boot.system.service.SysLoginServiceImpl;
+import com.boot.system.service.SysPermissionServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,13 +40,13 @@ import java.util.Set;
 @RestController
 public class SysLoginController {
     @Autowired
-    private SysLoginService loginService;
+    private SysLoginServiceImpl loginService;
 
     @Autowired
     private ISysMenuService menuService;
 
     @Autowired
-    private SysPermissionService permissionService;
+    private SysPermissionServiceImpl permissionService;
     @Autowired
     private TokenService tokenService;
 

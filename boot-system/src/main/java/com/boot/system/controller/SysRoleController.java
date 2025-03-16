@@ -17,7 +17,7 @@ import com.boot.system.domain.SysUserRole;
 import com.boot.system.service.ISysDeptService;
 import com.boot.system.service.ISysRoleService;
 import com.boot.system.service.ISysUserService;
-import com.boot.system.service.SysPermissionService;
+import com.boot.system.service.SysPermissionServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.validation.annotation.Validated;
@@ -41,7 +41,7 @@ public class SysRoleController extends BaseController {
     private TokenService tokenService;
 
     @Autowired
-    private SysPermissionService permissionService;
+    private SysPermissionServiceImpl permissionService;
 
     @Autowired
     private ISysUserService userService;

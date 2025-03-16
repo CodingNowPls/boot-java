@@ -2,18 +2,10 @@ package com.boot.system.service.impl;
 
 
 import com.boot.common.core.domain.entity.SysUser;
-import com.boot.common.core.enums.UserStatus;
-import com.boot.common.core.exception.CustomException;
-import com.boot.common.core.exception.ServiceException;
-import com.boot.common.core.exception.base.BaseException;
-import com.boot.common.core.exception.user.UserPasswordNotMatchException;
-import com.boot.common.core.utils.StringUtils;
-import com.boot.common.core.utils.sign.RsaUtils;
 import com.boot.common.security.core.domain.model.LoginUser;
-import com.boot.common.security.utils.SecurityUtils;
 import com.boot.system.service.ISysUserService;
-import com.boot.system.service.SysPasswordService;
-import com.boot.system.service.SysPermissionService;
+import com.boot.system.service.SysPasswordServiceImpl;
+import com.boot.system.service.SysPermissionServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +23,10 @@ public class UserSaServiceImpl {
     private ISysUserService userService;
 
     @Autowired
-    private SysPermissionService permissionService;
+    private SysPermissionServiceImpl permissionService;
 
     @Autowired
-    private SysPasswordService passwordService;
+    private SysPasswordServiceImpl passwordService;
 
     public LoginUser loadUserName(String username, String password){
         SysUser user = userService.selectUserByUserName(username);
