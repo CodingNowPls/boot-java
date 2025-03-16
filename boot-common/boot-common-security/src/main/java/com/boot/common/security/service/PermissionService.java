@@ -1,6 +1,7 @@
 package com.boot.common.security.service;
 
 import com.boot.common.core.domain.entity.SysRole;
+import com.boot.common.core.utils.spring.SpringUtils;
 import com.boot.common.security.context.PermissionContextHolder;
 import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.security.utils.SecurityUtils;
@@ -42,6 +43,23 @@ public class PermissionService {
             return false;
         }
         LoginUser loginUser = SecurityUtils.getLoginUser();
+        if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(loginUser.getPermissions())) {
+            return false;
+        }
+        PermissionContextHolder.setContext(permission);
+        return hasPermissions(loginUser.getPermissions(), permission);
+    }
+    public boolean hasPermi(String permission,String token) {
+        if (StringUtils.isEmpty(permission)) {
+            return false;
+        }
+        if (StringUtils.isEmpty(token)) {
+            return false;
+        }
+        TokenService tokenService = SpringUtils.getBean(TokenService.class);
+
+        LoginUser loginUser = tokenService.getLoginUserFromToken(token);
+
         if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(loginUser.getPermissions())) {
             return false;
         }

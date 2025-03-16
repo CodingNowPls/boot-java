@@ -243,6 +243,16 @@ public class TokenService {
         return claims.getSubject();
     }
 
+    public LoginUser getLoginUserFromToken(String token) {
+        Claims claims = parseToken(token);
+        // 解析对应的权限以及用户信息
+        String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
+        String userKey = getTokenKey(uuid);
+        LoginUser user = bootChche.getCacheObject(userKey);
+        return user;
+    }
+
+
     /**
      * 获取请求token
      *
