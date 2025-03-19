@@ -1,5 +1,6 @@
 #!/bin/bash
-
+# 设置终端标题为 "boot-java"
+printf "\033]0;boot-java\007"
 # 设置JAVA_HOME环境变量
 export JAVA_HOME=/path/to/your/jdk-21.0.2
 export PATH=$JAVA_HOME/bin:$PATH
