@@ -161,6 +161,49 @@ xss:
   urlPatterns: /system/*,/monitor/*,/tool/*
 
 
+tenant:
+  # 租户模式 是否启用 ，仅测试时可以临时关闭整个租户机制，但因为整个框架都是多租户架构，所以正式环境必须要启用
+  enable: false
+  # 租户模式 默认租户ID
+  defaultTenantId: 1
+  # 租户模式 默认租户名称
+  defaultTenantName: default
+  # 租户字段名
+  column: tenant_id
+  # 排除表
+  excludes:
+    - base_tenant #租户表
+    - base_menu_pack #所有的菜单包
+    - base_menu_pack_detail # 租户菜单包含的菜单详情
+    - base_tenant_menu_pack # 租户分配的菜单包
+    - gen_table
+    - gen_table_column
+    - qrtz_blob_triggers
+    - qrtz_calendars
+    - qrtz_cron_triggers
+    - qrtz_fired_triggers
+    - qrtz_job_details
+    - qrtz_locks
+    - qrtz_paused_trigger_grps
+    - qrtz_scheduler_state
+    - qrtz_simple_triggers
+    - qrtz_simprop_triggers
+    - qrtz_triggers
+    - sys_config
+    - sys_dict_data
+    - sys_dict_type
+    - sys_job
+    - sys_job_log
+    - sys_logininfor
+    - sys_menu
+    - sys_notice
+    - sys_oper_log
+    - sys_role_dept
+    - sys_role_menu
+    - sys_user
+    - sys_user_post
+    - sys_user_role
+
 
 
 # FlowLong Config
@@ -169,6 +212,9 @@ flowlong:
     cron: "*/5 * * * * ?"
   eventing:
     task: true
+
+
+
 
 
 

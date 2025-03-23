@@ -82,6 +82,9 @@ public class LoginUser  {
     private String password;
 
 
+    private String tenantId;
+
+
 
 
     public LoginUser() {

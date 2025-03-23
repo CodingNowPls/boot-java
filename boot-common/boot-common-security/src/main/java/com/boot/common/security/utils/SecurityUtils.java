@@ -33,6 +33,15 @@ public class SecurityUtils {
         }
     }
 
+    public static Long getCurrentTenantId() {
+        try {
+            return getLoginUser().getUserId();
+        } catch (Exception e) {
+            throw new ServiceException("获取用户ID异常", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+
     /**
      * 获取部门ID
      **/

@@ -91,6 +91,12 @@
             <groupId>com.boot</groupId>
             <artifactId>boot-common-ai</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.boot</groupId>
+            <artifactId>boot-common-tenant</artifactId>
+        </dependency>
+
+
     </dependencies>
 
 </project>

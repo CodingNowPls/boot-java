@@ -333,7 +333,11 @@
                 <artifactId>boot-common-magic-api</artifactId>
                 <version>${boot.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-tenant</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
             <!-- 定时任务-->
             <dependency>
                 <groupId>com.boot</groupId>

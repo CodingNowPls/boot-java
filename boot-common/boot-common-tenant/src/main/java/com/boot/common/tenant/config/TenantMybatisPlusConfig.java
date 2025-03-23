@@ -1,0 +1,105 @@
+package com.boot.common.tenant.config;
+
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
+import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
+import com.boot.common.security.utils.SecurityUtils;
+
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.LongValue;
+import net.sf.jsqlparser.expression.NullValue;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+
+import java.util.List;
+@Slf4j
+@Configuration
+@Order(1)
+@ConditionalOnProperty(prefix = "tenant", name = "enable", havingValue = "true")
+public class TenantMybatisPlusConfig {
+
+    @Autowired
+    private TenantProperties tenantProperties;
+    
+    @Autowired
+    private MybatisPlusInterceptor mybatisPlusInterceptor;
+
+    /**
+     * 初始化租户拦截器
+     */
+    @PostConstruct
+    public void init() {
+        //多租户插件
+        if (tenantProperties.getEnable()) {
+            log.info("初始化租户拦截器。。。。");
+            TenantLineInnerInterceptor tenantLineInnerInterceptor = new TenantLineInnerInterceptor(new TenantLineHandler() {
+                /**
+                 * 获取租户ID
+                 *
+                 * @return
+                 */
+                @Override
+                public Expression getTenantId() {
+                    //从登录信息中获取当前组织ID
+                    Long tenantId = SecurityUtils.getCurrentTenantId();
+                    if (tenantId == null) {
+                        return new NullValue();
+                    }
+                    return new LongValue(tenantId);
+                }
+
+                /**
+                 * 获取租户字段的名称
+                 *
+                 * @return
+                 */
+                @Override
+                public String getTenantIdColumn() {
+                    return tenantProperties.getColumn();
+                }
+
+                /**
+                 * 哪些表忽略租户
+                 *
+                 * @param tableName 表名
+                 * @return true忽略，false开启
+                 */
+                @Override
+                public boolean ignoreTable(String tableName) {
+                    List<String> excludeTables = tenantProperties.getExcludes();
+                    if (excludeTables != null && !excludeTables.isEmpty() && excludeTables.contains(tableName)) {
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            // 确保租户拦截器在所有拦截器的最前面
+            log.info("初始化租户拦截器，添加到拦截器链的最前面");
+            // 创建一个新的MybatisPlusInterceptor实例
+            MybatisPlusInterceptor newInterceptor = new MybatisPlusInterceptor();
+            // 首先添加租户拦截器
+            newInterceptor.addInnerInterceptor(tenantLineInnerInterceptor);
+            // 获取当前所有拦截器并添加到新的拦截器实例中
+            List<InnerInterceptor> existingInterceptors = mybatisPlusInterceptor.getInterceptors();
+            for (InnerInterceptor innerInterceptor : existingInterceptors) {
+                log.info("添加现有拦截器: " + innerInterceptor.getClass().getSimpleName());
+                newInterceptor.addInnerInterceptor(innerInterceptor);
+            }
+            // 使用反射替换原有的拦截器列表
+            try {
+                java.lang.reflect.Field interceptorsField = MybatisPlusInterceptor.class.getDeclaredField("interceptors");
+                interceptorsField.setAccessible(true);
+                interceptorsField.set(mybatisPlusInterceptor, newInterceptor.getInterceptors());
+                log.info("成功替换拦截器列表");
+            } catch (Exception e) {
+                log.error("替换拦截器列表失败", e);
+            }
+        }
+    }
+
+}
