@@ -37,7 +37,7 @@ public class SecurityUtils {
         try {
             return getLoginUser().getUserId();
         } catch (Exception e) {
-            throw new ServiceException("获取用户ID异常", HttpStatus.UNAUTHORIZED);
+            throw new ServiceException("获取租户ID异常", HttpStatus.UNAUTHORIZED);
         }
     }
 
