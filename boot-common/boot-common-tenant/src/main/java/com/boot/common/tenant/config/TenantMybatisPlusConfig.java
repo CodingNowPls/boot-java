@@ -36,7 +36,6 @@ public class TenantMybatisPlusConfig {
     public void init() {
         //多租户插件
         if (tenantProperties.getEnable()) {
-            log.info("初始化租户拦截器。。。。");
             TenantLineInnerInterceptor tenantLineInnerInterceptor = new TenantLineInnerInterceptor(new TenantLineHandler() {
                 /**
                  * 获取租户ID
@@ -79,15 +78,10 @@ public class TenantMybatisPlusConfig {
                 }
             });
             // 确保租户拦截器在所有拦截器的最前面
-            log.info("初始化租户拦截器，添加到拦截器链的最前面");
-            // 创建一个新的MybatisPlusInterceptor实例
             MybatisPlusInterceptor newInterceptor = new MybatisPlusInterceptor();
-            // 首先添加租户拦截器
             newInterceptor.addInnerInterceptor(tenantLineInnerInterceptor);
-            // 获取当前所有拦截器并添加到新的拦截器实例中
             List<InnerInterceptor> existingInterceptors = mybatisPlusInterceptor.getInterceptors();
             for (InnerInterceptor innerInterceptor : existingInterceptors) {
-                log.info("添加现有拦截器: " + innerInterceptor.getClass().getSimpleName());
                 newInterceptor.addInnerInterceptor(innerInterceptor);
             }
             // 使用反射替换原有的拦截器列表
@@ -95,7 +89,6 @@ public class TenantMybatisPlusConfig {
                 java.lang.reflect.Field interceptorsField = MybatisPlusInterceptor.class.getDeclaredField("interceptors");
                 interceptorsField.setAccessible(true);
                 interceptorsField.set(mybatisPlusInterceptor, newInterceptor.getInterceptors());
-                log.info("成功替换拦截器列表");
             } catch (Exception e) {
                 log.error("替换拦截器列表失败", e);
             }
