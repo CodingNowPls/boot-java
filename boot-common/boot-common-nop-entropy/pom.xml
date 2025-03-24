@@ -10,9 +10,7 @@
     </parent>
 
 
-    <artifactId>boot-common-print</artifactId>
+    <artifactId>boot-common-nop-entropy</artifactId>
+    <description>nop 模块</description>
 
-    <description>打印模块</description>
-    <module>boot-common/boot-common-print</module>
-    <module>boot-common/boot-common-nop-entropy</module>
 </project>

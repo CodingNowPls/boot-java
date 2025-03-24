@@ -19,7 +19,7 @@
         <module>boot-biz</module>
         <module>boot-biz/boot-biz-demo</module>
         <module>boot-workflow</module>
-        <module>boot-common/boot-common-print</module>
+
 
     </modules>
     <packaging>pom</packaging>
@@ -294,6 +294,7 @@
                 <artifactId>boot-common-security</artifactId>
                 <version>${boot.version}</version>
             </dependency>
+
             <!-- 通知器 -->
             <dependency>
                 <groupId>com.boot</groupId>
@@ -308,12 +309,6 @@
             <dependency>
                 <groupId>com.boot</groupId>
                 <artifactId>boot-common-notifier-dingTalk</artifactId>
-                <version>${boot.version}</version>
-            </dependency>
-            <!-- web服务模块 -->
-            <dependency>
-                <groupId>com.boot</groupId>
-                <artifactId>boot-common-web</artifactId>
                 <version>${boot.version}</version>
             </dependency>
 
@@ -347,6 +342,18 @@
             <dependency>
                 <groupId>com.boot</groupId>
                 <artifactId>boot-common-print</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-nop-entropy</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <!-- web服务模块 -->
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-web</artifactId>
                 <version>${boot.version}</version>
             </dependency>
 

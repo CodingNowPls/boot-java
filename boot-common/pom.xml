@@ -24,6 +24,8 @@
         <module>boot-common-ai</module>
         <module>boot-common-tenant</module>
         <module>boot-common-report</module>
+        <module>boot-common-print</module>
+        <module>boot-common-nop-entropy</module>
     </modules>
 
 </project>
