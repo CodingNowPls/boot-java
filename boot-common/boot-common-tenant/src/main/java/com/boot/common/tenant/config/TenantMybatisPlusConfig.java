@@ -16,6 +16,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
+import java.util.Objects;
+
 @Slf4j
 @Configuration
 @ConditionalOnProperty(prefix = "tenant", name = "enable", havingValue = "true")
@@ -83,12 +85,21 @@ public class TenantMybatisPlusConfig {
                 newInterceptor.addInnerInterceptor(innerInterceptor);
             }
             // 使用反射替换原有的拦截器列表
+            java.lang.reflect.Field interceptorsField = null;
             try {
-                java.lang.reflect.Field interceptorsField = MybatisPlusInterceptor.class.getDeclaredField("interceptors");
+                interceptorsField = MybatisPlusInterceptor.class.getDeclaredField("interceptors");
                 interceptorsField.setAccessible(true);
                 interceptorsField.set(mybatisPlusInterceptor, newInterceptor.getInterceptors());
             } catch (Exception e) {
                 log.error("替换拦截器列表失败", e);
+            }finally {
+                if (Objects.nonNull(interceptorsField)) {
+                    try {
+                        interceptorsField.setAccessible(false);
+                    } catch (Exception e) {
+                        log.error("重置拦截器列表失败", e);
+                    }
+                }
             }
         }
     }
