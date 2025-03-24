@@ -14,12 +14,10 @@ import net.sf.jsqlparser.expression.NullValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 
 import java.util.List;
 @Slf4j
 @Configuration
-@Order(1)
 @ConditionalOnProperty(prefix = "tenant", name = "enable", havingValue = "true")
 public class TenantMybatisPlusConfig {
 

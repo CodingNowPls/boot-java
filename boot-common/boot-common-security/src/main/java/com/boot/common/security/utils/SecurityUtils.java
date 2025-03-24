@@ -35,7 +35,7 @@ public class SecurityUtils {
 
     public static Long getCurrentTenantId() {
         try {
-            return getLoginUser().getUserId();
+            return getLoginUser().getTenantId();
         } catch (Exception e) {
             throw new ServiceException("获取租户ID异常", HttpStatus.UNAUTHORIZED);
         }

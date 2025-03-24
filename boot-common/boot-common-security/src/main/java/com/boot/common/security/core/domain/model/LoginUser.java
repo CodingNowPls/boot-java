@@ -82,7 +82,7 @@ public class LoginUser  {
     private String password;
 
 
-    private String tenantId;
+    private Long tenantId;
 
 
 
