@@ -5,11 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.boot</groupId>
-        <artifactId>boot-common</artifactId>
+        <artifactId>boot-java</artifactId>
         <version>3.8.5</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>boot-common-ai</artifactId>
-    <description>AI 相关</description>
+    <artifactId>boot-common-print</artifactId>
+
+    <description>打印模块</description>
 
 </project>

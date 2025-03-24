@@ -23,6 +23,7 @@
         <module>boot-common-magic-api</module>
         <module>boot-common-ai</module>
         <module>boot-common-tenant</module>
+        <module>boot-common-report</module>
     </modules>
 
 </project>

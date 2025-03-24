@@ -19,6 +19,7 @@
         <module>boot-biz</module>
         <module>boot-biz/boot-biz-demo</module>
         <module>boot-workflow</module>
+        <module>boot-common/boot-common-print</module>
 
     </modules>
     <packaging>pom</packaging>
@@ -338,6 +339,18 @@
                 <artifactId>boot-common-tenant</artifactId>
                 <version>${boot.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-report</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-print</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+
+
             <!-- 定时任务-->
             <dependency>
                 <groupId>com.boot</groupId>
@@ -376,7 +389,6 @@
             </dependency>
 
 
-
             <dependency>
                 <groupId>com.boot</groupId>
                 <artifactId>boot-biz-demo</artifactId>
@@ -395,7 +407,6 @@
         </dependency>
 
     </dependencies>
-
 
 
     <build>

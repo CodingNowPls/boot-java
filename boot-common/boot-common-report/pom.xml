@@ -9,7 +9,7 @@
         <version>3.8.5</version>
     </parent>
 
-    <artifactId>boot-common-ai</artifactId>
-    <description>AI 相关</description>
+    <artifactId>boot-common-report</artifactId>
+    <description>在线协同</description>
 
 </project>

@@ -95,7 +95,14 @@
             <groupId>com.boot</groupId>
             <artifactId>boot-common-tenant</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.boot</groupId>
+            <artifactId>boot-common-report</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.boot</groupId>
+            <artifactId>boot-common-print</artifactId>
+        </dependency>
 
     </dependencies>
 
