@@ -342,7 +342,7 @@
             </dependency>
             <dependency>
                 <groupId>com.boot</groupId>
-                <artifactId>boot-common-report</artifactId>
+                <artifactId>boot-common-real-time-editing</artifactId>
                 <version>${boot.version}</version>
             </dependency>
             <dependency>

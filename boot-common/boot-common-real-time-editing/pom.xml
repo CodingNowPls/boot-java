@@ -9,7 +9,7 @@
         <version>3.8.5</version>
     </parent>
 
-    <artifactId>boot-common-report</artifactId>
+    <artifactId>boot-common-real-time-editing</artifactId>
     <description>在线协同</description>
 
 </project>
