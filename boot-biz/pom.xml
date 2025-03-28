@@ -13,6 +13,7 @@
     <artifactId>boot-biz</artifactId>
     <modules>
         <module>boot-biz-demo</module>
+        <module>boot-biz-print</module>
     </modules>
 
     <dependencies>

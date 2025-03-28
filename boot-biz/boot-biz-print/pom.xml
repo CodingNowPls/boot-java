@@ -5,12 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.boot</groupId>
-        <artifactId>boot-common</artifactId>
+        <artifactId>boot-biz</artifactId>
         <version>3.8.5</version>
     </parent>
 
+    <artifactId>boot-biz-print</artifactId>
 
-    <artifactId>boot-common-print</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>com.boot</groupId>
+            <artifactId>boot-common-web</artifactId>
+        </dependency>
+    </dependencies>
 
-    <description>打印模块</description>
 </project>

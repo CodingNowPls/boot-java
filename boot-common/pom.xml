@@ -24,7 +24,6 @@
         <module>boot-common-ai</module>
         <module>boot-common-tenant</module>
         <module>boot-common-real-time-editing</module>
-        <module>boot-common-print</module>
         <module>boot-common-nop-entropy</module>
     </modules>
 
