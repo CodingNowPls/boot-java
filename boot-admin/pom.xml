@@ -84,6 +84,15 @@
             <groupId>com.boot</groupId>
             <artifactId>boot-biz-demo</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.boot</groupId>
+            <artifactId>boot-biz-print</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.boot</groupId>
+            <artifactId>boot-biz-ui</artifactId>
+        </dependency>
+
     </dependencies>
 
 
