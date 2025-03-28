@@ -17,7 +17,6 @@
         <module>boot-quartz</module>
         <module>boot-generator</module>
         <module>boot-biz</module>
-        <module>boot-biz/boot-biz-demo</module>
         <module>boot-workflow</module>
 
 

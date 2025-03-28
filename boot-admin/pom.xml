@@ -89,11 +89,11 @@
             <artifactId>boot-biz-print</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.boot</groupId>
-            <artifactId>boot-biz-ui</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.boot</groupId>-->
+<!--            <artifactId>boot-biz-ui</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
 
     </dependencies>
 
