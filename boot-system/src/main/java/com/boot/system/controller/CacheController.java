@@ -1,6 +1,7 @@
 package com.boot.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.boot.common.core.config.BootConfig;
 import com.boot.common.core.constant.CacheConstants;
 import com.boot.common.core.domain.AjaxResult;
 import com.boot.common.core.utils.StringUtils;
@@ -24,6 +25,10 @@ public class CacheController {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
+
+    @Autowired
+    private BootConfig bootConfig;
+
     {
         caches.add(new SysCache(CacheConstants.LOGIN_TOKEN_KEY, "用户信息"));
         caches.add(new SysCache(CacheConstants.SYS_CONFIG_KEY, "配置信息"));
@@ -37,6 +42,11 @@ public class CacheController {
     @SaCheckPermission("monitor:cache:list")
     @GetMapping()
     public AjaxResult getInfo() throws Exception {
+        if (bootConfig.getCacheType().equalsIgnoreCase("local")) {
+            return AjaxResult.success("当前使用的是本地缓存，暂不支持查看缓存信息");
+        }
+
+
         Properties info = (Properties) redisTemplate.execute((RedisCallback<Object>) connection -> connection.info());
         Properties commandStats = (Properties) redisTemplate.execute((RedisCallback<Object>) connection -> connection.info("commandstats"));
         Object dbSize = redisTemplate.execute((RedisCallback<Object>) connection -> connection.dbSize());
@@ -66,6 +76,9 @@ public class CacheController {
     @SaCheckPermission("monitor:cache:list")
     @GetMapping("/getKeys/{cacheName}")
     public AjaxResult getCacheKeys(@PathVariable String cacheName) {
+        if (bootConfig.getCacheType().equalsIgnoreCase("local")) {
+            return  AjaxResult.success(Collections.EMPTY_LIST);
+        }
         Set<String> cacheKeys = redisTemplate.keys(cacheName + "*");
         return AjaxResult.success(cacheKeys);
     }

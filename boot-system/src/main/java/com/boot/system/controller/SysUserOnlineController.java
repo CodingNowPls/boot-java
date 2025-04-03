@@ -2,6 +2,7 @@ package com.boot.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.boot.common.core.cache.BootCache;
+import com.boot.common.core.config.BootConfig;
 import com.boot.common.core.constant.CacheConstants;
 import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.web.controller.BaseController;
@@ -36,9 +37,16 @@ public class SysUserOnlineController extends BaseController {
     @Autowired
     private BootCache bootCache;
 
+    @Autowired
+    private BootConfig bootConfig;
+
     @SaCheckPermission("monitor:online:list")
     @GetMapping("/list")
     public TableDataInfo list(String ipaddr, String userName) {
+        if (bootConfig.getCacheType().equalsIgnoreCase("local")) {
+            return  getDataTable(Collections.emptyList());
+        }
+
         Collection<String> keys = bootCache.keys(CacheConstants.LOGIN_TOKEN_KEY + "*");
         List<SysUserOnline> userOnlineList = new ArrayList<SysUserOnline>();
         for (String key : keys) {
