@@ -9,7 +9,6 @@
         <version>3.8.5</version>
     </parent>
 
-
     <artifactId>boot-common-nop-entropy</artifactId>
     <description>nop 模块</description>
 

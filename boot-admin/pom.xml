@@ -74,21 +74,21 @@
             <groupId>com.boot</groupId>
             <artifactId>boot-generator</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.boot</groupId>
-            <artifactId>boot-workflow</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.boot</groupId>-->
+<!--            <artifactId>boot-workflow</artifactId>-->
+<!--        </dependency>-->
 
 
-        <dependency>
-            <groupId>com.boot</groupId>
-            <artifactId>boot-biz-demo</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.boot</groupId>
-            <artifactId>boot-biz-print</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.boot</groupId>-->
+<!--            <artifactId>boot-biz-demo</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.boot</groupId>-->
+<!--            <artifactId>boot-biz-print</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
 <!--        <dependency>-->
 <!--            <groupId>com.boot</groupId>-->
 <!--            <artifactId>boot-biz-ui</artifactId>-->

@@ -16,9 +16,6 @@
         <module>boot-common-notifier-dingTalk</module>
     </modules>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>com.boot</groupId>
