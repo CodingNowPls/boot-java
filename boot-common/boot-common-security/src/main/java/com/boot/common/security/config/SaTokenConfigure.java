@@ -88,6 +88,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                         "/swagger-resources/**",
                         "/webjars/**",
                          magicApiWebUrl+"/**",
+                        "/system/tenant/list**",
                         "/*/api-docs",
                         "/druid/**"
                 );

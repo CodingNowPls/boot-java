@@ -29,4 +29,15 @@ public class LoginBody {
      */
     private String uuid;
 
+    /**
+     * 租户id
+     */
+    private Long tenantId;
+    /**
+     * 是否是管理员登录
+     */
+    private Boolean isAdminLogin;
+
+
+
 }
