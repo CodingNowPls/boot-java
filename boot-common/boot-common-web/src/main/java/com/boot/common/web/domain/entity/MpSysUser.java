@@ -126,4 +126,10 @@ public class MpSysUser implements Serializable {
 
     @TableField("tenant_id")
     private String tenantId;
+
+    /**
+     * 是否是管理员
+     */
+    @TableField("is_admin")
+    private Integer isAdmin;
 }
