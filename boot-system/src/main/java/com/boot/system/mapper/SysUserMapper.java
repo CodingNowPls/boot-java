@@ -45,6 +45,17 @@ public interface SysUserMapper {
     public SysUser selectUserByUserName(String userName);
 
     /**
+     * 通过用户名和租户ID 查询用户
+     *
+     * @param userName 用户名
+     * @param tenantId 租户id
+     * @return 用户对象信息
+     */
+    SysUser selectUserByUserNameAndTenantId(String userName, Long tenantId);
+
+
+
+    /**
      * 通过用户ID查询用户
      *
      * @param userId 用户ID
@@ -133,4 +144,6 @@ public interface SysUserMapper {
      * @return
      */
     List<SysUser> getUserListByIds(@Param("collectionIds") Collection<Long> collectionIds);
+
+
 }

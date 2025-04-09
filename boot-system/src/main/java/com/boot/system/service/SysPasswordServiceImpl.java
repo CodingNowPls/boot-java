@@ -54,45 +54,45 @@ public class SysPasswordServiceImpl implements SysPasswordService {
     /**
      * 密码校验
      * @param user
-     * @param username
+     * @param userName
      * @param password
      */
     @Override
-    public void validate(SysUser user, String username,String password) {
+    public void validate(SysUser user, String userName,String password) {
         if (StringUtils.isNull(user)) {
-            log.info("登录用户：{} 不存在.", username);
+            log.info("登录用户：{} 不存在.", userName);
             throw new ServiceException("登录用户不存在");
         }
 
-        Integer retryCount = bootCache.getCacheObject(getCacheKey(username));
+        Integer retryCount = bootCache.getCacheObject(getCacheKey(userName));
 
         if (retryCount == null) {
             retryCount = 0;
         }
 
         if (retryCount >= Integer.valueOf(maxRetryCount).intValue()) {
-            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL,
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(userName, Constants.LOGIN_FAIL,
                     MessageUtils.message("user.password.retry.limit.exceed", maxRetryCount, lockTime)));
             throw new UserPasswordRetryLimitExceedException(maxRetryCount, lockTime);
         }
 
 
         if (UserStatus.DELETED.getCode().equals(user.getDelFlag())) {
-            log.info("登录用户：{} 已被删除.", username);
-            throw new ServiceException("对不起，您的账号：" + username + " 已被删除");
+            log.info("登录用户：{} 已被删除.", userName);
+            throw new ServiceException("对不起，您的账号：" + userName + " 已被删除");
         } else if (UserStatus.DISABLE.getCode().equals(user.getStatus())) {
-            log.info("登录用户：{} 已被停用.", username);
-            throw new ServiceException("对不起，您的账号：" + username + " 已停用");
+            log.info("登录用户：{} 已被停用.", userName);
+            throw new ServiceException("对不起，您的账号：" + userName + " 已停用");
         }
 
         if (!matches(user, password)) {
             retryCount = retryCount + 1;
-            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL,
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(userName, Constants.LOGIN_FAIL,
                     MessageUtils.message("user.password.retry.limit.count", retryCount)));
-            bootCache.setCacheObject(getCacheKey(username), retryCount, lockTime, TimeUnit.MINUTES);
+            bootCache.setCacheObject(getCacheKey(userName), retryCount, lockTime, TimeUnit.MINUTES);
             throw new UserPasswordNotMatchException();
         } else {
-            clearLoginRecordCache(username);
+            clearLoginRecordCache(userName);
         }
     }
 

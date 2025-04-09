@@ -6,6 +6,7 @@ import com.boot.common.core.annotation.Excel.Type;
 import com.boot.common.core.annotation.Excels;
 import com.boot.common.core.domain.BaseEntity;
 import com.boot.common.core.enums.EnumUserRoleType;
+import com.boot.common.core.enums.EnumYesNo;
 import com.boot.common.core.xss.Xss;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
@@ -136,6 +137,23 @@ public class SysUser extends BaseEntity {
      */
     private Long roleId;
 
+
+//        *   增加`is_sys`标识，只有为`1`的用户才能登录管理后台，管理后台中创建新用户时可以选择。
+//            *   增加`user_tenant`关联表，用于标识用户和租户的关系。
+//            *   管理后台的用户管理展示全部的用户，用户可以选择分配到哪个租户中，无部门选择，可以选择后台管理的角色。
+//            *   业务后台的用户管理展示此租户下的用户，有部门，且可以选择租户下的角色。
+
+    private Integer isSys;
+    /**
+     * 租户ID
+     */
+    private Long tenantId;
+    /**
+     * 是否是管理员
+     */
+    private Integer isAdmin;
+
+
     public SysUser() {
 
     }
@@ -144,29 +162,11 @@ public class SysUser extends BaseEntity {
         this.userId = userId;
     }
 
-    public static boolean isAdmin(Long userId) {
-        return userId != null && 1L == userId;
+    public static boolean isAdmin(Integer isAdmin) {
+        return EnumYesNo.YES.getCode() == isAdmin;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public boolean isAdmin() {
-        return isAdmin(this.userId);
-    }
-
-    public Long getDeptId() {
-        return deptId;
-    }
-
-    public void setDeptId(Long deptId) {
-        this.deptId = deptId;
-    }
 
     @Xss(message = "用户昵称不能包含脚本字符")
     @Size(min = 0, max = 30, message = "用户昵称长度不能超过30个字符")

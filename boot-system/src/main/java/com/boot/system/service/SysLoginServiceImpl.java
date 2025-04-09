@@ -1,11 +1,15 @@
 package com.boot.system.service;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.core.plugins.IgnoreStrategy;
+import com.baomidou.mybatisplus.core.plugins.InterceptorIgnoreHelper;
 import com.boot.common.core.cache.BootCache;
 import com.boot.common.core.constant.CacheConstants;
 import com.boot.common.core.constant.Constants;
 import com.boot.common.core.constant.UserConstants;
 import com.boot.common.core.domain.entity.SysUser;
+import com.boot.common.core.domain.model.LoginBody;
+import com.boot.common.core.enums.EnumYesNo;
 import com.boot.common.core.exception.user.*;
 import com.boot.common.core.exception.ServiceException;
 import com.boot.common.log.manager.AsyncManager;
@@ -50,40 +54,50 @@ public class SysLoginServiceImpl implements SysLoginService {
     /**
      * 登录验证
      *
-     * @param username 用户名
-     * @param password 密码
-     * @param code     验证码
-     * @param uuid     唯一标识
      * @return 结果
      */
     @Override
-    public String login(String username, String password, String code, String uuid) throws Exception {
+    public String login(LoginBody loginBody) throws Exception {
+        String userName = loginBody.getUserName();
+        String password = loginBody.getPassword();
+        String code = loginBody.getCode();
+        String uuid = loginBody.getUuid();
+        Integer isAdminLogin = loginBody.getIsAdminLogin();
+        Long tenantId = loginBody.getTenantId();
+
         // 验证码校验
-        validateCaptcha(username, code, uuid);
+        validateCaptcha(userName, code, uuid);
         // 登录前置校验
         //loginPreCheck(username, password);
         // 集成jsencrypt实现密码加密传输方式
         String decryptedPassword = RsaUtils.decryptByPrivateKey(password);
-        loginPreCheck(username, decryptedPassword);
+        loginPreCheck(userName, decryptedPassword);
         // 用户验证
         LoginUser loginUser;
         try {
-            loginUser = userSaService.loadUserName(username, decryptedPassword);
+            loginUser = userSaService.loadUserName(userName, decryptedPassword, tenantId, isAdminLogin);
             StpUtil.login(loginUser.getUserId());
         } catch (Exception e) {
             if (e instanceof UserPasswordNotMatchException) {
-                AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.password.not.match")));
+                AsyncManager.me().execute(AsyncFactory.recordLogininfor(userName, Constants.LOGIN_FAIL, MessageUtils.message("user.password.not.match")));
                 throw new UserPasswordNotMatchException();
             } else {
-                AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, e.getMessage()));
+                AsyncManager.me().execute(AsyncFactory.recordLogininfor(userName, Constants.LOGIN_FAIL, e.getMessage()));
                 throw new ServiceException(e.getMessage());
             }
         }
-        AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+
+        AsyncManager.me().execute(AsyncFactory.recordLogininfor(userName, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
 
         recordLoginInfo(loginUser.getUserId());
         // 生成token
         return tokenService.createToken(loginUser);
+    }
+
+    @Override
+    public String login(String username, String password, String code, String uuid) throws Exception {
+        LoginBody loginBody = new LoginBody(username, password, code, uuid, Constants.ADMIN_DEFAULT_TENANT_ID, EnumYesNo.YES.getCode());
+        return this.login(loginBody);
     }
 
     /**
@@ -97,7 +111,7 @@ public class SysLoginServiceImpl implements SysLoginService {
     @Override
     public void validateCaptcha(String username, String code, String uuid) {
         if (StringUtils.isNotEmpty(code) && SysLoginService.NOT_NEED_CHECK_CODE.equalsIgnoreCase(code)) {
-           //如果是magicApi登陆就直接放过
+            //如果是magicApi登陆就直接放过
             return;
         }
         boolean captchaEnabled = configService.selectCaptchaEnabled();

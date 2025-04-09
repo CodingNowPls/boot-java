@@ -100,6 +100,11 @@ public class SysUserServiceImpl implements ISysUserService {
         return userMapper.selectUserByUserName(userName);
     }
 
+    @Override
+    public SysUser selectUserByUserNameAndTenantId(String userName, Long tenantId) {
+        return userMapper.selectUserByUserNameAndTenantId(userName, tenantId);
+    }
+
     /**
      * 通过用户ID查询用户
      *
@@ -196,7 +201,7 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public void checkUserAllowed(SysUser user) {
-        if (StringUtils.isNotNull(user.getUserId()) && user.isAdmin()) {
+        if (StringUtils.isNotNull(user.getUserId()) && user.isAdmin(user.getIsAdmin())) {
             throw new ServiceException("不允许操作超级管理员用户");
         }
     }
@@ -208,7 +213,7 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public void checkUserDataScope(Long userId) {
-        if (!SysUser.isAdmin(SecurityUtils.getUserId())) {
+        if (!SysUser.isAdmin(SecurityUtils.getLoginUser().getIsAdmin())) {
             SysUser user = new SysUser();
             user.setUserId(userId);
             List<SysUser> users = SpringUtils.getAopProxy(this).selectUserList(user);

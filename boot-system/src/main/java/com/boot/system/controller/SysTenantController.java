@@ -22,7 +22,11 @@ public class SysTenantController  extends BaseController {
         List<Map> list = new ArrayList<>();
         Map<String,Object> map = new HashMap<>();
         map.put("tenantId","1");
-        map.put("tenantName","测试租户1");
+        map.put("tenantCode","0");
+        map.put("tenantName","默认租户");
+        map.put("status","0");
+        map.put("contactName","张三");
+        map.put("contactPhone","1300000000");
         list.add(map);
         return getDataTable(list);
      }

@@ -45,7 +45,7 @@ public class TenantMybatisPlusConfig {
                 @Override
                 public Expression getTenantId() {
                     //从登录信息中获取当前组织ID
-                    Long tenantId = SecurityUtils.getCurrentTenantId();
+                    Long tenantId = SecurityUtils.getCurrentTenantIdWithoutException();
                     if (tenantId == null) {
                         return new NullValue();
                     }

@@ -1,9 +1,18 @@
 package com.boot.common.security.service;
 
 
+import com.boot.common.core.domain.model.LoginBody;
+
 public interface SysLoginService {
 
     String NOT_NEED_CHECK_CODE = "not_need_check_code";
+    /**
+     * 登录验证
+     *
+
+     * @return 结果
+     */
+      String login(LoginBody loginBody) throws Exception;
     /**
      * 登录验证
      *
@@ -13,7 +22,8 @@ public interface SysLoginService {
      * @param uuid     唯一标识
      * @return 结果
      */
-      String login(String username, String password, String code, String uuid) throws Exception;
+    String login(String username, String password, String code, String uuid) throws Exception;
+
 
 
     /**

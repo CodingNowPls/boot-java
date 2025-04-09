@@ -1,6 +1,8 @@
 package com.boot.common.core.domain.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 用户登录对象
@@ -8,6 +10,8 @@ import lombok.Data;
  * @author boot
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginBody {
     /**
      * 用户名
@@ -36,7 +40,7 @@ public class LoginBody {
     /**
      * 是否是管理员登录
      */
-    private Boolean isAdminLogin;
+    private Integer isAdminLogin;
 
 
 

@@ -136,4 +136,7 @@ public class Constants {
      */
     public static final String[] JOB_ERROR_STR = {"java.net.URL", "javax.naming.InitialContext", "org.yaml.snakeyaml",
             "org.springframework", "org.apache", "com.boot.common.core.utils.file", "com.boot.common.core.config"};
+
+    // 默认租户ID
+    public static Long ADMIN_DEFAULT_TENANT_ID = 0L;
 }

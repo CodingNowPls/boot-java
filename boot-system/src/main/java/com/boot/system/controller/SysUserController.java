@@ -2,6 +2,8 @@ package com.boot.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.boot.common.core.enums.EnumYesNo;
 import com.boot.common.web.controller.BaseController;
 import com.boot.common.core.domain.AjaxResult;
 import com.boot.common.core.domain.entity.SysDept;
@@ -53,7 +55,7 @@ public class SysUserController extends BaseController {
     @SaCheckPermission("system:user:list")
     @GetMapping("/getUserInfo/{userId}")
     public AjaxResult getUserInfo(@PathVariable("userId") Long userId) {
-        LambdaQueryWrapper<MpSysUser> lqw = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<MpSysUser> lqw = Wrappers.lambdaQuery(MpSysUser.class);
         lqw.eq(MpSysUser::getUserId, userId);
         lqw.select(MpSysUser::getUserId, MpSysUser::getUserName, MpSysUser::getNickName);
         MpSysUser one = mpSysUserService.getOne(lqw);
@@ -108,8 +110,9 @@ public class SysUserController extends BaseController {
     public AjaxResult getInfo(@PathVariable(value = "userId", required = false) Long userId) {
         userService.checkUserDataScope(userId);
         AjaxResult ajax = AjaxResult.success();
+        Boolean admin = SecurityUtils.isAdmin();
         List<SysRole> roles = roleService.selectRoleAll();
-        ajax.put("roles", SysUser.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
+        ajax.put("roles", admin ? roles : roles.stream().filter(r -> !(EnumYesNo.YES.getCode() == r.getIsAdmin())).collect(Collectors.toList()));
         ajax.put("posts", postService.selectPostAll());
         if (StringUtils.isNotNull(userId)) {
             SysUser sysUser = userService.selectUserById(userId);
@@ -209,7 +212,7 @@ public class SysUserController extends BaseController {
         SysUser user = userService.selectUserById(userId);
         List<SysRole> roles = roleService.selectRolesByUserId(userId);
         ajax.put("user", user);
-        ajax.put("roles", SysUser.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
+        ajax.put("roles", SysUser.isAdmin(user.getIsAdmin()) ? roles : roles.stream().filter(r -> !(EnumYesNo.YES.getCode() == r.getIsAdmin())).collect(Collectors.toList()));
         return ajax;
     }
 

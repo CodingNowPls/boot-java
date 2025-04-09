@@ -81,9 +81,19 @@ public class LoginUser  {
 
     private String password;
 
-
+    /**
+     * 租户ID
+     */
     private Long tenantId;
+    /**
+     * 是否管理员
+     */
+    private Integer isAdmin;
 
+    /**
+     * 是否管理员登录
+     */
+    private Integer isAdminLogin;
 
 
 
@@ -104,6 +114,17 @@ public class LoginUser  {
         this.user = user;
         this.userName = user.getUserName();
         this.permissions = permissions;
+    }
+
+    public LoginUser(SysUser user, Integer isAdminLogin, Set<String> menuPermission) {
+        this.user = user;
+        this.userId = user.getUserId();
+        this.deptId = user.getDeptId();
+        this.userName = user.getUserName();
+        this.isAdminLogin = isAdminLogin;
+        this.permissions = menuPermission;
+        this.isAdmin = isAdminLogin;
+        this.tenantId = user.getTenantId();
     }
 
 

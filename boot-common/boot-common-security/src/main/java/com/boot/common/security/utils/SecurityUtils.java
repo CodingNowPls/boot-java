@@ -5,12 +5,14 @@ import com.boot.common.core.cache.BootCache;
 import com.boot.common.core.constant.CacheConstants;
 import com.boot.common.core.constant.HttpStatus;
 import com.boot.common.core.enums.EnumUserRoleType;
+import com.boot.common.core.enums.EnumYesNo;
 import com.boot.common.core.exception.CustomException;
 import com.boot.common.core.exception.ServiceException;
 import com.boot.common.core.utils.StringUtils;
 import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.core.utils.spring.SpringUtils;
 import com.boot.common.security.service.TokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Arrays;
@@ -21,7 +23,9 @@ import java.util.Objects;
  *
  * @author boot
  */
+@Slf4j
 public class SecurityUtils {
+
     /**
      * 用户ID
      **/
@@ -33,14 +37,9 @@ public class SecurityUtils {
         }
     }
 
-    public static Long getCurrentTenantId() {
-        try {
-            return getLoginUser().getTenantId();
-        } catch (Exception e) {
-            throw new ServiceException("获取租户ID异常", HttpStatus.UNAUTHORIZED);
-        }
+   public static Boolean isAdmin() {
+        return EnumYesNo.YES.getCode() == getLoginUser().getIsAdmin();
     }
-
 
     /**
      * 获取部门ID
@@ -56,7 +55,7 @@ public class SecurityUtils {
     /**
      * 获取用户账户
      **/
-    public static String getUsername() {
+    public static String getUserName() {
         try {
             return getLoginUser().getUser().getUserName();
         } catch (Exception e) {
@@ -100,15 +99,6 @@ public class SecurityUtils {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
-    /**
-     * 是否为管理员
-     *
-     * @param userId 用户ID
-     * @return 结果
-     */
-    public static boolean isAdmin(Long userId) {
-        return userId != null && 1L == userId;
-    }
 
 
     public static void logout(Long userId) {
@@ -131,4 +121,16 @@ public class SecurityUtils {
         }
     }
 
+    /**
+     *  获取当前租户ID
+     * @return
+     */
+    public static Long getCurrentTenantIdWithoutException() {
+        try {
+            return getLoginUser().getTenantId();
+        } catch (Exception e) {
+            log.info("获取租户ID");
+        }
+        return null;
+    }
 }

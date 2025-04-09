@@ -1,12 +1,16 @@
 package com.boot.system.domain;
 
 import com.boot.common.core.utils.StringUtils;
+import lombok.Data;
+import lombok.ToString;
 
 /**
  * 缓存信息
  *
  * @author boot
  */
+@Data
+@ToString
 public class SysCache {
     /**
      * 缓存名称
@@ -43,35 +47,4 @@ public class SysCache {
         this.cacheValue = cacheValue;
     }
 
-    public String getCacheName() {
-        return cacheName;
-    }
-
-    public void setCacheName(String cacheName) {
-        this.cacheName = cacheName;
-    }
-
-    public String getCacheKey() {
-        return cacheKey;
-    }
-
-    public void setCacheKey(String cacheKey) {
-        this.cacheKey = cacheKey;
-    }
-
-    public String getCacheValue() {
-        return cacheValue;
-    }
-
-    public void setCacheValue(String cacheValue) {
-        this.cacheValue = cacheValue;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
 }

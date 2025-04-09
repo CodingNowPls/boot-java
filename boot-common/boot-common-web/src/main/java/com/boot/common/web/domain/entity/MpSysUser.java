@@ -117,4 +117,13 @@ public class MpSysUser implements Serializable {
     @TableField
     private Date loginDate;
 
+//        *   增加`is_sys`标识，只有为`1`的用户才能登录管理后台，管理后台中创建新用户时可以选择。
+//            *   增加`user_tenant`关联表，用于标识用户和租户的关系。
+//            *   管理后台的用户管理展示全部的用户，用户可以选择分配到哪个租户中，无部门选择，可以选择后台管理的角色。
+//            *   业务后台的用户管理展示此租户下的用户，有部门，且可以选择租户下的角色。
+    @TableField("is_sys")
+    private Integer isSys;
+
+    @TableField("tenant_id")
+    private String tenantId;
 }
