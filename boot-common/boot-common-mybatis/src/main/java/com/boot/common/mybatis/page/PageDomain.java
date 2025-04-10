@@ -1,12 +1,16 @@
 package com.boot.common.mybatis.page;
 
 import com.boot.common.core.utils.StringUtils;
+import lombok.Data;
+import lombok.ToString;
 
 /**
  * 分页数据
  *
  * @author boot
  */
+@Data
+@ToString
 public class PageDomain {
     /**
      * 当前记录起始索引
@@ -40,33 +44,6 @@ public class PageDomain {
         return StringUtils.toUnderScoreCase(orderByColumn) + " " + isAsc;
     }
 
-    public Integer getPageNum() {
-        return pageNum;
-    }
-
-    public void setPageNum(Integer pageNum) {
-        this.pageNum = pageNum;
-    }
-
-    public Integer getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(Integer pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public String getOrderByColumn() {
-        return orderByColumn;
-    }
-
-    public void setOrderByColumn(String orderByColumn) {
-        this.orderByColumn = orderByColumn;
-    }
-
-    public String getIsAsc() {
-        return isAsc;
-    }
 
     public void setIsAsc(String isAsc) {
         if (StringUtils.isNotEmpty(isAsc)) {
@@ -85,9 +62,5 @@ public class PageDomain {
             return Boolean.TRUE;
         }
         return reasonable;
-    }
-
-    public void setReasonable(Boolean reasonable) {
-        this.reasonable = reasonable;
     }
 }

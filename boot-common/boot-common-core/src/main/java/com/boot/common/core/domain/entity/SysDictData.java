@@ -4,6 +4,8 @@ import com.boot.common.core.annotation.Excel;
 import com.boot.common.core.annotation.Excel.ColumnType;
 import com.boot.common.core.constant.UserConstants;
 import com.boot.common.core.domain.BaseEntity;
+import lombok.Data;
+import lombok.ToString;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -15,6 +17,8 @@ import jakarta.validation.constraints.Size;
  *
  * @author boot
  */
+@Data
+@ToString
 public class SysDictData extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -70,31 +74,12 @@ public class SysDictData extends BaseEntity {
     @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
     private String status;
 
-    public Long getDictCode() {
-        return dictCode;
-    }
-
-    public void setDictCode(Long dictCode) {
-        this.dictCode = dictCode;
-    }
-
-    public Long getDictSort() {
-        return dictSort;
-    }
-
-    public void setDictSort(Long dictSort) {
-        this.dictSort = dictSort;
-    }
-
     @NotBlank(message = "字典标签不能为空")
     @Size(min = 0, max = 100, message = "字典标签长度不能超过100个字符")
     public String getDictLabel() {
         return dictLabel;
     }
 
-    public void setDictLabel(String dictLabel) {
-        this.dictLabel = dictLabel;
-    }
 
     @NotBlank(message = "字典键值不能为空")
     @Size(min = 0, max = 100, message = "字典键值长度不能超过100个字符")
@@ -102,9 +87,6 @@ public class SysDictData extends BaseEntity {
         return dictValue;
     }
 
-    public void setDictValue(String dictValue) {
-        this.dictValue = dictValue;
-    }
 
     @NotBlank(message = "字典类型不能为空")
     @Size(min = 0, max = 100, message = "字典类型长度不能超过100个字符")
@@ -112,64 +94,11 @@ public class SysDictData extends BaseEntity {
         return dictType;
     }
 
-    public void setDictType(String dictType) {
-        this.dictType = dictType;
-    }
 
     @Size(min = 0, max = 100, message = "样式属性长度不能超过100个字符")
     public String getCssClass() {
         return cssClass;
     }
 
-    public void setCssClass(String cssClass) {
-        this.cssClass = cssClass;
-    }
 
-    public String getListClass() {
-        return listClass;
-    }
-
-    public void setListClass(String listClass) {
-        this.listClass = listClass;
-    }
-
-    public boolean getDefault() {
-        return UserConstants.YES.equals(this.isDefault);
-    }
-
-    public String getIsDefault() {
-        return isDefault;
-    }
-
-    public void setIsDefault(String isDefault) {
-        this.isDefault = isDefault;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("dictCode", getDictCode())
-                .append("dictSort", getDictSort())
-                .append("dictLabel", getDictLabel())
-                .append("dictValue", getDictValue())
-                .append("dictType", getDictType())
-                .append("cssClass", getCssClass())
-                .append("listClass", getListClass())
-                .append("isDefault", getIsDefault())
-                .append("status", getStatus())
-                .append("createBy", getCreateBy())
-                .append("createTime", getCreateTime())
-                .append("updateBy", getUpdateBy())
-                .append("updateTime", getUpdateTime())
-                .append("remark", getRemark())
-                .toString();
-    }
 }

@@ -1,5 +1,6 @@
 package com.boot.common.core.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -23,46 +24,46 @@ public class BaseEntity implements Serializable {
      * 搜索值
      */
     @JsonIgnore
+    @TableField(exist = false)
     private String searchValue;
 
     /**
      * 创建者
      */
+    @TableField("create_by")
     private String createBy;
 
     /**
      * 创建时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField("create_time")
     private Date createTime;
 
     /**
      * 更新者
      */
+    @TableField("update_by")
     private String updateBy;
 
     /**
      * 更新时间
      */
+    @TableField("update_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**
      * 备注
      */
+    @TableField("remark")
     private String remark;
 
     /**
      * 请求参数
      */
+    @TableField(exist = false)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private Map<String, Object> params;
-
-    public Map<String, Object> getParams() {
-        if (params == null) {
-            params = new HashMap<>();
-        }
-        return params;
-    }
+    private Map<String, Object> params = new HashMap<>();
 
  }

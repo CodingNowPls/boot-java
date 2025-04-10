@@ -1,5 +1,8 @@
 package com.boot.common.mybatis.page;
 
+import lombok.Data;
+import lombok.ToString;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -8,6 +11,8 @@ import java.util.List;
  *
  * @author boot
  */
+@Data
+@ToString
 public class TableDataInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -46,37 +51,5 @@ public class TableDataInfo implements Serializable {
     public TableDataInfo(List<?> list, int total) {
         this.rows = list;
         this.total = total;
-    }
-
-    public long getTotal() {
-        return total;
-    }
-
-    public void setTotal(long total) {
-        this.total = total;
-    }
-
-    public List<?> getRows() {
-        return rows;
-    }
-
-    public void setRows(List<?> rows) {
-        this.rows = rows;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
     }
 }
