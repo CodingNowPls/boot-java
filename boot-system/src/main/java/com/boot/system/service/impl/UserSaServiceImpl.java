@@ -48,13 +48,13 @@ public class UserSaServiceImpl {
 
     /**
      *  查询用户
-     * @param username
+     * @param userName
      * @param password
      * @param tenantId
      * @param isAdminLogin
      * @return
      */
-    public LoginUser loadUserName(String username, String password,Long tenantId,Integer isAdminLogin) {
+    public LoginUser loadUserName(String userName, String password,Long tenantId,Integer isAdminLogin) {
         try {
             //此时还没有租户，所以全部关闭租户功能
             InterceptorIgnoreHelper.handle(IgnoreStrategy.builder().tenantLine(true).build());
@@ -65,13 +65,13 @@ public class UserSaServiceImpl {
                 tenantId = Constants.ADMIN_DEFAULT_TENANT_ID;
             }
 
-            SysUser user = userService.selectUserByUserNameAndTenantId(username, tenantId);
-            passwordService.validate(user, username, password);
+            SysUser user = userService.selectUserByUserNameAndTenantId(userName, tenantId);
+            passwordService.validate(user, userName, password);
             if (isAdminLoginFlag) {
                 //如果是管理后台登录，额外判定
                 if (EnumYesNo.NO.equals(user.getIsSys())) {
-                    log.info("登录用户：{} 非管理用户.", username);
-                    throw new ServiceException("对不起，您的账号：" + username + " 并非管理账号");
+                    log.info("登录用户：{} 非管理用户.", userName);
+                    throw new ServiceException("对不起，您的账号：" + userName + " 并非管理账号");
                 }
             }
 //            else {
