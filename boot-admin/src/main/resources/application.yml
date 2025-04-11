@@ -165,7 +165,7 @@ tenant:
   # 租户模式 是否启用 ，仅测试时可以临时关闭整个租户机制，但因为整个框架都是多租户架构，所以正式环境必须要启用
   enable: false
   # 租户模式 默认租户ID
-  defaultTenantId: 1
+  defaultTenantId: 0
   # 租户模式 默认租户名称
   defaultTenantName: default
   # 租户字段名
