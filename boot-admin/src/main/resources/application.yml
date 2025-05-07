@@ -84,11 +84,11 @@ spring:
     mode: HTML
     encoding: utf-8
     cache: false
+    prefix: classpath:/static/
 
   web:
     resources:
       static-locations: classpath:/static/
-
   # sa-token配置
   sa-token:
     # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
