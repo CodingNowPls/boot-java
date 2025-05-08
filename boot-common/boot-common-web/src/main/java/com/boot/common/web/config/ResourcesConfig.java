@@ -76,25 +76,21 @@ public class ResourcesConfig implements WebMvcConfigurer {
 
         // 处理WebJar中的静态资源
         registry.addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/")
-                .setCacheControl(CacheControl.maxAge(7, TimeUnit.DAYS).cachePublic());
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
 
         // 处理static目录下的资源
         registry.addResourceHandler("/static/**")
                 .addResourceLocations(
                         "classpath:/META-INF/resources/webjars/static/",
-                        "classpath:/static/")
-                .setCacheControl(CacheControl.maxAge(7, TimeUnit.DAYS).cachePublic());
+                        "classpath:/static/");
 
         // 处理js目录下的资源
         registry.addResourceHandler("/js/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/static/js/")
-                .setCacheControl(CacheControl.maxAge(7, TimeUnit.DAYS).cachePublic());
+                .addResourceLocations("classpath:/META-INF/resources/webjars/static/js/");
 
         // 处理css目录下的资源
         registry.addResourceHandler("/css/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/static/css/")
-                .setCacheControl(CacheControl.maxAge(7, TimeUnit.DAYS).cachePublic());
+                .addResourceLocations("classpath:/META-INF/resources/webjars/static/css/");
 
         // 处理其他静态资源，确保所有路径都能被正确映射
         registry.addResourceHandler("/**")
