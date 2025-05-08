@@ -94,7 +94,13 @@
 <!--            <artifactId>boot-biz-ui</artifactId>-->
 <!--            <version>${project.version}</version>-->
 <!--        </dependency>-->
-
+        <dependency>
+            <groupId>com.boot.webjar</groupId>
+            <artifactId>boot-ui</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}\..\lib\boot-ui-1.0.0.jar</systemPath>
+        </dependency>
     </dependencies>
 
 

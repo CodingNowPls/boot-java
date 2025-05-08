@@ -74,8 +74,51 @@ public class ResourcesConfig implements WebMvcConfigurer {
                 .setCacheControl(CacheControl.maxAge(5, TimeUnit.HOURS).cachePublic());
 
 
-        registry.addResourceHandler("/static/**")
-                .addResourceLocations("classpath:/static/");
+        // 处理WebJar中的静态资源
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/")
+                .setCacheControl(CacheControl.maxAge(7, TimeUnit.DAYS).cachePublic());
 
+        // 处理node_modules资源 - 根据jar包内容，正确映射路径
+        registry.addResourceHandler("/node_modules/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/static/node_modules/")
+                .setCacheControl(CacheControl.maxAge(7, TimeUnit.DAYS).cachePublic());
+
+        // 处理static目录下的资源
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations(
+                        "classpath:/META-INF/resources/webjars/static/",
+                        "classpath:/static/")
+                .setCacheControl(CacheControl.maxAge(7, TimeUnit.DAYS).cachePublic());
+
+        // 处理js目录下的资源
+        registry.addResourceHandler("/js/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/static/js/")
+                .setCacheControl(CacheControl.maxAge(7, TimeUnit.DAYS).cachePublic());
+
+        // 处理css目录下的资源
+        registry.addResourceHandler("/css/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/static/css/")
+                .setCacheControl(CacheControl.maxAge(7, TimeUnit.DAYS).cachePublic());
+
+        // 处理其他静态资源，确保所有路径都能被正确映射
+        registry.addResourceHandler("/**")
+                .addResourceLocations(
+                        "classpath:/META-INF/resources/webjars/static/",
+                        "classpath:/META-INF/resources/webjars/",
+                        "classpath:/META-INF/resources/",
+                        "classpath:/resources/",
+                        "classpath:/static/",
+                        "classpath:/public/");
     }
+
+    /**
+     * 添加视图控制器，将根路径请求映射到index.html
+     */
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        // 将根路径请求映射到index.html
+        registry.addViewController("/").setViewName("forward:/index.html");
+    }
+
 }
