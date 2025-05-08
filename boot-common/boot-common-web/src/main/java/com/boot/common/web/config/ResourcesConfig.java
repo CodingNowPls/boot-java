@@ -79,11 +79,6 @@ public class ResourcesConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/META-INF/resources/webjars/")
                 .setCacheControl(CacheControl.maxAge(7, TimeUnit.DAYS).cachePublic());
 
-        // 处理node_modules资源 - 根据jar包内容，正确映射路径
-        registry.addResourceHandler("/node_modules/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/static/node_modules/")
-                .setCacheControl(CacheControl.maxAge(7, TimeUnit.DAYS).cachePublic());
-
         // 处理static目录下的资源
         registry.addResourceHandler("/static/**")
                 .addResourceLocations(

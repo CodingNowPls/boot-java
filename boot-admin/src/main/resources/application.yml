@@ -91,7 +91,7 @@ spring:
   web:
     resources:
       # 增加WebJar资源路径，确保能够正确加载前端资源
-      static-locations: classpath:/META-INF/resources/,classpath:/META-INF/resources/webjars/,classpath:/META-INF/resources/webjars/boot-ui/,classpath:/resources/,classpath:/static/,classpath:/public/
+      static-locations: classpath:/META-INF/resources/,classpath:/META-INF/resources/webjars/,classpath:/resources/,classpath:/static/,classpath:/public/
       chain:
         # 启用资源链，提高静态资源访问效率
         enabled: true
