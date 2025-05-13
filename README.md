@@ -19,6 +19,7 @@
 14. 主分支已经升级到springboot3
 15. 已经集成flowlong后端
 16. 已集成Magic-api
+17. 集成webjar，前端项目可以打包为jar，然后在admin模块中依赖，也可以直接在admin模块下的resources目录下新增static文件夹，把前端html放到static文件夹下
  
 
 
