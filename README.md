@@ -19,7 +19,7 @@
 14. 主分支已经升级到springboot3
 15. 已经集成flowlong后端
 16. 已集成Magic-api
- 
+17. 前端代码可以打包为webjar，然后后端以jar的形式引入，方便更新
 
 
 
