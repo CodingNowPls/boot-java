@@ -57,6 +57,10 @@
         <magic-api.version>2.1.1</magic-api.version>
         <nop-entropy.version>2.0.0-SNAPSHOT</nop-entropy.version>
         <spring-cloud-context.version>4.2.0</spring-cloud-context.version>
+        <jimu-report.version>2.1.3</jimu-report.version>
+        <jimureport-nosql>2.1.0</jimureport-nosql>
+        <jimureport-echarts>2.1.1</jimureport-echarts>
+        <jimu-bi.version>2.1.4</jimu-bi.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -265,6 +269,29 @@
                 <version>${hutool.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.jeecgframework.jimureport</groupId>
+                <artifactId>jimureport-spring-boot3-starter</artifactId>
+                <version>${jimu-report.version}</version>
+            </dependency>
+            <!-- mongo、redis和文件数据集支持包，按需引入 -->
+            <dependency>
+                <groupId>org.jeecgframework.jimureport</groupId>
+                <artifactId>jimureport-nosql-starter</artifactId>
+                <version>${jimureport-nosql}</version>
+            </dependency>
+            <!-- 后台导出接口Echart图表支持包，按需引入 -->
+            <dependency>
+                <groupId>org.jeecgframework.jimureport</groupId>
+                <artifactId>jimureport-echarts-starter</artifactId>
+                <version>${jimureport-echarts}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jeecgframework.jimureport</groupId>
+                <artifactId>jimubi-spring-boot3-starter</artifactId>
+                <version>${jimu-bi.version}</version>
+            </dependency>
+
 
             <!-- 核心模块 -->
             <dependency>
@@ -337,6 +364,18 @@
                 <artifactId>boot-common-tenant</artifactId>
                 <version>${boot.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-jimu-report</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-jimu-bi</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.boot</groupId>
                 <artifactId>boot-common-real-time-editing</artifactId>

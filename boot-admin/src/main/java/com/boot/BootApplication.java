@@ -13,7 +13,7 @@ import org.springframework.core.env.Environment;
  * @author boot
  */
 @EnableMPP
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class}, scanBasePackages = {"org.jeecg", "com.boot"})
 public class BootApplication {
 
     public static void main(String[] args) {

@@ -25,6 +25,8 @@
         <module>boot-common-tenant</module>
         <module>boot-common-real-time-editing</module>
         <module>boot-common-nop-entropy</module>
+        <module>boot-common-jimu-report</module>
+        <module>boot-common-jimu-bi</module>
     </modules>
 
 </project>
