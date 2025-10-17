@@ -1,5 +1,6 @@
 package com.boot.common.core.config;
 
+import com.boot.common.core.enums.EnumCacheType;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -41,11 +42,17 @@ public class BootConfig {
      * 实例演示开关
      */
     private boolean demoEnabled;
+    /**
+     * 前后端是否是一体化，true是一体，false是前后端分离
+     */
+    private static boolean frontCoupled;
 
     /**
      * 缓存类型
      */
-    private String cacheType = "local";
+    private String cacheType = EnumCacheType.CACHE_TYPE_LOCAL;
+
+
 
     public static String getProfile() {
         return profile;
@@ -71,6 +78,14 @@ public class BootConfig {
         BootConfig.captchaType = captchaType;
     }
 
+
+    public static boolean isFrontCoupled() {
+        return frontCoupled;
+    }
+
+    public void setFrontCoupled(boolean frontCoupled) {
+        BootConfig.frontCoupled = frontCoupled;
+    }
     /**
      * 获取导入上传路径
      */

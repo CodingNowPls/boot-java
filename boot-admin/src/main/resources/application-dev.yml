@@ -2,6 +2,8 @@ boot:
   # 服务器的HTTP端口，默认为8080
   port: 8080
   cacheType: redis
+  # 前后端是否是一体化，true是一体，false是前后端分离
+  frontCoupled: true
   profile: E:/home/boot/uploadPath
   mail:
     enabled: false
@@ -96,29 +98,30 @@ spring:
           url: jdbc:mysql://127.0.0.1:3306/boot-java?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
           username: root
           password: root2018
-  # redis 配置
-#  redis:
-#    # 地址
-#    host: 127.0.0.1
-#    # 端口，默认为6379
-#    port: 16379
-#    # 数据库索引
-#    database: 10
-#    # 密码
-#    password: 123456
-#    # 连接超时时间
-#    timeout: 10s
-#    lettuce:
-#      pool:
-#        # 连接池中的最小空闲连接
-#        min-idle: 0
-#        # 连接池中的最大空闲连接
-#        max-idle: 8
-#        # 连接池的最大数据库连接数
-#        max-active: 8
-#        # #连接池最大阻塞等待时间（使用负值表示没有限制）
-#        max-wait: -1ms
 
+  # redis 配置
+  data:
+    redis:
+      # 地址
+      host: 127.0.0.1
+      # 端口，默认为6379
+      port: 6379
+      # 数据库索引
+      database: 10
+      # 密码
+      password: 123456
+      # 连接超时时间
+      timeout: 10s
+    lettuce:
+      pool:
+        # 连接池中的最小空闲连接
+        min-idle: 0
+        # 连接池中的最大空闲连接
+        max-idle: 8
+        # 连接池的最大数据库连接数
+        max-active: 8
+        # #连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1ms
 magic-api:
   #  配置web页面入口
   web: /magicApi

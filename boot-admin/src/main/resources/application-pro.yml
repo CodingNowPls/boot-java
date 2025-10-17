@@ -1,5 +1,8 @@
 boot:
+  port: 8080
   cacheType: local
+  # 前后端是否是一体化，true是一体，false是前后端分离
+  frontCoupled: true
   profile: /home/boot/uploadPath
   mail:
     enabled: false
@@ -25,10 +28,33 @@ boot:
             # 启用TLS加密
             enable: true
             required: true
-
-server:
-  # 服务器的HTTP端口，默认为8080
-  port: 10020
+  #需要忽略的路径
+  saToken:
+    excludeUrlPath:
+      - /login
+      - /logout
+      - /register
+      - /captchaImage
+      - /*.html
+      - /**/*.html
+      - /**/*.css
+      - /**/*.js
+      - /favicon.ico
+      - /static/**
+      - /system/config/5
+      - /profile/**
+      - /common/download**
+      - /common/download/resource**
+      - /swagger-ui.html
+      - /swagger-resources/**
+      - /webjars/**
+      - ${magic-api.web}
+      - /system/tenant/list**
+      - /*/api-docs
+      - /druid/**
+      - /jmreport/**
+      - /drag/**
+      - /jimubi/**
 
 # spring配置
 spring:

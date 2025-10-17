@@ -5,6 +5,7 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.stp.StpUtil;
 
+import com.boot.common.core.config.BootConfig;
 import com.boot.common.core.constant.HttpStatus;
 import com.boot.common.core.exception.CustomException;
 import com.boot.common.core.utils.ServletUtils;
@@ -64,7 +65,21 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                     if (StringUtils.isNotNull(loginUser)) {
                         tokenService.verifyToken(loginUser);
                     } else {
-                        throw new CustomException("当前会话未登录", HttpStatus.UNAUTHORIZED);
+                        if (BootConfig.isFrontCoupled()) {
+                            // 前后端一体化就跳转到登录页面
+                            HttpServletResponse response = ServletUtils.getResponse();
+                            try {
+                                // 重定向到前端登录页面的 URL
+                                // 请将 "/login" 替换为你实际的前端登录页面路径
+                                response.sendRedirect(request.getContextPath() + "/#/login?redirect=%2Findex");
+                            } catch (IOException e) {
+                                // 处理重定向可能发生的 IOException
+                                throw new RuntimeException("重定向到登录页失败", e);
+                            }
+                        } else {
+                            //前后端分离就抛出异常
+                            throw new CustomException("当前会话未登录", HttpStatus.UNAUTHORIZED);
+                        }
                     }
                 }))
                 .addPathPatterns("/**")

@@ -12,6 +12,7 @@ import java.util.Objects;
  * @author boot
  */
 public class AjaxResult extends HashMap<String, Object> {
+    private static final long serialVersionUID = 1L;
     /**
      * 状态码
      */
@@ -24,7 +25,7 @@ public class AjaxResult extends HashMap<String, Object> {
      * 数据对象
      */
     public static final String DATA_TAG = "data";
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 初始化一个新创建的 AjaxResult 对象，使其表示一个空消息。
