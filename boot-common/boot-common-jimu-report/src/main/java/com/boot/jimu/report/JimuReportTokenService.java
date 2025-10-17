@@ -4,7 +4,6 @@ import com.boot.common.core.utils.StringUtils;
 import com.boot.common.core.utils.json.BootJsonUtil;
 import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.security.service.TokenService;
-import com.boot.common.security.utils.SecurityUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.jeecg.modules.jmreport.api.JmReportTokenServiceI;
@@ -51,14 +50,15 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
         }
         return BootJsonUtil.toMap(loginUser);
     }
-    //drag:datasource:testConnection	仪表盘数据库连接测试
-    //onl:drag:clear:recovery	仪表盘清空回收站
-    //drag:analysis:sql	仪表盘SQL解析
-    //drag:design:getTotalData	仪表盘对Online表单展示数据
-    //onl:drag:page:delete 仪表盘数据删除
+
 
     @Override
     public String[] getRoles(String token) {
+        //后期要设置角色 https://help.jimureport.com/prodSafe
+        //拥有角色admin、dbadeveloper 、lowdeveloper 用户可以访问敏感接口。 拥有角色admin、lowdeveloper 用户在关闭在线报表设计情况下，也可以设计报表
+        //admin	超级管理员	拥有最高权限
+        //dbadeveloper	DB管理员	可以设置数据库连接
+        //lowdeveloper	报表设计管理员	可以设计报表
         return new String[]{"admin", "lowdeveloper", "dbadeveloper"};
     }
 
