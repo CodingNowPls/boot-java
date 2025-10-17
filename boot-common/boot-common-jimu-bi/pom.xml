@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>com.boot</groupId>
-            <artifactId>boot-common-core</artifactId>
+            <artifactId>boot-common-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.jimureport</groupId>

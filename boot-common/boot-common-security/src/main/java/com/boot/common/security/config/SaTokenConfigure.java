@@ -25,6 +25,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author gao
@@ -33,6 +34,9 @@ import java.io.IOException;
 public class SaTokenConfigure implements WebMvcConfigurer {
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private SaTokenExcludeUrlConfig excludeUrlPathConfig;
 
 
     @Bean
@@ -45,10 +49,6 @@ public class SaTokenConfigure implements WebMvcConfigurer {
         return new SecurityUserContextProvider();
     }
 
-    @Value("${magic-api.web}")
-    private String magicApiWebUrl;
-
-
     /**
      * 注册sa-token的拦截器
      *
@@ -57,6 +57,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册 Sa-Token 的路由拦截器
+        List<String> excludeUrlPath = excludeUrlPathConfig.getExcludeUrlPath();
         registry.addInterceptor(new SaInterceptor(handle -> {
                     HttpServletRequest request = ServletUtils.getRequest();
                     LoginUser loginUser = tokenService.getLoginUser(request);
@@ -65,33 +66,10 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                     } else {
                         throw new CustomException("当前会话未登录", HttpStatus.UNAUTHORIZED);
                     }
-
                 }))
                 .addPathPatterns("/**")
                 // 排除不需要拦截的路径
-                .excludePathPatterns(
-                        "/login",
-                        "/logout",
-                        "/register",
-                        "/captchaImage",
-                        "/*.html",
-                        "/**/*.html",
-                        "/**/*.css",
-                        "/**/*.js",
-                        "/favicon.ico",
-                        "/static/**",
-                        "/system/config/5",
-                        "/profile/**",
-                        "/common/download**",
-                        "/common/download/resource**",
-                        "/swagger-ui.html",
-                        "/swagger-resources/**",
-                        "/webjars/**",
-                         magicApiWebUrl+"/**",
-                        "/system/tenant/list**",
-                        "/*/api-docs",
-                        "/druid/**"
-                );
+                .excludePathPatterns(excludeUrlPath);
     }
 
 

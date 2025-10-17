@@ -99,15 +99,6 @@
 <!--            <groupId>com.boot</groupId>-->
 <!--            <artifactId>boot-common-real-time-editing</artifactId>-->
 <!--        </dependency>-->
-
-        <dependency>
-            <groupId>com.boot</groupId>
-            <artifactId>boot-common-jimu-report</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.boot</groupId>
-            <artifactId>boot-common-jimu-bi</artifactId>
-        </dependency>
     </dependencies>
 
 </project>

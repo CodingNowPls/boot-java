@@ -17,12 +17,14 @@
     <dependencies>
         <dependency>
             <groupId>com.boot</groupId>
-            <artifactId>boot-common-core</artifactId>
+            <artifactId>boot-common-web</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.jimureport</groupId>
             <artifactId>jimureport-spring-boot3-starter</artifactId>
         </dependency>
+
+
         <!-- mongo、redis和文件数据集支持包，按需引入 -->
         <!--        <dependency>-->
         <!--            <groupId>org.jeecgframework.jimureport</groupId>-->

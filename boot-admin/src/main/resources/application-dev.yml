@@ -1,5 +1,7 @@
 boot:
-  cacheType: local
+  # 服务器的HTTP端口，默认为8080
+  port: 8080
+  cacheType: redis
   profile: E:/home/boot/uploadPath
   mail:
     enabled: false
@@ -26,9 +28,34 @@ boot:
             enable: true
             required: true
 
-server:
-  # 服务器的HTTP端口，默认为8080
-  port: 8081
+  #需要忽略的路径
+  saToken:
+    excludeUrlPath:
+      - /login
+      - /logout
+      - /register
+      - /captchaImage
+      - /*.html
+      - /**/*.html
+      - /**/*.css
+      - /**/*.js
+      - /favicon.ico
+      - /static/**
+      - /system/config/5
+      - /profile/**
+      - /common/download**
+      - /common/download/resource**
+      - /swagger-ui.html
+      - /swagger-resources/**
+      - /webjars/**
+      - ${magic-api.web}
+      - /system/tenant/list**
+      - /*/api-docs
+      - /druid/**
+      - /jmreport/**
+      - /drag/**
+      - /jimubi/**
+
 # spring配置
 spring:
   datasource:
@@ -100,3 +127,6 @@ magic-api:
     location: magic-api
   #编辑器配置
 #  editor-config: classpath:./magic-editor-config.js
+
+
+

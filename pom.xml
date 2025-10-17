@@ -38,7 +38,7 @@
         <mybatis-plus3.version>3.5.8</mybatis-plus3.version>
         <mybatisplus-plus.version>1.7.5-RELEASE</mybatisplus-plus.version>
         <dynamic-datasource3.version>4.3.1</dynamic-datasource3.version>
-        <fastjson.version>2.0.25</fastjson.version>
+        <fastjson.version>2.0.59</fastjson.version>
         <oshi.version>6.4.0</oshi.version>
         <commons.io.version>2.11.0</commons.io.version>
         <commons.collections.version>3.2.2</commons.collections.version>
@@ -227,6 +227,7 @@
                 <artifactId>fastjson2</artifactId>
                 <version>${fastjson.version}</version>
             </dependency>
+
 
             <!-- 升级springboot3  Sa-Token 权限认证, 在线文档： -->
             <dependency>
