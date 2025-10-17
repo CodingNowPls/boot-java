@@ -50,7 +50,7 @@ public class OnlDragExternalServiceImpl implements IOnlDragExternalService {
             //});
         }
 
-        if (!CollectionUtils.isEmpty(tableDictList)) {
+        if (CollectionUtils.isNotEmpty(tableDictList)) {
             tableDictList.forEach(item -> {
                 List<DragDictModel> dictItems = new ArrayList<>();
                 JSONObject object = JSONObject.parseObject(item.toString());
@@ -81,16 +81,18 @@ public class OnlDragExternalServiceImpl implements IOnlDragExternalService {
             LambdaQueryWrapper<SysDictData> lqw = Wrappers.lambdaQuery(SysDictData.class);
             lqw.eq(SysDictData::getDictCode, dictCode);
             List<SysDictData> dictDataList = mpSysDictDataService.list(lqw);
-            dictDataList.forEach(dictItem -> {
-                DragDictModel dictModel = new DragDictModel();
-                String dictLabel = dictItem.getDictLabel();
-                dictModel.setText(dictLabel);
-                String dictValue = dictItem.getDictValue();
-                dictModel.setValue(dictValue);
-                String cssClass = dictItem.getCssClass();
-                dictModel.setColor(cssClass);
-                dictItems.add(dictModel);
-            });
+            if (CollectionUtils.isNotEmpty(dictDataList)) {
+                dictDataList.forEach(dictItem -> {
+                    DragDictModel dictModel = new DragDictModel();
+                    String dictLabel = dictItem.getDictLabel();
+                    dictModel.setText(dictLabel);
+                    String dictValue = dictItem.getDictValue();
+                    dictModel.setValue(dictValue);
+                    String cssClass = dictItem.getCssClass();
+                    dictModel.setColor(cssClass);
+                    dictItems.add(dictModel);
+                });
+            }
         }
         return dictItems;
     }
