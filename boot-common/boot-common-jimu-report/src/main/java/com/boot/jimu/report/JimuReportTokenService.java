@@ -1,5 +1,6 @@
 package com.boot.jimu.report;
 
+import com.boot.common.core.domain.entity.SysRole;
 import com.boot.common.core.utils.StringUtils;
 import com.boot.common.core.utils.json.BootJsonUtil;
 import com.boot.common.security.core.domain.model.LoginUser;
@@ -10,6 +11,7 @@ import org.jeecg.modules.jmreport.api.JmReportTokenServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -59,7 +61,17 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
         //admin	超级管理员	拥有最高权限
         //dbadeveloper	DB管理员	可以设置数据库连接
         //lowdeveloper	报表设计管理员	可以设计报表
-        return new String[]{"admin", "lowdeveloper", "dbadeveloper"};
+        LoginUser loginUser = tokenService.getLoginUserByCookie();
+        if (Objects.isNull(loginUser)) {
+            return new String[]{};
+        }
+        List<SysRole> roles = loginUser.getUser().getRoles();
+        String[] userRoles = new String[roles.size()];
+        for (SysRole role : roles) {
+            userRoles[roles.indexOf(role)] = role.getRoleKey();
+        }
+        //new String[]{"admin", "lowdeveloper", "dbadeveloper"}
+        return userRoles;
     }
 
     @Override
