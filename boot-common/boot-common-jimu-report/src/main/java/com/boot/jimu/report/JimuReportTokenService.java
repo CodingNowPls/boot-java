@@ -24,13 +24,13 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
 
     @Override
     public String getUsername(String token) {
-        LoginUser loginUser = SecurityUtils.getLoginUser();
+        LoginUser loginUser = tokenService.getLoginUserByCookie();
         return loginUser.getUserName();
     }
 
     @Override
     public Boolean verifyToken(String token) {
-        LoginUser loginUser = SecurityUtils.getLoginUser();
+        LoginUser loginUser = tokenService.getLoginUserByCookie();
         if (StringUtils.isNotNull(loginUser)) {
             tokenService.verifyToken(loginUser);
             return true;
@@ -40,12 +40,12 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
 
     @Override
     public String getToken(HttpServletRequest request) {
-        return SecurityUtils.getLoginUser().getToken();
+        return tokenService.getLoginUserByCookie().getToken();
     }
 
     @Override
     public Map<String, Object> getUserInfo(String token) {
-        LoginUser loginUser = SecurityUtils.getLoginUser();
+        LoginUser loginUser = tokenService.getLoginUserByCookie();
         if (Objects.isNull(loginUser)) {
             return null;
         }

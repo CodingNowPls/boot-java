@@ -67,7 +67,7 @@ public class MagicLoginAuthorizationInterceptor implements AuthorizationIntercep
     @Override
     public MagicUser getUserByToken(String token) throws MagicLoginException {
         // 从token中获取MagicUser对象
-        LoginUser user = tokenService.magicApiLoginUser();
+        LoginUser user = tokenService.getLoginUserByCookie();
         try {
             if (Objects.isNull(user)) {
                 //说明未进行登录页登陆，取token校验

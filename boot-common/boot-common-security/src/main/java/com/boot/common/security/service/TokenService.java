@@ -81,7 +81,7 @@ public class TokenService {
      *
      * @return 用户信息
      */
-    public LoginUser magicApiLoginUser() {
+    public LoginUser getLoginUserByCookie() {
         // 获取请求携带的令牌
         Cookie[] cookies = ServletUtils.getRequest().getCookies();
         if (cookies != null) {
