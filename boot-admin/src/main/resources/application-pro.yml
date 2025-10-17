@@ -49,6 +49,7 @@ boot:
       - /swagger-resources/**
       - /webjars/**
       - ${magic-api.web}
+      - /magic-editor/**
       - /system/tenant/list**
       - /*/api-docs
       - /druid/**

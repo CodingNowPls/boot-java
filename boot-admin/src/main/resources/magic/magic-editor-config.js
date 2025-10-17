@@ -2,7 +2,7 @@ var MAGIC_EDITOR_CONFIG = {
     title: 'test',
     theme: 'default',
     defaultExpand: true,
-    checkUpdate: true,
+    checkUpdate: false,
     jdbcDrivers: ['driver1', 'driver2'],
     datasourceTypes: ['type1', 'type2'],
     options: [['key1', '描述', 'defaultValue1'], ['key2', '描述', 'defaultValue2']],
