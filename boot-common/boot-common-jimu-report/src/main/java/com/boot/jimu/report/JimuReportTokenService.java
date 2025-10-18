@@ -41,7 +41,11 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
 
     @Override
     public String getToken(HttpServletRequest request) {
-        return tokenService.getLoginUserByCookie().getToken();
+        LoginUser loginUser = tokenService.getLoginUserByCookie();
+        if (Objects.isNull(loginUser)) {
+            return null;
+        }
+        return loginUser.getToken();
     }
 
     @Override

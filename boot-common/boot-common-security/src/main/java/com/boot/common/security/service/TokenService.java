@@ -86,7 +86,7 @@ public class TokenService {
         Cookie[] cookies = ServletUtils.getRequest().getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("Admin-Token")) {
+                if (cookie.getName().equals("Admin-Token")|| cookie.getName().equals("token")) {
                     String authorization = cookie.getValue();
                     Claims claims = parseToken(authorization);
                     String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
