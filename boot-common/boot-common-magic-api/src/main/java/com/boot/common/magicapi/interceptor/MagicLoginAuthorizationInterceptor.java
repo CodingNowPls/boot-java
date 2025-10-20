@@ -1,23 +1,16 @@
 package com.boot.common.magicapi.interceptor;
 
-import com.alibaba.fastjson2.JSON;
 import com.boot.common.core.cache.BootCache;
-import com.boot.common.core.constant.CacheConstants;
 import com.boot.common.core.constant.Constants;
-import com.boot.common.core.domain.AjaxResult;
 import com.boot.common.core.utils.MessageUtils;
 import com.boot.common.core.utils.ServletUtils;
-import com.boot.common.core.utils.StringUtils;
 import com.boot.common.core.utils.sign.RsaUtils;
 import com.boot.common.log.manager.AsyncManager;
 import com.boot.common.log.manager.factory.AsyncFactory;
 import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.security.service.PermissionService;
 import com.boot.common.security.service.SysLoginService;
-import com.boot.common.security.service.SysPermissionService;
 import com.boot.common.security.service.TokenService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -112,13 +105,9 @@ public class MagicLoginAuthorizationInterceptor implements AuthorizationIntercep
     }
 
     @Override
-    public void logout(String token) {
-
+    public void refreshToken(MagicUser user) {
+        String token = user.getToken();
+        tokenService.verifyToken(token);
     }
-
-
-
-
-
 }
 
