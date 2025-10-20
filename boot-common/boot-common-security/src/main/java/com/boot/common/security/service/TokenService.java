@@ -2,7 +2,9 @@ package com.boot.common.security.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -179,6 +181,21 @@ public class TokenService {
         }
     }
 
+
+    public void verifyToken(String token) {
+        if (StringUtils.isNotEmpty(token)) {
+            Claims claims = parseToken(token);
+            // 解析对应的权限以及用户信息
+            String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
+            String userKey = getTokenKey(uuid);
+            LoginUser user = bootChche.getCacheObject(userKey);
+            if (Objects.isNull(user)) {
+                throw new RuntimeException("请从网站登录页登陆");
+            }
+            verifyToken(user);
+        }
+    }
+
     /**
      * 刷新令牌有效期
      *
@@ -232,17 +249,6 @@ public class TokenService {
                 .getBody();
     }
 
-    /**
-     * 从令牌中获取用户名
-     *
-     * @param token 令牌
-     * @return 用户名
-     */
-    public String getUsernameFromToken(String token) {
-        Claims claims = parseToken(token);
-        return claims.getSubject();
-    }
-
     public LoginUser getLoginUserFromToken(String token) {
         Claims claims = parseToken(token);
         // 解析对应的权限以及用户信息
@@ -252,17 +258,22 @@ public class TokenService {
         return user;
     }
 
-
     /**
      * 获取请求token
      *
      * @param request
      * @return token
      */
-    private String getToken(HttpServletRequest request) {
+    public String getToken(HttpServletRequest request) {
         String token = request.getHeader(header);
         if (StringUtils.isNotEmpty(token) && token.startsWith(Constants.TOKEN_PREFIX)) {
             token = token.replace(Constants.TOKEN_PREFIX, "");
+            return token;
+        }
+        token = request.getParameter("token");
+        if (StringUtils.isNotEmpty(token) && token.startsWith(Constants.TOKEN_PREFIX)) {
+            token = token.replace(Constants.TOKEN_PREFIX, "");
+            return token;
         }
         return token;
     }

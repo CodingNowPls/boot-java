@@ -1,7 +1,6 @@
 package com.boot.jimu.report;
 
 import com.boot.common.core.domain.entity.SysRole;
-import com.boot.common.core.utils.StringUtils;
 import com.boot.common.core.utils.json.BootJsonUtil;
 import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.security.service.TokenService;
@@ -25,32 +24,28 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
 
     @Override
     public String getUsername(String token) {
-        LoginUser loginUser = tokenService.getLoginUserByCookie();
+        LoginUser loginUser = tokenService.getLoginUserFromToken(token);
         return loginUser.getUserName();
     }
 
     @Override
     public Boolean verifyToken(String token) {
-        LoginUser loginUser = tokenService.getLoginUserByCookie();
-        if (StringUtils.isNotNull(loginUser)) {
-            tokenService.verifyToken(loginUser);
+        try {
+            tokenService.verifyToken(token);
             return true;
+        } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
     @Override
     public String getToken(HttpServletRequest request) {
-        LoginUser loginUser = tokenService.getLoginUserByCookie();
-        if (Objects.isNull(loginUser)) {
-            return null;
-        }
-        return loginUser.getToken();
+        return tokenService.getToken(request);
     }
 
     @Override
     public Map<String, Object> getUserInfo(String token) {
-        LoginUser loginUser = tokenService.getLoginUserByCookie();
+        LoginUser loginUser = tokenService.getLoginUserFromToken(token);
         if (Objects.isNull(loginUser)) {
             return null;
         }
@@ -65,7 +60,8 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
         //admin	超级管理员	拥有最高权限
         //dbadeveloper	DB管理员	可以设置数据库连接
         //lowdeveloper	报表设计管理员	可以设计报表
-        LoginUser loginUser = tokenService.getLoginUserByCookie();
+        LoginUser loginUser2 = tokenService.getLoginUser();
+        LoginUser loginUser = tokenService.getLoginUserFromToken(token);
         if (Objects.isNull(loginUser)) {
             return new String[]{};
         }
