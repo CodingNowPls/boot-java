@@ -100,7 +100,7 @@ public class GlobalExceptionHandler {
     public AjaxResult notLoginException(NotLoginException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',发生未知异常.", requestURI, e);
-        return AjaxResult.error("登陆信息已失效", HttpStatus.UNAUTHORIZED);
+        return AjaxResult.error(HttpStatus.UNAUTHORIZED,"登陆信息已失效",null);
     }
 
 //    @ExceptionHandler(RuntimeException.class)

@@ -61,6 +61,7 @@
         <jimureport-nosql>2.1.0</jimureport-nosql>
         <jimureport-echarts>2.1.1</jimureport-echarts>
         <jimu-bi.version>2.1.4</jimu-bi.version>
+        <mssql.version>11.2.0.jre17</mssql.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -228,6 +229,11 @@
                 <version>${fastjson.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.microsoft.sqlserver</groupId>
+                <artifactId>mssql-jdbc</artifactId>
+                <version>${mssql.version}</version>
+            </dependency>
 
             <!-- 升级springboot3  Sa-Token 权限认证, 在线文档： -->
             <dependency>

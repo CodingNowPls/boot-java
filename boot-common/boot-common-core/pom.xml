@@ -126,7 +126,11 @@
             <artifactId>mybatis-plus-annotation</artifactId>
             <version>${mybatis-plus3.version}</version>
         </dependency>
-
+        <!--  sqlserver驱动类-->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

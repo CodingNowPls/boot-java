@@ -102,6 +102,23 @@ public class TokenService {
 
     }
 
+
+    public String getTokenByCookie() {
+        // 获取请求携带的令牌
+        Cookie[] cookies = ServletUtils.getRequest().getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("Admin-Token")|| cookie.getName().equals("token")
+                        || cookie.getName().equals("Token")) {
+                    String authorization = cookie.getValue();
+                    return authorization;
+                }
+            }
+        }
+        return null;
+
+    }
+
     /**
      * @Description: TODO
      * @author: wangming
@@ -276,6 +293,16 @@ public class TokenService {
             token = token.replace(Constants.TOKEN_PREFIX, "");
             return token;
         }
+        token = request.getParameter("Token");
+        if (StringUtils.isNotEmpty(token) && token.startsWith(Constants.TOKEN_PREFIX)) {
+            token = token.replace(Constants.TOKEN_PREFIX, "");
+            return token;
+        }
+        token = getTokenByCookie();
+        if (Objects.nonNull(token)) {
+            return token;
+        }
+
         return token;
     }
 

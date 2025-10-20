@@ -87,11 +87,11 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                         }
                     } else {
                         //前后端分离就抛出异常
-                        throw new CustomException("当前会话未登录", HttpStatus.UNAUTHORIZED);
+                        throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
                     }
                 }
             } catch (Exception e) {
-                throw new CustomException("当前会话未登录", HttpStatus.UNAUTHORIZED);
+                throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
             }
         });
 

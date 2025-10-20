@@ -60,7 +60,6 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
         //admin	超级管理员	拥有最高权限
         //dbadeveloper	DB管理员	可以设置数据库连接
         //lowdeveloper	报表设计管理员	可以设计报表
-        LoginUser loginUser2 = tokenService.getLoginUser();
         LoginUser loginUser = tokenService.getLoginUserFromToken(token);
         if (Objects.isNull(loginUser)) {
             return new String[]{};

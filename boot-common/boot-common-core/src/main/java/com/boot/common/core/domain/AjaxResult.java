@@ -153,6 +153,9 @@ public class AjaxResult extends HashMap<String, Object> {
         return AjaxResult.error(msg, null);
     }
 
+    public static AjaxResult error(int code, String msg, Object data) {
+        return new AjaxResult(code, msg, data);
+    }
     /**
      * 返回错误消息
      *
