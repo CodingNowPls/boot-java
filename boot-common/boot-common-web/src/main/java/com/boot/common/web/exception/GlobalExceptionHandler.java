@@ -96,12 +96,12 @@ public class GlobalExceptionHandler {
     /**
      * 拦截未知的运行时异常
      */
-//    @ExceptionHandler(NotLoginException.class)
-//    public AjaxResult notLoginException(NotLoginException e, HttpServletRequest request) {
-//        String requestURI = request.getRequestURI();
-//        log.error("请求地址'{}',发生未知异常.", requestURI, e);
-//        return AjaxResult.error("登陆信息已失效");
-//    }
+    @ExceptionHandler(NotLoginException.class)
+    public AjaxResult notLoginException(NotLoginException e, HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',发生未知异常.", requestURI, e);
+        return AjaxResult.error("登陆信息已失效", HttpStatus.UNAUTHORIZED);
+    }
 
 //    @ExceptionHandler(RuntimeException.class)
 //    public AjaxResult handleLoginException(RuntimeException e, HttpServletRequest request) {
