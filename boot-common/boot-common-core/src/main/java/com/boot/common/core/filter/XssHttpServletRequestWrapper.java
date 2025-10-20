@@ -88,7 +88,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     /**
      * 是否是Json请求
      *
-     * @param request
+     * @param
      */
     public boolean isJsonRequest() {
         String header = super.getHeader(HttpHeaders.CONTENT_TYPE);
