@@ -260,6 +260,7 @@ public class TokenService {
 
     /**
      * 获取请求token
+     *  只要有一个不为空就返回不为空的token
      *
      * @param request
      * @return token
