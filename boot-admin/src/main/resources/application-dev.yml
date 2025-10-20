@@ -50,7 +50,7 @@ boot:
       - /swagger-ui.html
       - /swagger-resources/**
       - /webjars/**
-      - ${magic-api.web}
+      - ${magic-api.web}/**
       - /magic-editor/**
       - /system/tenant/list**
       - /*/api-docs

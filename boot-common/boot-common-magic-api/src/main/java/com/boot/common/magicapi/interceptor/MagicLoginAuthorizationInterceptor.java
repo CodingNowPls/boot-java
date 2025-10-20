@@ -66,28 +66,16 @@ public class MagicLoginAuthorizationInterceptor implements AuthorizationIntercep
      */
     @Override
     public MagicUser getUserByToken(String token) throws MagicLoginException {
-        // 从token中获取MagicUser对象
-        LoginUser user = tokenService.getLoginUserByCookie();
-        try {
-            if (Objects.isNull(user)) {
-                //说明未进行登录页登陆，取token校验
-                Claims claims = parseToken(token);
-                if (Objects.isNull(claims)) {
-                    throw new MagicLoginException("请从网站登录页登陆");
-                }
-                // 解析对应的权限以及用户信息
-                String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
-                String userKey = getTokenKey(uuid);
-                user = bootCache.getCacheObject(userKey);
-            }
-            //获取到用户之后，封装成magic-api的用户类
-            if (user != null) {
-                return new MagicUser(user.getUserId().toString(), user.getUserName(), token, expireTime);
-            }
-        } catch (Exception e) {
+        LoginUser user = tokenService.getLoginUserFromToken(token);
+        if (Objects.isNull(user)) {
             throw new MagicLoginException("请从网站登录页登陆");
         }
-        throw new MagicLoginException("请从网站登录页登陆");
+        return new MagicUser(
+                user.getUserId().toString(),
+                user.getUserName(),
+                token,
+                expireTime
+        );
     }
 
     @Override
@@ -116,22 +104,8 @@ public class MagicLoginAuthorizationInterceptor implements AuthorizationIntercep
     }
 
 
-    private String getTokenKey(String uuid) {
-        return CacheConstants.LOGIN_TOKEN_KEY + uuid;
-    }
 
-    /**
-     * 从令牌中获取数据声明
-     *
-     * @param token 令牌
-     * @return 数据声明
-     */
-    private Claims parseToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(token)
-                .getBody();
-    }
+
 
 }
 
