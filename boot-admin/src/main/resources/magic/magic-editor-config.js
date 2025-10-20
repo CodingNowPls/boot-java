@@ -1,5 +1,5 @@
 var MAGIC_EDITOR_CONFIG = {
-    title: 'test',
+    title: '在线代码开发',
     theme: 'default',
     defaultExpand: true,
     checkUpdate: false,
@@ -28,8 +28,8 @@ var MAGIC_EDITOR_CONFIG = {
         beforeSend: function (config) {
         // # 我的项目是配置在iframe中，链接后加入的自己项目的token，可以直接从链接中取自己项目的token
             let _href = window.location.href;
-            config.headers.Authorization = localStorage["magic-token"]; // 此处自行获取Token
-            // config.headers.token = _href.split("token=")[1]
+            config.headers.Authorization = localStorage["magic-token"];
+            config.headers.token = _href.split("token=")[1]
             return config;
         },
         onError: function (err) {

@@ -89,9 +89,9 @@ public class SysLoginController {
     @ApiOperation("获取用户信息")
     @GetMapping("/getInfo")
     public AjaxResult getInfo() {
-        if (!StpUtil.isLogin()) {
-            return AjaxResult.error("登陆状态失效");
-        }
+        //if (!StpUtil.isLogin()) {
+        //    return AjaxResult.error("登陆状态失效");
+        //}
         SysUser user = SecurityUtils.getLoginUser().getUser();
         // 角色集合
         Set<String> roles = permissionService.getRolePermission(user);

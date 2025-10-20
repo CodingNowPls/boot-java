@@ -18,6 +18,9 @@ import com.boot.common.security.service.SysPermissionService;
 import com.boot.common.security.service.TokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -70,6 +73,16 @@ public class MagicLoginAuthorizationInterceptor implements AuthorizationIntercep
         if (Objects.isNull(user)) {
             throw new MagicLoginException("请从网站登录页登陆");
         }
+        HttpServletRequest request = ServletUtils.getRequest();
+        request.setAttribute("token", token);
+
+        // 将token写入Cookie
+        Cookie tokenCookie = new Cookie("token", token);
+        tokenCookie.setHttpOnly(true); // 防止XSS攻击
+        tokenCookie.setSecure(true);   // 仅在HTTPS下传输
+        tokenCookie.setPath("/");      // Cookie有效路径
+        HttpServletResponse response = ServletUtils.getResponse();
+        response.addCookie(tokenCookie);
         return new MagicUser(
                 user.getUserId().toString(),
                 user.getUserName(),
