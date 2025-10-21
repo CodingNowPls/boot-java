@@ -1,10 +1,14 @@
 package com.boot.jimu.report;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import com.boot.common.core.domain.entity.SysRole;
+import com.boot.common.core.utils.ServletUtils;
 import com.boot.common.core.utils.json.BootJsonUtil;
 import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.security.service.TokenService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.jeecg.modules.jmreport.api.JmReportTokenServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +28,15 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
 
     @Override
     public String getUsername(String token) {
-        LoginUser loginUser = tokenService.getLoginUserFromToken(token);
-        if (Objects.isNull(loginUser)){
-            return null;
+        try {
+            LoginUser loginUser = tokenService.getLoginUserFromToken(token);
+            if (Objects.isNull(loginUser)){
+                return null;
+            }
+            return loginUser.getUserName();
+        } catch (Exception e) {
+            throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
         }
-        return loginUser.getUserName();
     }
 
     @Override
@@ -37,13 +45,17 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
             tokenService.verifyToken(token);
             return true;
         } catch (Exception e) {
-            return false;
+            throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
         }
     }
 
     @Override
     public String getToken(HttpServletRequest request) {
-        return tokenService.getToken(request);
+        try {
+            return tokenService.getToken(request);
+        } catch (Exception e) {
+            throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
+        }
     }
 
     @Override

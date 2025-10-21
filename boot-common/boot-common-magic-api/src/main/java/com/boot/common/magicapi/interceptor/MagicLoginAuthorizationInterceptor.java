@@ -1,5 +1,6 @@
 package com.boot.common.magicapi.interceptor;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import com.boot.common.core.cache.BootCache;
 import com.boot.common.core.constant.Constants;
 import com.boot.common.core.utils.MessageUtils;
@@ -61,53 +62,57 @@ public class MagicLoginAuthorizationInterceptor implements AuthorizationIntercep
      * 根据Token获取User
      */
     @Override
-    public MagicUser getUserByToken(String token) throws MagicLoginException {
-        LoginUser user = tokenService.getLoginUserFromToken(token);
-        if (Objects.isNull(user)) {
-            throw new MagicLoginException("请从网站登录页登陆");
+    public MagicUser getUserByToken(String token) {
+        try {
+            LoginUser user = tokenService.getLoginUserFromToken(token);
+            if (Objects.isNull(user)) {
+                throw new MagicLoginException("请从网站登录页登陆");
+            }
+            HttpServletRequest request = ServletUtils.getRequest();
+            request.setAttribute("token", token);
+            return new MagicUser(
+                    user.getUserId().toString(),
+                    user.getUserName(),
+                    token,
+                    expireTime
+            );
+        } catch (Exception e) {
+            throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
         }
-        HttpServletRequest request = ServletUtils.getRequest();
-        request.setAttribute("token", token);
-
-        // 将token写入Cookie
-        Cookie tokenCookie = new Cookie("token", token);
-        tokenCookie.setHttpOnly(true); // 防止XSS攻击
-        tokenCookie.setSecure(true);   // 仅在HTTPS下传输
-        tokenCookie.setPath("/");      // Cookie有效路径
-        HttpServletResponse response = ServletUtils.getResponse();
-        response.addCookie(tokenCookie);
-        return new MagicUser(
-                user.getUserId().toString(),
-                user.getUserName(),
-                token,
-                expireTime
-        );
     }
 
     @Override
-    public MagicUser login(String username, String password) throws MagicLoginException {
-        String token;
+    public MagicUser login(String username, String password) {
         try {
-            String encryptPassword = RsaUtils.encryptByPublicKey(RsaUtils.publicKey, password);
-            token = sysLoginService.login(username, encryptPassword, SysLoginService.NOT_NEED_CHECK_CODE, null);
+            String token;
+            try {
+                String encryptPassword = RsaUtils.encryptByPublicKey(RsaUtils.publicKey, password);
+                token = sysLoginService.login(username, encryptPassword, SysLoginService.NOT_NEED_CHECK_CODE, null);
+            } catch (Exception e) {
+                throw new MagicLoginException("登陆失败");
+            }
+            //需要校验权限
+            boolean permi = permissionService.hasPermi("magic:api:code", token);
+            if (!permi) {
+                throw new MagicLoginException("无权限");
+            }
+            MagicUser user = getUserByToken(token);
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+            // 返回登录信息  登录成功后将用户信息封装成magic-api的用户信息
+            return new MagicUser(user.getId().toString(), username, token, expireTime);
         } catch (Exception e) {
-            throw new MagicLoginException("登陆失败");
+            throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
         }
-        //需要校验权限
-        boolean permi = permissionService.hasPermi("magic:api:code", token);
-        if (!permi) {
-            throw new MagicLoginException("无权限");
-        }
-        MagicUser user = getUserByToken(token);
-        AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
-        // 返回登录信息  登录成功后将用户信息封装成magic-api的用户信息
-        return new MagicUser(user.getId().toString(), username, token, expireTime);
     }
 
     @Override
     public void refreshToken(MagicUser user) {
-        String token = user.getToken();
-        tokenService.verifyToken(token);
+        try {
+            String token = user.getToken();
+            tokenService.verifyToken(token);
+        } catch (Exception e) {
+            throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
+        }
     }
 
     @Override
