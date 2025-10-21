@@ -293,6 +293,7 @@ CREATE TABLE `sys_menu` (
   `component` varchar(255) DEFAULT NULL COMMENT '组件路径',
   `query` varchar(255) DEFAULT NULL COMMENT '路由参数',
   `is_frame` int(1) DEFAULT '1' COMMENT '是否为外链（0是 1否）',
+  `external_flag` int(1) DEFAULT '1' COMMENT '外链 外置跳转还是内嵌页面（0内嵌  1 外置） 默认 外置',
   `is_cache` int(1) DEFAULT '0' COMMENT '是否缓存（0缓存 1不缓存）',
   `menu_type` char(1) DEFAULT '' COMMENT '菜单类型（M目录 C菜单 F按钮）',
   `visible` char(1) DEFAULT '0' COMMENT '菜单状态（0显示 1隐藏）',
