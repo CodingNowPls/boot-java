@@ -24,6 +24,7 @@ import com.boot.common.core.utils.ip.IpUtils;
 import com.boot.common.core.utils.uuid.IdUtils;
 import com.boot.common.security.core.domain.model.LoginUser;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -44,6 +45,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Component
 public class TokenService {
     // 令牌自定义标识
+    @Getter
     @Value("${token.header}")
     private String header;
 
@@ -93,7 +95,7 @@ public class TokenService {
         Cookie[] cookies = ServletUtils.getRequest().getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("Admin-Token")|| cookie.getName().equals("token")) {
+                if (cookie.getName().equals("Admin-Token") || cookie.getName().equals("token")) {
                     String authorization = cookie.getValue();
                     Claims claims = parseToken(authorization);
                     String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
@@ -113,7 +115,7 @@ public class TokenService {
         Cookie[] cookies = ServletUtils.getRequest().getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("Admin-Token")|| cookie.getName().equals("token")
+                if (cookie.getName().equals("Admin-Token") || cookie.getName().equals("token")
                         || cookie.getName().equals("Token")) {
                     String authorization = cookie.getValue();
                     return authorization;
@@ -123,7 +125,7 @@ public class TokenService {
         return null;
     }
 
-    public void loginOut(){
+    public void loginOut() {
         HttpServletRequest request = ServletUtils.getRequest();
         HttpServletResponse response = ServletUtils.getResponse();
         LoginUser loginUser = this.getLoginUser(request);
@@ -315,29 +317,37 @@ public class TokenService {
 
     /**
      * 获取请求token
-     *  只要有一个不为空就返回不为空的token
+     * 只要有一个不为空就返回不为空的token
      *
      * @param request
      * @return token
      */
     public String getToken(HttpServletRequest request) {
         String token = request.getHeader(header);
-        if (StringUtils.isNotEmpty(token)) {
+        if (StringUtils.isNotEmpty(token) && token.length() >= 30) {
             if (token.startsWith(Constants.TOKEN_PREFIX)) {
                 token = token.replace(Constants.TOKEN_PREFIX, "");
             }
             return token;
         }
         token = request.getParameter("token");
-        if (StringUtils.isNotEmpty(token)) {
+        if (StringUtils.isNotEmpty(token) && token.length() >= 30) {
             return token;
         }
         token = request.getParameter("Token");
-        if (StringUtils.isNotEmpty(token)) {
+        if (StringUtils.isNotEmpty(token) && token.length() >= 30) {
             return token;
         }
+        token = request.getHeader("X-Access-Token");
+        if (StringUtils.isNotEmpty(token) && token.length() >= 30) {
+            if (token.startsWith(Constants.TOKEN_PREFIX)) {
+                token = token.replace(Constants.TOKEN_PREFIX, "");
+            }
+            return token;
+        }
+
         token = getTokenByCookie();
-        if (Objects.nonNull(token)) {
+        if (Objects.nonNull(token) && token.length() >= 30) {
             return token;
         }
 
