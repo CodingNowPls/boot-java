@@ -267,13 +267,23 @@ public class TokenService {
     }
 
     public LoginUser getLoginUserFromToken(String token) {
-        if(StringUtils.isEmpty(token)){
-            token = getTokenByCookie();
+        if (StringUtils.isNotEmpty(token) && token.length() < 30) {
+            token = null;
         }
-        if (StringUtils.isEmpty(token)){
+        if (StringUtils.isEmpty(token)) {
             token = getToken(ServletUtils.getRequest());
+            if (StringUtils.isNotEmpty(token) && token.length() < 30) {
+                token = null;
+            }
         }
-        if (StringUtils.isEmpty(token)){
+        if (StringUtils.isEmpty(token)) {
+            token = getTokenByCookie();
+            if (StringUtils.isNotEmpty(token) && token.length() < 30) {
+                token = null;
+            }
+        }
+
+        if (StringUtils.isEmpty(token)) {
             return null;
         }
 
@@ -294,8 +304,10 @@ public class TokenService {
      */
     public String getToken(HttpServletRequest request) {
         String token = request.getHeader(header);
-        if (StringUtils.isNotEmpty(token) && token.startsWith(Constants.TOKEN_PREFIX)) {
-            token = token.replace(Constants.TOKEN_PREFIX, "");
+        if (StringUtils.isNotEmpty(token)) {
+            if (token.startsWith(Constants.TOKEN_PREFIX)) {
+                token = token.replace(Constants.TOKEN_PREFIX, "");
+            }
             return token;
         }
         token = request.getParameter("token");
