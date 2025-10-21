@@ -67,9 +67,9 @@ public class SysMenu extends BaseEntity {
     private String isFrame;
 
     /**
-     * 外链 外置跳转还是内嵌页面（0内嵌  1 外置） 默认 外置
+     * iFrame  外置跳转还是内嵌页面（1内嵌  2 外置） 默认 内嵌     EnumYesNo.YES.getCode()
      */
-    private Integer externalFlag = EnumYesNo.YES.getCode();
+    private Integer frameEmbedFlag;
 
     /**
      * 是否缓存（0缓存 1不缓存）
