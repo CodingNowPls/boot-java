@@ -116,8 +116,8 @@ public class TokenService {
             }
         }
         return null;
-
     }
+
 
     /**
      * @Description: TODO
@@ -267,6 +267,16 @@ public class TokenService {
     }
 
     public LoginUser getLoginUserFromToken(String token) {
+        if(StringUtils.isEmpty(token)){
+            token = getTokenByCookie();
+        }
+        if (StringUtils.isEmpty(token)){
+            token = getToken(ServletUtils.getRequest());
+        }
+        if (StringUtils.isEmpty(token)){
+            return null;
+        }
+
         Claims claims = parseToken(token);
         // 解析对应的权限以及用户信息
         String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
@@ -289,13 +299,11 @@ public class TokenService {
             return token;
         }
         token = request.getParameter("token");
-        if (StringUtils.isNotEmpty(token) && token.startsWith(Constants.TOKEN_PREFIX)) {
-            token = token.replace(Constants.TOKEN_PREFIX, "");
+        if (StringUtils.isNotEmpty(token)) {
             return token;
         }
         token = request.getParameter("Token");
-        if (StringUtils.isNotEmpty(token) && token.startsWith(Constants.TOKEN_PREFIX)) {
-            token = token.replace(Constants.TOKEN_PREFIX, "");
+        if (StringUtils.isNotEmpty(token)) {
             return token;
         }
         token = getTokenByCookie();
