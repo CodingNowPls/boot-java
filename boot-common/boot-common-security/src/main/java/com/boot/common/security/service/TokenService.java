@@ -6,6 +6,10 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import com.alibaba.fastjson2.JSON;
+import com.boot.common.core.domain.AjaxResult;
+import com.boot.common.log.manager.AsyncManager;
+import com.boot.common.log.manager.factory.AsyncFactory;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -19,6 +23,7 @@ import com.boot.common.core.utils.ip.AddressUtils;
 import com.boot.common.core.utils.ip.IpUtils;
 import com.boot.common.core.utils.uuid.IdUtils;
 import com.boot.common.security.core.domain.model.LoginUser;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -118,6 +123,19 @@ public class TokenService {
         return null;
     }
 
+    public void loginOut(){
+        HttpServletRequest request = ServletUtils.getRequest();
+        HttpServletResponse response = ServletUtils.getResponse();
+        LoginUser loginUser = this.getLoginUser(request);
+        if (StringUtils.isNotNull(loginUser)) {
+            String userName = loginUser.getUserName();
+            // 删除用户缓存记录
+            this.delLoginUser(loginUser.getToken());
+            // 记录用户退出日志
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(userName, Constants.LOGOUT, "退出成功"));
+        }
+        ServletUtils.renderString(response, JSON.toJSONString(AjaxResult.success("退出成功")));
+    }
 
     /**
      * @Description: TODO

@@ -69,16 +69,7 @@ public class SysLoginController {
 
     @PostMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-
-        LoginUser loginUser = tokenService.getLoginUser(request);
-        if (StringUtils.isNotNull(loginUser)) {
-            String userName = loginUser.getUserName();
-            // 删除用户缓存记录
-            tokenService.delLoginUser(loginUser.getToken());
-            // 记录用户退出日志
-            AsyncManager.me().execute(AsyncFactory.recordLogininfor(userName, Constants.LOGOUT, "退出成功"));
-        }
-        ServletUtils.renderString(response, JSON.toJSONString(AjaxResult.success("退出成功")));
+         tokenService.loginOut();
     }
 
     /**

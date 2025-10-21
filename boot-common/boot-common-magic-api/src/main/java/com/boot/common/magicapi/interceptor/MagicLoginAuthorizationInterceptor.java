@@ -109,5 +109,10 @@ public class MagicLoginAuthorizationInterceptor implements AuthorizationIntercep
         String token = user.getToken();
         tokenService.verifyToken(token);
     }
+
+    @Override
+    public void logout(String token) {
+       //tokenService.loginOut();
+    }
 }
 
