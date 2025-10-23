@@ -1,5 +1,6 @@
 package com.boot.common.cache.config;
 
+import com.boot.common.core.enums.EnumCacheType;
 import com.boot.common.cache.local.LocalBootCache;
 import com.boot.common.cache.redis.RedisBootCache;
 import com.boot.common.core.cache.BootCache;
@@ -20,7 +21,7 @@ public class CacheConfig {
 
     // 本地缓存 Bean
     @Bean
-    @ConditionalOnProperty(name = "boot.cache.type", havingValue = "local", matchIfMissing = true)
+    @ConditionalOnProperty(name = "boot.cacheType", havingValue = EnumCacheType.CACHE_TYPE_LOCAL, matchIfMissing = true)
     public BootCache localCache() {
         log.info("使用本地缓存 LocalCache");
         return new LocalBootCache();
@@ -28,7 +29,7 @@ public class CacheConfig {
 
     // Redis 缓存 Bean
     @Bean
-    @ConditionalOnProperty(name = "boot.cache.type", havingValue = "redis")
+    @ConditionalOnProperty(name = "boot.cacheType", havingValue = EnumCacheType.CACHE_TYPE_REDIS)
     public BootCache redisCache() {
         log.info("使用redis缓存");
         RedisTemplate redisTemplate = SpringUtils.getBean(RedisTemplate.class);

@@ -43,6 +43,12 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+
+        </dependency>
+
         <!-- 阿里JSON解析器 -->
         <dependency>
             <groupId>com.alibaba.fastjson2</groupId>
@@ -112,6 +118,18 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-annotation</artifactId>
+            <version>${mybatis-plus3.version}</version>
+        </dependency>
+        <!--  sqlserver驱动类-->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
         </dependency>
     </dependencies>
 

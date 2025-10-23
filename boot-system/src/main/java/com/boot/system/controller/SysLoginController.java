@@ -19,6 +19,7 @@ import com.boot.system.service.SysLoginServiceImpl;
 import com.boot.system.service.SysPermissionServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,21 +65,18 @@ public class SysLoginController {
         String token = loginService.login(loginBody.getUserName(), loginBody.getPassword(), loginBody.getCode(),
                 loginBody.getUuid());
         ajax.put(Constants.TOKEN, token);
+        Cookie tokenCookie = new Cookie("token", token);
+        tokenCookie.setHttpOnly(true); // 防止XSS攻击
+        tokenCookie.setSecure(true);   // 仅在HTTPS下传输
+        tokenCookie.setPath("/");      // Cookie有效路径
+        HttpServletResponse response = ServletUtils.getResponse();
+        response.addCookie(tokenCookie);
         return ajax;
     }
 
     @PostMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-
-        LoginUser loginUser = tokenService.getLoginUser(request);
-        if (StringUtils.isNotNull(loginUser)) {
-            String userName = loginUser.getUserName();
-            // 删除用户缓存记录
-            tokenService.delLoginUser(loginUser.getToken());
-            // 记录用户退出日志
-            AsyncManager.me().execute(AsyncFactory.recordLogininfor(userName, Constants.LOGOUT, "退出成功"));
-        }
-        ServletUtils.renderString(response, JSON.toJSONString(AjaxResult.success("退出成功")));
+         tokenService.loginOut();
     }
 
     /**
@@ -89,9 +87,9 @@ public class SysLoginController {
     @ApiOperation("获取用户信息")
     @GetMapping("/getInfo")
     public AjaxResult getInfo() {
-        if (!StpUtil.isLogin()) {
-            return AjaxResult.error("登陆状态失效");
-        }
+        //if (!StpUtil.isLogin()) {
+        //    return AjaxResult.error("登陆状态失效");
+        //}
         SysUser user = SecurityUtils.getLoginUser().getUser();
         // 角色集合
         Set<String> roles = permissionService.getRolePermission(user);

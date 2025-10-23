@@ -1,6 +1,5 @@
 package com.boot.common.magicapi.interceptor;
 
-import com.boot.common.core.utils.StringUtils;
 import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.security.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;

@@ -43,6 +43,7 @@ server:
       max: 800
       # Tomcat启动初始化的线程数，默认值10
       min-spare: 100
+  port: ${boot.port}
 
 # 日志配置
 logging:
@@ -86,9 +87,19 @@ spring:
     cache: false
     prefix: classpath:/static/
 
+  mvc:
+    static-path-pattern: /**
   web:
     resources:
-      static-locations: classpath:/static/
+      # 增加WebJar资源路径，确保能够正确加载前端资源
+      static-locations: classpath:/META-INF/resources/,classpath:/META-INF/resources/webjars/,classpath:/resources/,classpath:/static/,classpath:/public/
+      chain:
+        # 启用资源链，提高静态资源访问效率
+        enabled: true
+        # 启用缓存
+        cache: true
+        # 启用压缩资源解析
+        compressed: true
   # sa-token配置
   sa-token:
     # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
@@ -212,7 +223,6 @@ flowlong:
     cron: "*/5 * * * * ?"
   eventing:
     task: true
-
 
 
 

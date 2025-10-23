@@ -6,6 +6,7 @@ import com.boot.common.core.domain.entity.SysUser;
 import com.boot.common.core.enums.EnumUserRoleType;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +17,7 @@ import java.util.Set;
  * @author boot
  */
 @Data
-public class LoginUser  {
+public class LoginUser  implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**

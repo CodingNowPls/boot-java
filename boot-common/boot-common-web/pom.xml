@@ -82,10 +82,10 @@
 <!--            <artifactId>boot-common-notifier-dingTalk</artifactId>-->
 <!--        </dependency>-->
 
-<!--        <dependency>-->
-<!--            <groupId>com.boot</groupId>-->
-<!--            <artifactId>boot-common-magic-api</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.boot</groupId>
+            <artifactId>boot-common-magic-api</artifactId>
+        </dependency>
 
 <!--        <dependency>-->
 <!--            <groupId>com.boot</groupId>-->
@@ -99,8 +99,6 @@
 <!--            <groupId>com.boot</groupId>-->
 <!--            <artifactId>boot-common-real-time-editing</artifactId>-->
 <!--        </dependency>-->
-
-
     </dependencies>
 
 </project>

@@ -89,12 +89,25 @@
 <!--            <artifactId>boot-biz-print</artifactId>-->
 <!--            <version>${project.version}</version>-->
 <!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.boot</groupId>-->
-<!--            <artifactId>boot-biz-ui</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
 
+
+        <dependency>
+            <groupId>com.boot.webjar</groupId>
+            <artifactId>boot-ui</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}\..\lib\boot-ui-1.0.0.jar</systemPath>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.boot</groupId>
+            <artifactId>boot-common-jimu-report</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.boot</groupId>
+            <artifactId>boot-common-jimu-bi</artifactId>
+        </dependency>
     </dependencies>
 
 

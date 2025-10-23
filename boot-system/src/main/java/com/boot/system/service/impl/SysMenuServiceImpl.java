@@ -150,6 +150,11 @@ public class SysMenuServiceImpl implements ISysMenuService {
             router.setComponent(getComponent(menu));
             router.setQuery(menu.getQuery());
             router.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon(), StringUtils.equals("1", menu.getIsCache()), menu.getPath()));
+            // 设置外链相关字段
+            if (router.getMeta() != null) {
+                router.getMeta().setIsFrame(menu.getIsFrame());
+                router.getMeta().setFrameEmbedFlag(menu.getFrameEmbedFlag());
+            }
             List<SysMenu> cMenus = menu.getChildren();
             if (StringUtils.isNotEmpty(cMenus) && UserConstants.TYPE_DIR.equals(menu.getMenuType())) {
                 router.setAlwaysShow(true);
@@ -162,7 +167,11 @@ public class SysMenuServiceImpl implements ISysMenuService {
                 children.setPath(menu.getPath());
                 children.setComponent(menu.getComponent());
                 children.setName(StringUtils.capitalize(menu.getPath()));
-                children.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon(), StringUtils.equals("1", menu.getIsCache()), menu.getPath()));
+                MetaVo metaVo = new MetaVo(menu.getMenuName(), menu.getIcon(), StringUtils.equals("1", menu.getIsCache()), menu.getPath());
+                // 设置外链相关字段
+                metaVo.setIsFrame(menu.getIsFrame());
+                metaVo.setFrameEmbedFlag(menu.getFrameEmbedFlag());
+                children.setMeta(metaVo);
                 children.setQuery(menu.getQuery());
                 childrenList.add(children);
                 router.setChildren(childrenList);
@@ -175,7 +184,11 @@ public class SysMenuServiceImpl implements ISysMenuService {
                 children.setPath(routerPath);
                 children.setComponent(UserConstants.INNER_LINK);
                 children.setName(StringUtils.capitalize(routerPath));
-                children.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon(), menu.getPath()));
+                MetaVo metaVo = new MetaVo(menu.getMenuName(), menu.getIcon(), menu.getPath());
+                //是外链
+                metaVo.setIsFrame(menu.getIsFrame());
+                metaVo.setFrameEmbedFlag(menu.getFrameEmbedFlag());
+                children.setMeta(metaVo);
                 childrenList.add(children);
                 router.setChildren(childrenList);
             }

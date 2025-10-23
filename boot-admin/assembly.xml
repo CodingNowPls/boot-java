@@ -15,9 +15,7 @@
             <directory>${project.basedir}/src/main/resources</directory>
             <outputDirectory>.</outputDirectory>
             <includes>
-                <include>*.properties</include>
                 <include>*.yml</include>
-                <include>*.xml</include>
             </includes>
         </fileSet>
 
@@ -41,7 +39,6 @@
             <includes>
                 <include>static/**</include>
                 <include>templates/**</include>
-                <include>mybatis/**</include>
             </includes>
         </fileSet>
 

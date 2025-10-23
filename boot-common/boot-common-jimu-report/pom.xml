@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.boot</groupId>
+        <artifactId>boot-common</artifactId>
+        <version>3.8.5</version>
+    </parent>
+
+    <artifactId>boot-common-jimu-report</artifactId>
+    <description>JimuReport</description>
+    <properties>
+
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.boot</groupId>
+            <artifactId>boot-common-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jeecgframework.jimureport</groupId>
+            <artifactId>jimureport-spring-boot3-starter</artifactId>
+        </dependency>
+
+
+        <!-- mongo、redis和文件数据集支持包，按需引入 -->
+        <!--        <dependency>-->
+        <!--            <groupId>org.jeecgframework.jimureport</groupId>-->
+        <!--            <artifactId>jimureport-nosql-starter</artifactId>-->
+        <!--        </dependency>-->
+        <!-- 后台导出接口Echart图表支持包，按需引入 -->
+        <dependency>
+            <groupId>org.jeecgframework.jimureport</groupId>
+            <artifactId>jimureport-echarts-starter</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

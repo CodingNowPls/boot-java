@@ -38,7 +38,7 @@
         <mybatis-plus3.version>3.5.8</mybatis-plus3.version>
         <mybatisplus-plus.version>1.7.5-RELEASE</mybatisplus-plus.version>
         <dynamic-datasource3.version>4.3.1</dynamic-datasource3.version>
-        <fastjson.version>2.0.25</fastjson.version>
+        <fastjson.version>2.0.59</fastjson.version>
         <oshi.version>6.4.0</oshi.version>
         <commons.io.version>2.11.0</commons.io.version>
         <commons.collections.version>3.2.2</commons.collections.version>
@@ -57,6 +57,11 @@
         <magic-api.version>2.1.1</magic-api.version>
         <nop-entropy.version>2.0.0-SNAPSHOT</nop-entropy.version>
         <spring-cloud-context.version>4.2.0</spring-cloud-context.version>
+        <jimu-report.version>2.1.3</jimu-report.version>
+        <jimureport-nosql>2.1.0</jimureport-nosql>
+        <jimureport-echarts>2.1.1</jimureport-echarts>
+        <jimu-bi.version>2.1.4</jimu-bi.version>
+        <mssql.version>11.2.0.jre17</mssql.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -224,6 +229,12 @@
                 <version>${fastjson.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.microsoft.sqlserver</groupId>
+                <artifactId>mssql-jdbc</artifactId>
+                <version>${mssql.version}</version>
+            </dependency>
+
             <!-- 升级springboot3  Sa-Token 权限认证, 在线文档： -->
             <dependency>
                 <groupId>cn.dev33</groupId>
@@ -263,6 +274,29 @@
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jeecgframework.jimureport</groupId>
+                <artifactId>jimureport-spring-boot3-starter</artifactId>
+                <version>${jimu-report.version}</version>
+            </dependency>
+            <!-- mongo、redis和文件数据集支持包，按需引入 -->
+            <dependency>
+                <groupId>org.jeecgframework.jimureport</groupId>
+                <artifactId>jimureport-nosql-starter</artifactId>
+                <version>${jimureport-nosql}</version>
+            </dependency>
+            <!-- 后台导出接口Echart图表支持包，按需引入 -->
+            <dependency>
+                <groupId>org.jeecgframework.jimureport</groupId>
+                <artifactId>jimureport-echarts-starter</artifactId>
+                <version>${jimureport-echarts}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jeecgframework.jimureport</groupId>
+                <artifactId>jimubi-spring-boot3-starter</artifactId>
+                <version>${jimu-bi.version}</version>
             </dependency>
 
 
@@ -337,6 +371,18 @@
                 <artifactId>boot-common-tenant</artifactId>
                 <version>${boot.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-jimu-report</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.boot</groupId>
+                <artifactId>boot-common-jimu-bi</artifactId>
+                <version>${boot.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.boot</groupId>
                 <artifactId>boot-common-real-time-editing</artifactId>

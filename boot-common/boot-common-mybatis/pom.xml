@@ -42,11 +42,6 @@
             <groupId>com.github.jeffreyning</groupId>
             <artifactId>mybatisplus-plus</artifactId>
         </dependency>
-        <!--  联合主键-->
-        <dependency>
-            <groupId>com.github.jeffreyning</groupId>
-            <artifactId>mybatisplus-plus</artifactId>
-        </dependency>
         <!--连表查询-->
         <dependency>
             <groupId>com.github.yulichang</groupId>

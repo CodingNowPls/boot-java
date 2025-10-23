@@ -1,8 +1,8 @@
 var MAGIC_EDITOR_CONFIG = {
-    title: 'test',
+    title: '在线代码开发',
     theme: 'default',
     defaultExpand: true,
-    checkUpdate: true,
+    checkUpdate: false,
     jdbcDrivers: ['driver1', 'driver2'],
     datasourceTypes: ['type1', 'type2'],
     options: [['key1', '描述', 'defaultValue1'], ['key2', '描述', 'defaultValue2']],
@@ -19,17 +19,11 @@ var MAGIC_EDITOR_CONFIG = {
         repo: true,
         qqGroup: true
     },
-    getMagicTokenValue: function () {
-    // # 我的项目是配置在iframe中，链接后加入的自己项目的token，可以直接从链接中取自己项目的token
-        let _href = window.location.href;
-        return _href.split("token=")[1];
-    },
     request: {
         beforeSend: function (config) {
         // # 我的项目是配置在iframe中，链接后加入的自己项目的token，可以直接从链接中取自己项目的token
             let _href = window.location.href;
-            config.headers.Authorization = localStorage["magic-token"]; // 此处自行获取Token
-            // config.headers.token = _href.split("token=")[1]
+            config.headers.Authorization = _href.split("token=")[1];
             return config;
         },
         onError: function (err) {

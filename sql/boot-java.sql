@@ -293,6 +293,7 @@ CREATE TABLE `sys_menu` (
   `component` varchar(255) DEFAULT NULL COMMENT '组件路径',
   `query` varchar(255) DEFAULT NULL COMMENT '路由参数',
   `is_frame` int(1) DEFAULT '1' COMMENT '是否为外链（0是 1否）',
+  `frame_embed_flag` int(1) DEFAULT '1' COMMENT '外链  外置跳转还是内嵌页面（1内嵌  2 外置） 默认 内嵌',
   `is_cache` int(1) DEFAULT '0' COMMENT '是否缓存（0缓存 1不缓存）',
   `menu_type` char(1) DEFAULT '' COMMENT '菜单类型（M目录 C菜单 F按钮）',
   `visible` char(1) DEFAULT '0' COMMENT '菜单状态（0显示 1隐藏）',
@@ -394,8 +395,19 @@ INSERT INTO `sys_menu` VALUES ('1057', '生成删除', '116', '3', '#', '', '', 
 INSERT INTO `sys_menu` VALUES ('1058', '导入代码', '116', '4', '#', '', '', '1', '0', 'F', '0', '0', 'tool:gen:import', '#', 'admin', '2024-12-12 12:22:06', '', null, '');
 INSERT INTO `sys_menu` VALUES ('1059', '预览代码', '116', '5', '#', '', '', '1', '0', 'F', '0', '0', 'tool:gen:preview', '#', 'admin', '2024-12-12 12:22:06', '', null, '');
 INSERT INTO `sys_menu` VALUES ('1060', '生成代码', '116', '6', '#', '', '', '1', '0', 'F', '0', '0', 'tool:gen:code', '#', 'admin', '2024-12-12 12:22:06', '', null, '');
-INSERT INTO `sys_menu` VALUES ('1062', 'MagicApi', '0', '1400', 'magicApi', NULL, NULL, '1', '0', 'M', '0', '0', 'magic:api:code', 'code', 'admin', '2025-03-09 18:13:35', '', NULL, '');
-INSERT INTO `sys_menu` VALUES ('1063', '编写代码', '1062', '10', 'http://localhost:8081/magicApi/index.html', NULL, NULL, '0', '0', 'C', '0', '0', 'magic:api:code', 'clipboard', 'admin', '2025-03-09 18:15:09', '', NULL, '');
+
+
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('1062', 'MagicApi', '0', '1400', 'magicApi', NULL, NULL, '1', '0', 'M', '0', '0', 'magic:api:code', 'code', 'admin', '2025-03-09 18:13:35', 'admin', '2025-10-17 16:25:32', '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('1063', '编写代码', '1062', '10', 'http://localhost:8081/magicApi/index.html', NULL, NULL, '0', '0', 'C', '0', '0', 'magic:api:code', 'clipboard', 'admin', '2025-03-09 18:15:09', 'admin', '2025-10-17 16:56:23', '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('1064', '报表设计', '1066', '1', 'http://localhost:8081/jmreport/list', NULL, NULL, '0', '0', 'C', '0', '0', '', 'chart', 'admin', '2025-10-17 10:00:34', 'admin', '2025-10-17 16:24:43', '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('1065', 'BI设计', '1066', '2', 'http://localhost:8081/drag/list', NULL, NULL, '0', '0', 'C', '0', '0', '', 'chart', 'admin', '2025-10-17 10:01:20', 'admin', '2025-10-17 16:24:49', '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('1066', '图表设计', '0', '100', 'design', NULL, NULL, '1', '0', 'M', '0', '0', '', 'edit', 'admin', '2025-10-17 16:24:34', 'admin', '2025-10-17 16:27:41', '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('1067', '测试页面', '0', '10', 'test', NULL, NULL, '1', '0', 'M', '0', '0', NULL, 'list', 'admin', '2025-10-17 16:26:17', '', NULL, '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('1068', '乡村振兴', '1067', '10', 'http://localhost:8081/jmreport/shareView/864668240323870720', NULL, NULL, '0', '0', 'C', '0', '0', '', 'eye-open', 'admin', '2025-10-17 16:26:45', 'admin', '2025-10-17 17:48:55', '');
+INSERT INTO `sys_menu` (`menu_id`, `menu_name`, `parent_id`, `order_num`, `path`, `component`, `query`, `is_frame`, `frame_embed_flag`, `is_cache`, `menu_type`, `visible`, `status`, `perms`, `icon`, `create_by`, `create_time`, `update_by`, `update_time`, `remark`) VALUES ('1076', '首页管理', '1', '0', 'https://blog.csdn.net/weixin_44588243/article/details/116244504', NULL, NULL, '0', '1', '0', 'M', '1', '0', '', 'dashboard', 'admin', '2025-10-23 09:50:26', 'admin', '2025-10-23 10:35:42', '');
+
+
+
 
 -- ----------------------------
 -- Table structure for sys_notice

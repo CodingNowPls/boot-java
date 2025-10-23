@@ -2,8 +2,14 @@ package com.boot.common.security.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
+import com.alibaba.fastjson2.JSON;
+import com.boot.common.core.domain.AjaxResult;
+import com.boot.common.log.manager.AsyncManager;
+import com.boot.common.log.manager.factory.AsyncFactory;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -17,6 +23,8 @@ import com.boot.common.core.utils.ip.AddressUtils;
 import com.boot.common.core.utils.ip.IpUtils;
 import com.boot.common.core.utils.uuid.IdUtils;
 import com.boot.common.security.core.domain.model.LoginUser;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -37,6 +45,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Component
 public class TokenService {
     // 令牌自定义标识
+    @Getter
     @Value("${token.header}")
     private String header;
 
@@ -81,12 +90,12 @@ public class TokenService {
      *
      * @return 用户信息
      */
-    public LoginUser magicApiLoginUser() {
+    public LoginUser getLoginUserByCookie() {
         // 获取请求携带的令牌
         Cookie[] cookies = ServletUtils.getRequest().getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("Admin-Token")) {
+                if (cookie.getName().equals("Admin-Token") || cookie.getName().equals("token")) {
                     String authorization = cookie.getValue();
                     Claims claims = parseToken(authorization);
                     String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
@@ -98,6 +107,36 @@ public class TokenService {
         }
         return null;
 
+    }
+
+
+    public String getTokenByCookie() {
+        // 获取请求携带的令牌
+        Cookie[] cookies = ServletUtils.getRequest().getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("Admin-Token") || cookie.getName().equals("token")
+                        || cookie.getName().equals("Token")) {
+                    String authorization = cookie.getValue();
+                    return authorization;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void loginOut() {
+        HttpServletRequest request = ServletUtils.getRequest();
+        HttpServletResponse response = ServletUtils.getResponse();
+        LoginUser loginUser = this.getLoginUser(request);
+        if (StringUtils.isNotNull(loginUser)) {
+            String userName = loginUser.getUserName();
+            // 删除用户缓存记录
+            this.delLoginUser(loginUser.getToken());
+            // 记录用户退出日志
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(userName, Constants.LOGOUT, "退出成功"));
+        }
+        ServletUtils.renderString(response, JSON.toJSONString(AjaxResult.success("退出成功")));
     }
 
     /**
@@ -179,6 +218,21 @@ public class TokenService {
         }
     }
 
+
+    public void verifyToken(String token) {
+        if (StringUtils.isNotEmpty(token)) {
+            Claims claims = parseToken(token);
+            // 解析对应的权限以及用户信息
+            String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
+            String userKey = getTokenKey(uuid);
+            LoginUser user = bootChche.getCacheObject(userKey);
+            if (Objects.isNull(user)) {
+                throw new RuntimeException("请从网站登录页登陆");
+            }
+            verifyToken(user);
+        }
+    }
+
     /**
      * 刷新令牌有效期
      *
@@ -225,25 +279,34 @@ public class TokenService {
      * @param token 令牌
      * @return 数据声明
      */
-    private Claims parseToken(String token) {
+    public Claims parseToken(String token) {
         return Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
     }
 
-    /**
-     * 从令牌中获取用户名
-     *
-     * @param token 令牌
-     * @return 用户名
-     */
-    public String getUsernameFromToken(String token) {
-        Claims claims = parseToken(token);
-        return claims.getSubject();
-    }
-
     public LoginUser getLoginUserFromToken(String token) {
+        if (StringUtils.isNotEmpty(token) && token.length() < 30) {
+            token = null;
+        }
+        if (StringUtils.isEmpty(token)) {
+            token = getToken(ServletUtils.getRequest());
+            if (StringUtils.isNotEmpty(token) && token.length() < 30) {
+                token = null;
+            }
+        }
+        if (StringUtils.isEmpty(token)) {
+            token = getTokenByCookie();
+            if (StringUtils.isNotEmpty(token) && token.length() < 30) {
+                token = null;
+            }
+        }
+
+        if (StringUtils.isEmpty(token)) {
+            return null;
+        }
+
         Claims claims = parseToken(token);
         // 解析对应的权限以及用户信息
         String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
@@ -252,18 +315,42 @@ public class TokenService {
         return user;
     }
 
-
     /**
      * 获取请求token
+     * 只要有一个不为空就返回不为空的token
      *
      * @param request
      * @return token
      */
-    private String getToken(HttpServletRequest request) {
+    public String getToken(HttpServletRequest request) {
         String token = request.getHeader(header);
-        if (StringUtils.isNotEmpty(token) && token.startsWith(Constants.TOKEN_PREFIX)) {
-            token = token.replace(Constants.TOKEN_PREFIX, "");
+        if (StringUtils.isNotEmpty(token) && token.length() >= 30) {
+            if (token.startsWith(Constants.TOKEN_PREFIX)) {
+                token = token.replace(Constants.TOKEN_PREFIX, "");
+            }
+            return token;
         }
+        token = request.getParameter("token");
+        if (StringUtils.isNotEmpty(token) && token.length() >= 30) {
+            return token;
+        }
+        token = request.getParameter("Token");
+        if (StringUtils.isNotEmpty(token) && token.length() >= 30) {
+            return token;
+        }
+        token = request.getHeader("X-Access-Token");
+        if (StringUtils.isNotEmpty(token) && token.length() >= 30) {
+            if (token.startsWith(Constants.TOKEN_PREFIX)) {
+                token = token.replace(Constants.TOKEN_PREFIX, "");
+            }
+            return token;
+        }
+
+        token = getTokenByCookie();
+        if (Objects.nonNull(token) && token.length() >= 30) {
+            return token;
+        }
+
         return token;
     }
 
@@ -283,7 +370,7 @@ public class TokenService {
     }
 
 
-    private String getTokenKey(String uuid) {
+    public String getTokenKey(String uuid) {
         return CacheConstants.LOGIN_TOKEN_KEY + uuid;
     }
 
