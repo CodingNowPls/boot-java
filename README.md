@@ -23,7 +23,6 @@
  
 
 
-
 ## springboot 前后端合并打包
 1. 前端dist打包以后，覆盖resources下的templates文件夹跟static文件夹
 
