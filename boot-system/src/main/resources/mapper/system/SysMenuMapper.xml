@@ -167,7 +167,7 @@
 		<if test="component != null and component != ''">component,</if>
 		<if test="query != null and query != ''">`query`,</if>
 		<if test="isFrame != null and isFrame != ''">is_frame,</if>
-		<if test="frameEmbedFlag != null ">frame_embed_flag</if>
+		<if test="frameEmbedFlag != null ">frame_embed_flag,</if>
 		<if test="isCache != null and isCache != ''">is_cache,</if>
 		<if test="menuType != null and menuType != ''">menu_type,</if>
 		<if test="visible != null">visible,</if>
