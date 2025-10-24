@@ -1,20 +1,14 @@
 package com.boot.jimu.report;
 
 import cn.dev33.satoken.exception.NotLoginException;
-import com.boot.common.core.constant.Constants;
 import com.boot.common.core.domain.entity.SysRole;
-import com.boot.common.core.utils.ServletUtils;
-import com.boot.common.core.utils.StringUtils;
 import com.boot.common.core.utils.json.BootJsonUtil;
 import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.security.service.TokenService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.jeecg.modules.jmreport.api.JmReportTokenServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,17 +22,6 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
 
     @Autowired
     private TokenService tokenService;
-    @Override
-    public HttpHeaders customApiHeader() {
-
-        HttpHeaders header = new HttpHeaders();
-        //主要用于API数据源。默认给API数据源的header中携带上Token。
-        //如使用当前项目的API，则需要在header中携带Authorization头
-        header.add(tokenService.getHeader(), getToken());
-        header.add(Constants.TOKEN, getToken());
-        header.add("X-Access-Token", getToken());
-        return header;
-    }
     @Override
     public String getUsername(String token) {
         try {

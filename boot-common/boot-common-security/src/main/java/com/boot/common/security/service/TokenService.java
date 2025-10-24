@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import com.alibaba.fastjson2.JSON;
 import com.boot.common.core.domain.AjaxResult;
 import com.boot.common.log.manager.AsyncManager;
