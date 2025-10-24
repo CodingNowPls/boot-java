@@ -108,14 +108,15 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                             throw new RuntimeException("重定向到登录页失败", e);
                         }
                     } else {
-                        log.error("这不报错了。。。。。");
+                        log.error("未获取到用户信息，跳转到登录界面");
                         //前后端分离就抛出异常
-                        //throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
+                        throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
                     }
                 }
             } catch (Exception e) {
-                //throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
-                log.error("这不报错了222222。。。。。");
+                log.error("拦截器报错：{}",e.getMessage());
+                throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
+
             }
         });
 
