@@ -95,7 +95,7 @@ public class TokenService {
         Cookie[] cookies = ServletUtils.getRequest().getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("Admin-Token") || cookie.getName().equals("token")) {
+                if (cookie.getName().equals("Admin-Token") || cookie.getName().equals(Constants.TOKEN)) {
                     String authorization = cookie.getValue();
                     Claims claims = parseToken(authorization);
                     String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
@@ -115,7 +115,7 @@ public class TokenService {
         Cookie[] cookies = ServletUtils.getRequest().getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("Admin-Token") || cookie.getName().equals("token")
+                if (cookie.getName().equals("Admin-Token") || cookie.getName().equals(Constants.TOKEN)
                         || cookie.getName().equals("Token")) {
                     String authorization = cookie.getValue();
                     return authorization;
@@ -330,7 +330,7 @@ public class TokenService {
             }
             return token;
         }
-        token = request.getParameter("token");
+        token = request.getParameter(Constants.TOKEN);
         if (StringUtils.isNotEmpty(token) && token.length() >= 30) {
             return token;
         }

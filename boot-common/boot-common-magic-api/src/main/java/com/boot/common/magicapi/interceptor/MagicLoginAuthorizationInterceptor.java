@@ -68,7 +68,7 @@ public class MagicLoginAuthorizationInterceptor implements AuthorizationIntercep
                 throw new MagicLoginException("请从网站登录页登陆");
             }
             HttpServletRequest request = ServletUtils.getRequest();
-            request.setAttribute("token", token);
+            request.setAttribute(Constants.TOKEN, token);
             return new MagicUser(
                     user.getUserId().toString(),
                     user.getUserName(),

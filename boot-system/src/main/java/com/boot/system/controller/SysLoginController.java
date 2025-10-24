@@ -65,7 +65,7 @@ public class SysLoginController {
         String token = loginService.login(loginBody.getUserName(), loginBody.getPassword(), loginBody.getCode(),
                 loginBody.getUuid());
         ajax.put(Constants.TOKEN, token);
-        Cookie tokenCookie = new Cookie("token", token);
+        Cookie tokenCookie = new Cookie(Constants.TOKEN, token);
         tokenCookie.setHttpOnly(true); // 防止XSS攻击
         tokenCookie.setSecure(true);   // 仅在HTTPS下传输
         tokenCookie.setPath("/");      // Cookie有效路径

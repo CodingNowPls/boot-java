@@ -1,6 +1,7 @@
 package com.boot.jimu.report;
 
 import cn.dev33.satoken.exception.NotLoginException;
+import com.boot.common.core.constant.Constants;
 import com.boot.common.core.domain.entity.SysRole;
 import com.boot.common.core.utils.ServletUtils;
 import com.boot.common.core.utils.StringUtils;
@@ -34,7 +35,7 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
         //主要用于API数据源。默认给API数据源的header中携带上Token。
         //如使用当前项目的API，则需要在header中携带Authorization头
         header.add(tokenService.getHeader(), getToken());
-        header.add("token", getToken());
+        header.add(Constants.TOKEN, getToken());
         header.add("X-Access-Token", getToken());
         return header;
     }
