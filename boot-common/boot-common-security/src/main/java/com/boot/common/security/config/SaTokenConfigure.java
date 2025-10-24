@@ -19,6 +19,7 @@ import com.boot.common.security.context.SecurityUserContextProvider;
 import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.security.service.TokenService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,7 @@ import java.util.Objects;
 /**
  * @author gao
  */
+@Slf4j
 @Configuration
 public class SaTokenConfigure implements WebMvcConfigurer {
     @Autowired
@@ -86,12 +88,14 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                             throw new RuntimeException("重定向到登录页失败", e);
                         }
                     } else {
+                        log.error("这不报错了。。。。。");
                         //前后端分离就抛出异常
-                        throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
+                        //throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
                     }
                 }
             } catch (Exception e) {
-                throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
+                //throw new NotLoginException(NotLoginException.TOKEN_TIMEOUT_MESSAGE, "", NotLoginException.TOKEN_TIMEOUT);
+                log.error("这不报错了222222。。。。。");
             }
         });
 

@@ -50,7 +50,7 @@
         <mybatis-plus-join.version>1.5.2</mybatis-plus-join.version>
         <caffeine.version>3.1.8</caffeine.version>
         <aspectjweaver.version>1.9.7</aspectjweaver.version>
-        <satoken3.version>1.39.0</satoken3.version>
+        <satoken3.version>1.44.0</satoken3.version>
         <jaxb.version>2.3.1</jaxb.version>
         <jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
         <flowlong.version>1.1.2</flowlong.version>
@@ -247,7 +247,6 @@
                 <artifactId>sa-token-jwt</artifactId>
                 <version>${satoken3.version}</version>
             </dependency>
-
             <!-- Token生成与解析-->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
