@@ -247,6 +247,7 @@
                 <artifactId>sa-token-jwt</artifactId>
                 <version>${satoken3.version}</version>
             </dependency>
+
             <!-- Token生成与解析-->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>

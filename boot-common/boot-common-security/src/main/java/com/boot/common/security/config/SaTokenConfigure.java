@@ -2,6 +2,7 @@ package com.boot.common.security.config;
 
 
 import cn.dev33.satoken.context.SaHolder;
+import cn.dev33.satoken.dao.SaTokenDaoForRedisTemplate;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.router.SaRouter;
@@ -9,11 +10,15 @@ import cn.dev33.satoken.spring.SpringMVCUtil;
 import cn.dev33.satoken.stp.StpUtil;
 
 import cn.dev33.satoken.util.SaFoxUtil;
+import com.boot.common.cache.redis.RedisBootCache;
+import com.boot.common.core.cache.BootCache;
 import com.boot.common.core.config.BootConfig;
 import com.boot.common.core.constant.HttpStatus;
+import com.boot.common.core.enums.EnumCacheType;
 import com.boot.common.core.exception.CustomException;
 import com.boot.common.core.utils.ServletUtils;
 import com.boot.common.core.utils.StringUtils;
+import com.boot.common.core.utils.spring.SpringUtils;
 import com.boot.common.log.context.UserContextProvider;
 import com.boot.common.security.context.SecurityUserContextProvider;
 import com.boot.common.security.core.domain.model.LoginUser;
@@ -22,8 +27,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -56,6 +63,19 @@ public class SaTokenConfigure implements WebMvcConfigurer {
     public UserContextProvider userContextProvider() {
         return new SecurityUserContextProvider();
     }
+
+    /**
+     * 基于redis 缓存的sa Token
+     * @return
+     */
+    @Bean
+    @ConditionalOnProperty(name = "boot.cacheType", havingValue = EnumCacheType.CACHE_TYPE_REDIS)
+    public SaTokenDaoForRedisTemplate saTokenDaoForRedisTemplate() {
+        log.info("saToken 使用redis 缓存");
+        SaTokenDaoForRedisTemplate saTokenDaoForRedisTemplate = new SaTokenDaoForRedisTemplate();
+        return saTokenDaoForRedisTemplate;
+    }
+
 
     /**
      * 注册sa-token的拦截器
