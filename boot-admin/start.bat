@@ -1,6 +1,6 @@
 @echo off
 title boot-java
-
+chcp 65001
 set JAVA_HOME=D:\program\Java\jdk\jdk-21.0.2
 set PATH=%JAVA_HOME%\bin;%PATH%
 
