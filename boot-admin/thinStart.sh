@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 应用名称（用于日志和 PID 文件）
-APP_NAME="boot-java"
+APP_NAME="boot-admin"
 JAR_NAME="${APP_NAME}.jar"
 
 # Java 环境配置（根据实际路径修改）
@@ -9,7 +9,7 @@ JAVA_HOME="/path/to/your/jdk-21.0.2"
 JAVA="$JAVA_HOME/bin/java"
 
 # 日志目录与 PID 文件路径
-LOG_DIR="/var/log/boot-java"
+LOG_DIR="/var/log/boot-admin"
 PID_FILE="./${APP_NAME}.pid"
 LOG_FILE="$LOG_DIR/app.log"
 
