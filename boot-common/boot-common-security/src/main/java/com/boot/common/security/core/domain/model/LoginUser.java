@@ -137,7 +137,7 @@ public class LoginUser  implements Serializable {
         if (roleId != null) {
             return roles.stream().anyMatch(role -> roleId.equals(role.getRoleId()));
         }
-        if (StrUtil.isNotEmpty(roleKey)) {
+        if (StrUtil.isNotEmpty(roleKey) && StrUtil.isNotEmpty(roleName)) {
             return roles.stream().anyMatch(role -> roleName.equals(role.getRoleKey()));
         }
         if (StrUtil.isNotEmpty(roleName)) {
