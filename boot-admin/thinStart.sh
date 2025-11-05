@@ -15,7 +15,7 @@ LOG_FILE="$LOG_DIR/app.log"
 
 # JVM 参数
 JVM_OPTS="-Xms128m -Xmx256m"
-CLASSPATH="lib/*:$JAR_NAME"
+CLASSPATH="$JAR_NAME:lib/*"
 
 # Spring 配置文件位置
 SPRING_CONFIG="--spring.config.location=application.yml"
