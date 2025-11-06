@@ -1,6 +1,7 @@
 package com.boot.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.boot.common.core.constant.UserConstants;
 import com.boot.common.web.controller.BaseController;
 import com.boot.common.core.domain.AjaxResult;
@@ -26,6 +27,13 @@ import java.util.List;
 public class SysMenuController extends BaseController {
     @Autowired
     private ISysMenuService menuService;
+
+    @SaIgnore
+    @GetMapping(value = "/getIndexInfo")
+    public AjaxResult getIndexInfo() {
+        return success(menuService.selectMenuById(1076L));
+    }
+
 
     /**
      * 获取菜单列表
