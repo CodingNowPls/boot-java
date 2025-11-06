@@ -93,6 +93,9 @@ public class LoginUser  implements Serializable {
 
     public LoginUser(SysUser user, Set<String> permissions) {
         this.user = user;
+        this.userName = user.getUserName();
+        this.password = user.getPassword();
+
         this.userId = user.getUserId();
         this.deptId = user.getDeptId();
         this.userName = user.getUserName();
@@ -100,6 +103,7 @@ public class LoginUser  implements Serializable {
     }
 
     public LoginUser(Long userId, Long deptId, SysUser user, Set<String> permissions) {
+        this.password = user.getPassword();
         this.userId = userId;
         this.deptId = deptId;
         this.user = user;
