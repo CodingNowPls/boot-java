@@ -2,8 +2,8 @@
 * 感谢metaee-boot作者
 * 感谢 [RuoYi-Vue](https://gitee.com/y_project/RuoYi-Vue)
 * 感谢 [FlowLong](https://gitee.com/aizuda/flowlong)
-* 感谢 [magic-api](https://gitee.com/y_project/Magic-API)
-* 感谢 [积木报表](https://gitee.com/y_project/Jimureport)
+* 感谢 [magic-api](https://gitee.com/ssssssss-team/magic-api)
+* 感谢 [积木报表](https://gitee.com/jeecg/jimureport)
 * 前端地址：[boot-ui](https://gitee.com/a-crud-boy/boot-ui)
 * 完全兼容RuoYi-Vue
 ## 主要改进：
