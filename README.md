@@ -22,8 +22,14 @@
 17. 集成webjar，前端项目可以打包为jar，然后在admin模块中依赖，也可以直接在admin模块下的resources目录下新增static文件夹，把前端html放到static文件夹下
 18. 集成积木报表
 19. 集成积木BI
+20. 首页管理配置：系统管理--->菜单管理--->系统管理
  
+首页图片： 
 
+<img src="img/index.png" width="100%" height="100%">
+<img src="img/dev.png" width="100%" height="100%">
+<img src="img/tubiao.png" width="100%" height="100%">
+<img src="img/bi.png" width="100%" height="100%">
 
 ## springboot 前后端合并打包
 1. 前端dist打包以后，覆盖resources下的templates文件夹跟static文件夹
