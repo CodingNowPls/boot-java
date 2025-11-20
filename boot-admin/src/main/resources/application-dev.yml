@@ -4,7 +4,7 @@ boot:
   # 缓存类型，local为本地缓存，redis为redis缓存
   cacheType: local
   # 前后端是否是一体化，true是一体，false是前后端分离
-  frontCoupled: false
+  frontCoupled: true
   profile: E:/home/boot/uploadPath
   mail:
     enabled: false
