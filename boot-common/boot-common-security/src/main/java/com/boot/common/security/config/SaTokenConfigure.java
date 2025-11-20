@@ -101,7 +101,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                             // 请将 "/login" 替换为你实际的前端登录页面路径
                             String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
                             // 拼接前端登录路径和重定向参数
-                            String loginUrl = baseUrl + "/#/login?redirect=%2Findex";
+                            String loginUrl = baseUrl + "/index.html";
                             response.sendRedirect(loginUrl);
                         } catch (IOException e) {
                             // 处理重定向可能发生的 IOException

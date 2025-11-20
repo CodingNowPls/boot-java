@@ -120,6 +120,7 @@
                 <version>${springboot.version}</version>
                 <configuration>
                     <layout>ZIP</layout>
+                    <includeSystemScope>true</includeSystemScope>
                 </configuration>
             </plugin>
             <plugin>
@@ -153,6 +154,24 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy file="${project.basedir}/../lib/boot-ui-1.0.0.jar" todir="${project.build.directory}/lib"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!--assembly 将lib目录，demo.jar, config，bin文件等组合成一个发布包-->
             <plugin>
