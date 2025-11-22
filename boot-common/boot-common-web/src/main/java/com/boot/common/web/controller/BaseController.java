@@ -1,5 +1,6 @@
 package com.boot.common.web.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.boot.common.security.core.domain.model.LoginUser;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -49,6 +50,10 @@ public class BaseController {
      */
     protected void startPage() {
         PageUtils.startPage();
+    }
+
+    protected  <T> Page<T> startMpPage(T t) {
+        return PageUtils.startMpPage(t);
     }
 
     /**
