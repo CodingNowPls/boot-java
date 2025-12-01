@@ -154,6 +154,13 @@
           <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
         </el-form-item>
         <el-form-item label="租户菜单">
+          <el-alert
+            v-if="isPlatformTenant"
+            type="info"
+            show-icon
+            class="mb10"
+            title="平台租户菜单固定不可配置"
+          />
           <el-select
             v-model="form.packIds"
             multiple
@@ -162,6 +169,7 @@
             placeholder="请选择租户菜单"
             style="width: 100%;"
             :loading="menuPackLoading"
+            :disabled="isPlatformTenant"
           >
             <el-option
               v-for="pack in menuPackOptions"
@@ -228,6 +236,11 @@ export default {
           { required: true, message: '租户编码不能为空', trigger: 'blur' }
         ]
       }
+    }
+  },
+  computed: {
+    isPlatformTenant() {
+      return this.isEdit && this.form && this.form.tenantId === this.platformTenantId
     }
   },
   created() {
@@ -349,5 +362,8 @@ export default {
 .pack-option-desc {
   font-size: 12px;
   color: #909399;
+}
+.mb10 {
+  margin-bottom: 10px;
 }
 </style>

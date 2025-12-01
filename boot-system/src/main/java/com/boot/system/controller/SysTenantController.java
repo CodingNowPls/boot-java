@@ -151,6 +151,10 @@ public class SysTenantController extends BaseController {
         if (StringUtils.isBlank(tenantId)) {
             return;
         }
+        if (Constants.PLATFORM_TENANT_ID.equals(tenantId)) {
+            // 平台租户固定菜单，不允许调整
+            return;
+        }
         tenantMenuPackService.lambdaUpdate()
                 .eq(SysTenantMenuPack::getTenantId, tenantId)
                 .remove();
