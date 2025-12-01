@@ -2,16 +2,39 @@
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">后台管理系统</h3>
+      <el-form-item
+        v-if="showTenantSelect"
+        class="tenant-select-item"
+        prop="tenantId"
+      >
+        <el-select
+          v-model="loginForm.tenantId"
+          placeholder="请选择租户"
+          filterable
+          :loading="tenantLoading"
+          :disabled="tenantList.length === 0"
+          @visible-change="visible => visible && ensureTenantList()"
+        >
+          <el-option
+            v-for="tenant in tenantList"
+            :key="tenant.tenantId"
+            :label="tenant.tenantName"
+            :value="tenant.tenantId"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item prop="userName">
         <el-input
           v-model="loginForm.userName"
           type="text"
           auto-complete="off"
           placeholder="账号"
+          @blur="handleUserNameBlur"
         >
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
+
       <el-form-item prop="password">
         <el-input
           v-model="loginForm.password"
@@ -108,6 +131,7 @@ export default {
         tenantList: []
       },
       tenantList: [],
+      tenantLoading: false,
       showTenantSelect: false
     };
   },
@@ -189,15 +213,34 @@ export default {
         this.showTenantSelect = false;
       }
     },
+    async ensureTenantList() {
+      if (this.tenantList.length === 0) {
+        await this.loadTenantList();
+      }
+    },
     async loadTenantList() {
-      if (!this.loginForm.userName) {
+      if (!this.showTenantSelect) {
         return;
       }
-      const res = await getTenantList(this.loginForm.userName, this.loginForm.isAdminLogin);
-      this.tenantList = res.data || [];
-      // 如果当前未选择租户且有列表，则默认选第一个
-      if (!this.loginForm.tenantId && this.tenantList.length > 0) {
-        this.loginForm.tenantId = this.tenantList[0].tenantId;
+      if (!this.loginForm.userName) {
+        this.tenantList = [];
+        this.loginForm.tenantId = '';
+        return;
+      }
+      this.tenantLoading = true;
+      try {
+        const res = await getTenantList(this.loginForm.userName, this.loginForm.isAdminLogin);
+        this.tenantList = res.data || [];
+        if (!this.loginForm.tenantId && this.tenantList.length > 0) {
+          this.loginForm.tenantId = this.tenantList[0].tenantId;
+        }
+      } finally {
+        this.tenantLoading = false;
+      }
+    },
+    handleUserNameBlur() {
+      if (this.showTenantSelect) {
+        this.loadTenantList();
       }
     },
     handleLogin() {
@@ -253,6 +296,12 @@ export default {
   background: #ffffff;
   width: 400px;
   padding: 25px 25px 5px 25px;
+  .tenant-select-item {
+    width: 100%;
+    .el-select {
+      width: 100%;
+    }
+  }
   .el-input {
     height: 38px;
     input {

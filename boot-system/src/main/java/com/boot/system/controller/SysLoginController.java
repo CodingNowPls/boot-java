@@ -1,5 +1,6 @@
 package com.boot.system.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.alibaba.fastjson2.JSON;
 import com.boot.common.core.constant.Constants;
 import com.boot.common.core.domain.AjaxResult;
@@ -89,12 +90,14 @@ public class SysLoginController {
     }
 
     @ApiOperation("获取登录配置")
+    @SaIgnore
     @GetMapping("/getLoginConfig")
     public AjaxResult getLoginConfig() {
         return AjaxResult.success(buildLoginConfig());
     }
 
     @ApiOperation("获取租户下拉列表")
+    @SaIgnore
     @GetMapping("/getTenantList")
     public AjaxResult getTenantList(String userName, Boolean isAdminLogin) {
         boolean adminLogin = Boolean.TRUE.equals(isAdminLogin);
