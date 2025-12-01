@@ -177,19 +177,18 @@ xss:
 
 tenant:
   # 租户模式 是否启用 ，仅测试时可以临时关闭整个租户机制，但因为整个框架都是多租户架构，所以正式环境必须要启用
-  enable: false
+  enable: true
   # 租户模式 默认租户ID
-  defaultTenantId: 0
-  # 租户模式 默认租户名称
-  defaultTenantName: default
+  defaultTenantId: '0'
   # 租户字段名
   column: tenant_id
   # 排除表
   excludes:
-    - base_tenant #租户表
-    - base_menu_pack #所有的菜单包
-    - base_menu_pack_detail # 租户菜单包含的菜单详情
-    - base_tenant_menu_pack # 租户分配的菜单包
+    - sys_tenant #租户表
+    - sys_menu_pack #所有的菜单包
+    - sys_menu_pack_detail # 租户菜单包含的菜单详情
+    - sys_tenant_menu_pack # 租户分配的菜单包
+    - sys_user_tenant
     - gen_table
     - gen_table_column
     - qrtz_blob_triggers

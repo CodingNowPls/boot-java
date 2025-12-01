@@ -140,4 +140,19 @@ public class Constants {
      */
     public static final String[] JOB_ERROR_STR = {"java.net.URL", "javax.naming.InitialContext", "org.yaml.snakeyaml",
             "org.springframework", "org.apache", "com.boot.common.core.utils.file", "com.boot.common.core.config"};
+
+    /**
+     * 平台/默认租户ID（字符串类型）
+     */
+    public static final String PLATFORM_TENANT_ID = "0";
+
+    /**
+     * 管理后台默认租户ID
+     */
+    public static final String ADMIN_DEFAULT_TENANT_ID = PLATFORM_TENANT_ID;
+
+    /**
+     * 默认租户ID（单租户模式）
+     */
+    public static final String DEFAULT_TENANT_ID = PLATFORM_TENANT_ID;
 }

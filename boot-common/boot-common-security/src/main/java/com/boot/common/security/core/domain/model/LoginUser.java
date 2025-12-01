@@ -83,8 +83,15 @@ public class LoginUser  implements Serializable {
     private String password;
 
 
-    private Long tenantId;
+    /**
+     * 当前租户ID（字符串类型）
+     */
+    private String tenantId;
 
+    /**
+     * 当前租户名称
+     */
+    private String tenantName;
 
 
 

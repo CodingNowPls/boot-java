@@ -86,7 +86,8 @@ public class MagicLoginAuthorizationInterceptor implements AuthorizationIntercep
             String token;
             try {
                 String encryptPassword = RsaUtils.encryptByPublicKey(RsaUtils.publicKey, password);
-                token = sysLoginService.login(username, encryptPassword, SysLoginService.NOT_NEED_CHECK_CODE, null);
+                // Magic-API 登录：不校验验证码、不指定租户和后台类型，走与普通业务登录一致的逻辑
+                token = sysLoginService.login(username, encryptPassword, SysLoginService.NOT_NEED_CHECK_CODE, null, null, null);
             } catch (Exception e) {
                 throw new MagicLoginException("登陆失败");
             }

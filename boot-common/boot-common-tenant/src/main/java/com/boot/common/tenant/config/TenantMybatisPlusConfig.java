@@ -4,13 +4,14 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
+import com.boot.common.core.utils.StringUtils;
 import com.boot.common.security.utils.SecurityUtils;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.NullValue;
+import net.sf.jsqlparser.expression.StringValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -44,12 +45,12 @@ public class TenantMybatisPlusConfig {
                  */
                 @Override
                 public Expression getTenantId() {
-                    //从登录信息中获取当前组织ID
-                    Long tenantId = SecurityUtils.getCurrentTenantId();
-                    if (tenantId == null) {
+                    //从登录信息中获取当前租户ID
+                    String tenantId = SecurityUtils.getCurrentTenantId();
+                    if (StringUtils.isEmpty(tenantId)) {
                         return new NullValue();
                     }
-                    return new LongValue(tenantId);
+                    return new StringValue(tenantId);
                 }
 
                 /**

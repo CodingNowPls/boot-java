@@ -3,13 +3,14 @@ package com.boot.common.security.utils;
 import cn.hutool.core.util.StrUtil;
 import com.boot.common.core.cache.BootCache;
 import com.boot.common.core.constant.CacheConstants;
+import com.boot.common.core.constant.Constants;
 import com.boot.common.core.constant.HttpStatus;
 import com.boot.common.core.enums.EnumUserRoleType;
 import com.boot.common.core.exception.CustomException;
 import com.boot.common.core.exception.ServiceException;
 import com.boot.common.core.utils.StringUtils;
-import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.core.utils.spring.SpringUtils;
+import com.boot.common.security.core.domain.model.LoginUser;
 import com.boot.common.security.service.TokenService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -33,11 +34,33 @@ public class SecurityUtils {
         }
     }
 
-    public static Long getCurrentTenantId() {
+    public static String getCurrentTenantId() {
         try {
-            return getLoginUser().getTenantId();
+            LoginUser loginUser = getLoginUser();
+            if (loginUser == null || StringUtils.isEmpty(loginUser.getTenantId())) {
+                return Constants.DEFAULT_TENANT_ID;
+            }
+            return loginUser.getTenantId();
         } catch (Exception e) {
-            throw new ServiceException("获取租户ID异常", HttpStatus.UNAUTHORIZED);
+            return Constants.DEFAULT_TENANT_ID;
+        }
+    }
+
+    /**
+     * 切换当前租户上下文
+     *
+     * @param tenantId 租户ID
+     */
+    public static void setCurrentTenantId(String tenantId) {
+        TokenService tokenService = SpringUtils.getBean(TokenService.class);
+        LoginUser loginUser = null;
+        try {
+            loginUser = tokenService.getLoginUser();
+        } catch (Exception ignored) {
+        }
+        if (loginUser != null) {
+            loginUser.setTenantId(tenantId);
+            tokenService.setLoginUser(loginUser);
         }
     }
 

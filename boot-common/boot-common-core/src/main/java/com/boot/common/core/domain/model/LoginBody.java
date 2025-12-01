@@ -30,9 +30,9 @@ public class LoginBody {
     private String uuid;
 
     /**
-     * 租户id
+     * 租户ID（字符串类型，兼容jimu等组件）
      */
-    private Long tenantId;
+    private String tenantId;
     /**
      * 是否是管理员登录
      */

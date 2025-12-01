@@ -97,6 +97,11 @@ public class SysMenu extends BaseEntity {
     private String perms;
 
     /**
+     * 是否系统菜单（0业务菜单 1系统菜单）
+     */
+    private String isSys;
+
+    /**
      * 菜单图标
      */
     private String icon;

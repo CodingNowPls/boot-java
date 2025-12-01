@@ -18,11 +18,18 @@ import com.boot.common.core.utils.MessageUtils;
 import com.boot.common.core.utils.StringUtils;
 import com.boot.common.core.utils.ip.IpUtils;
 import com.boot.common.core.utils.sign.RsaUtils;
+import com.boot.system.domain.SysTenant;
+import com.boot.system.domain.SysUserTenant;
+import com.boot.system.service.ISysTenantService;
+import com.boot.system.service.ISysUserTenantService;
 import com.boot.system.service.impl.UserSaServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 /**
  * 登录校验方法
  *
@@ -46,6 +53,14 @@ public class SysLoginServiceImpl implements SysLoginService {
     @Autowired
     private UserSaServiceImpl userSaService;
 
+    @Autowired
+    private ISysTenantService tenantService;
+
+    @Autowired
+    private ISysUserTenantService userTenantService;
+
+    private static final String STATUS_NORMAL = "0";
+    private static final String DEFAULT_TENANT_NAME = "默认租户";
 
     /**
      * 登录验证
@@ -54,10 +69,12 @@ public class SysLoginServiceImpl implements SysLoginService {
      * @param password 密码
      * @param code     验证码
      * @param uuid     唯一标识
+     * @param tenantId 租户ID（业务后台必填）
+     * @param isAdminLogin 是否管理后台登录
      * @return 结果
      */
     @Override
-    public String login(String username, String password, String code, String uuid) throws Exception {
+    public String login(String username, String password, String code, String uuid, String tenantId, Boolean isAdminLogin) throws Exception {
         // 验证码校验
         validateCaptcha(username, code, uuid);
         // 登录前置校验
@@ -79,8 +96,12 @@ public class SysLoginServiceImpl implements SysLoginService {
                 throw new ServiceException(e.getMessage());
             }
         }
+        boolean adminLogin = Boolean.TRUE.equals(isAdminLogin);
+        TenantInfo tenantInfo = determineTenant(loginUser.getUser(), tenantId, adminLogin);
+        loginUser.setTenantId(tenantInfo.getTenantId());
+        loginUser.setTenantName(tenantInfo.getTenantName());
+        updateLastLoginTenant(loginUser.getUser(), tenantInfo.getTenantId(), adminLogin);
         AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
-
         recordLoginInfo(loginUser.getUserId());
         // 生成token
         return tokenService.createToken(loginUser);
@@ -161,5 +182,116 @@ public class SysLoginServiceImpl implements SysLoginService {
         sysUser.setLoginIp(IpUtils.getIpAddr());
         sysUser.setLoginDate(DateUtils.getNowDate());
         userService.updateUserProfile(sysUser);
+    }
+
+    private TenantInfo determineTenant(SysUser user, String requestedTenantId, boolean adminLogin) {
+        if (adminLogin) {
+            return buildTenantInfo(Constants.ADMIN_DEFAULT_TENANT_ID);
+        }
+        List<SysTenant> availableTenants = getAvailableTenants(user.getUserId());
+        if (StringUtils.isNotEmpty(requestedTenantId)) {
+            SysTenant matchedTenant = findTenant(availableTenants, requestedTenantId);
+            if (matchedTenant != null) {
+                return buildTenantInfo(matchedTenant);
+            }
+            if (CollectionUtils.isEmpty(availableTenants) && Constants.DEFAULT_TENANT_ID.equals(requestedTenantId)) {
+                return buildTenantInfo(Constants.DEFAULT_TENANT_ID);
+            }
+            throw new ServiceException("当前用户无权访问该租户或租户已被禁用");
+        }
+        if (CollectionUtils.isEmpty(availableTenants)) {
+            return buildTenantInfo(Constants.DEFAULT_TENANT_ID);
+        }
+        if (availableTenants.size() == 1) {
+            return buildTenantInfo(availableTenants.get(0));
+        }
+        String lastTenantId = user.getBusinessLoginTenantId();
+        if (StringUtils.isNotEmpty(lastTenantId)) {
+            SysTenant lastTenant = findTenant(availableTenants, lastTenantId);
+            if (lastTenant != null) {
+                return buildTenantInfo(lastTenant);
+            }
+        }
+        return buildTenantInfo(availableTenants.get(0));
+    }
+
+    private List<SysTenant> getAvailableTenants(Long userId) {
+        List<SysUserTenant> relations = userTenantService.lambdaQuery()
+                .eq(SysUserTenant::getUserId, userId)
+                .eq(SysUserTenant::getDisabled, STATUS_NORMAL)
+                .list();
+        if (CollectionUtils.isEmpty(relations)) {
+            return Collections.emptyList();
+        }
+        List<String> tenantIds = relations.stream()
+                .map(SysUserTenant::getTenantId)
+                .distinct()
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(tenantIds)) {
+            return Collections.emptyList();
+        }
+        return tenantService.lambdaQuery()
+                .in(SysTenant::getTenantId, tenantIds)
+                .eq(SysTenant::getStatus, STATUS_NORMAL)
+                .eq(SysTenant::getDelFlag, STATUS_NORMAL)
+                .list();
+    }
+
+    private SysTenant findTenant(List<SysTenant> tenants, String tenantId) {
+        if (CollectionUtils.isEmpty(tenants) || StringUtils.isEmpty(tenantId)) {
+            return null;
+        }
+        return tenants.stream()
+                .filter(tenant -> tenantId.equals(tenant.getTenantId()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void updateLastLoginTenant(SysUser user, String tenantId, boolean adminLogin) {
+        if (user == null || StringUtils.isEmpty(tenantId)) {
+            return;
+        }
+        SysUser update = new SysUser();
+        update.setUserId(user.getUserId());
+        if (adminLogin) {
+            update.setAdminLoginTenantId(tenantId);
+        } else {
+            update.setBusinessLoginTenantId(tenantId);
+        }
+        userService.updateUserProfile(update);
+    }
+
+    private TenantInfo buildTenantInfo(SysTenant tenant) {
+        if (tenant == null) {
+            return buildTenantInfo(Constants.DEFAULT_TENANT_ID);
+        }
+        return new TenantInfo(tenant.getTenantId(), tenant.getTenantName());
+    }
+
+    private TenantInfo buildTenantInfo(String tenantId) {
+        String targetTenantId = StringUtils.isEmpty(tenantId) ? Constants.DEFAULT_TENANT_ID : tenantId;
+        SysTenant tenant = tenantService.getById(targetTenantId);
+        if (tenant != null) {
+            return new TenantInfo(tenant.getTenantId(), tenant.getTenantName());
+        }
+        return new TenantInfo(targetTenantId, DEFAULT_TENANT_NAME);
+    }
+
+    private static class TenantInfo {
+        private final String tenantId;
+        private final String tenantName;
+
+        TenantInfo(String tenantId, String tenantName) {
+            this.tenantId = tenantId;
+            this.tenantName = tenantName;
+        }
+
+        public String getTenantId() {
+            return tenantId;
+        }
+
+        public String getTenantName() {
+            return tenantName;
+        }
     }
 }

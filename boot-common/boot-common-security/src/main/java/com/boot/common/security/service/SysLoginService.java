@@ -11,9 +11,11 @@ public interface SysLoginService {
      * @param password 密码
      * @param code     验证码
      * @param uuid     唯一标识
+     * @param tenantId 租户ID（业务后台必填）
+     * @param isAdminLogin 是否管理后台登录
      * @return 结果
      */
-      String login(String username, String password, String code, String uuid) throws Exception;
+      String login(String username, String password, String code, String uuid, String tenantId, Boolean isAdminLogin) throws Exception;
 
 
     /**
