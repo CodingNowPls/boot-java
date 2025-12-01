@@ -3,20 +3,29 @@ package com.boot.system.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.boot.common.core.constant.Constants;
 import com.boot.common.core.domain.AjaxResult;
+import com.boot.common.core.domain.entity.SysRole;
+import com.boot.common.core.domain.entity.SysUser;
+import com.boot.common.core.exception.ServiceException;
 import com.boot.common.core.utils.StringUtils;
 import com.boot.common.log.annotation.Log;
 import com.boot.common.core.enums.BusinessType;
 import com.boot.common.mybatis.page.TableDataInfo;
+import com.boot.common.security.utils.SecurityUtils;
 import com.boot.common.web.controller.BaseController;
+import com.boot.system.domain.SysMenuPackDetail;
 import com.boot.system.domain.SysTenant;
 import com.boot.system.domain.SysTenantMenuPack;
-import com.boot.system.service.ISysTenantService;
-import com.boot.system.service.ISysTenantMenuPackService;
+import com.boot.system.domain.SysUserTenant;
+import com.boot.system.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -31,6 +40,21 @@ public class SysTenantController extends BaseController {
 
     @Autowired
     private ISysTenantMenuPackService tenantMenuPackService;
+
+    @Autowired
+    private ISysRoleService roleService;
+
+    @Autowired
+    private ISysMenuPackDetailService menuPackDetailService;
+
+    @Autowired
+    private ISysUserService userService;
+
+    @Autowired
+    private ISysUserTenantService userTenantService;
+
+    @Autowired
+    private ISysConfigService configService;
 
     /**
      * 查询租户列表
@@ -73,6 +97,7 @@ public class SysTenantController extends BaseController {
     @SaCheckPermission("system:tenant:add")
     @Log(title = "租户管理", businessType = BusinessType.INSERT)
     @PostMapping
+    @Transactional(rollbackFor = Exception.class)
     public AjaxResult add(@RequestBody SysTenant tenant) {
         // 校验租户编码（必填且唯一）
         if (StringUtils.isBlank(tenant.getTenantCode())) {
@@ -98,6 +123,12 @@ public class SysTenantController extends BaseController {
         if (exists) {
             return AjaxResult.error("租户ID已存在");
         }
+        if (!Constants.PLATFORM_TENANT_ID.equals(tenant.getTenantId())) {
+            AjaxResult adminValidate = validateTenantAdminInfo(tenant);
+            if (adminValidate != null) {
+                return adminValidate;
+            }
+        }
         // 默认状态和删除标记
         if (StringUtils.isBlank(tenant.getStatus())) {
             tenant.setStatus("0");
@@ -107,6 +138,10 @@ public class SysTenantController extends BaseController {
         boolean saved = sysTenantService.save(tenant);
         if (saved) {
             assignTenantMenuPacks(tenant.getTenantId(), tenant.getPackIds());
+            if (!Constants.PLATFORM_TENANT_ID.equals(tenant.getTenantId())) {
+                Long adminRoleId = createTenantAdminRole(tenant);
+                createTenantAdminUser(tenant, adminRoleId);
+            }
         }
         return toAjax(saved);
     }
@@ -167,5 +202,99 @@ public class SysTenantController extends BaseController {
                 tenantMenuPackService.save(relation);
             }
         }
+    }
+
+    private AjaxResult validateTenantAdminInfo(SysTenant tenant) {
+        if (StringUtils.isBlank(tenant.getAdminAccount())) {
+            return AjaxResult.error("管理员账号不能为空");
+        }
+        if (StringUtils.isBlank(tenant.getAdminName())) {
+            return AjaxResult.error("管理员姓名不能为空");
+        }
+        if (StringUtils.isBlank(tenant.getAdminContact())) {
+            return AjaxResult.error("管理员联系方式不能为空");
+        }
+        SysUser exists = userService.selectUserByUserName(tenant.getAdminAccount());
+        if (exists != null) {
+            return AjaxResult.error("管理员账号已存在，请更换账号");
+        }
+        return null;
+    }
+
+    private Long createTenantAdminRole(SysTenant tenant) {
+        List<Long> menuIds = resolveMenuIdsByPackIds(tenant.getPackIds());
+        SysRole role = new SysRole();
+        role.setTenantId(tenant.getTenantId());
+        role.setRoleName(tenant.getTenantName() + "管理员");
+        role.setRoleKey("TENANT_ADMIN_" + tenant.getTenantCode());
+        role.setIsAdmin("1");
+        role.setStatus("0");
+        role.setDelFlag("0");
+        role.setCreateBy(getUserName());
+        role.setMenuIds(menuIds.toArray(new Long[0]));
+        int insert = roleService.insertRole(role);
+        if (insert <= 0 || role.getRoleId() == null) {
+            throw new ServiceException("创建租户管理员角色失败");
+        }
+        return role.getRoleId();
+    }
+
+    private List<Long> resolveMenuIdsByPackIds(List<Long> packIds) {
+        if (CollectionUtils.isEmpty(packIds)) {
+            return Collections.emptyList();
+        }
+        Set<Long> menuIds = new HashSet<>();
+        menuPackDetailService.lambdaQuery()
+                .in(SysMenuPackDetail::getPackId, packIds)
+                .list()
+                .forEach(detail -> {
+                    if (detail.getMenuId() != null) {
+                        menuIds.add(detail.getMenuId());
+                    }
+                });
+        return menuIds.stream().collect(Collectors.toList());
+    }
+
+    private void createTenantAdminUser(SysTenant tenant, Long roleId) {
+        SysUser exists = userService.selectUserByUserName(tenant.getAdminAccount());
+        if (exists != null) {
+            throw new ServiceException("管理员账号已存在，请更换账号");
+        }
+        SysUser user = new SysUser();
+        user.setUserName(tenant.getAdminAccount());
+        user.setNickName(tenant.getAdminName());
+        user.setStatus("0");
+        user.setDelFlag("0");
+        user.setIsSys("0");
+        user.setBusinessLoginTenantId(tenant.getTenantId());
+        String contact = tenant.getAdminContact();
+        if (StringUtils.isNotBlank(contact)) {
+            if (contact.contains("@")) {
+                user.setEmail(contact);
+            } else {
+                user.setPhonenumber(contact);
+            }
+        }
+        String initPassword = configService.selectConfigByKey("sys.user.initPassword");
+        if (StringUtils.isBlank(initPassword)) {
+            initPassword = "123456";
+        }
+        user.setPassword(SecurityUtils.encryptPassword(initPassword));
+        if (roleId != null) {
+            user.setRoleIds(new Long[]{roleId});
+        } else {
+            user.setRoleIds(new Long[0]);
+        }
+        user.setCreateBy(getUserName());
+        int rows = userService.insertUser(user);
+        if (rows <= 0 || user.getUserId() == null) {
+            throw new ServiceException("租户管理员用户创建失败");
+        }
+        SysUserTenant relation = new SysUserTenant();
+        relation.setUserId(user.getUserId());
+        relation.setTenantId(tenant.getTenantId());
+        relation.setDisabled("0");
+        relation.setCreateBy(getUserName());
+        userTenantService.save(relation);
     }
 }

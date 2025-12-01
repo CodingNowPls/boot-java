@@ -141,6 +141,16 @@
         <el-form-item label="联系邮箱" prop="contactEmail">
           <el-input v-model="form.contactEmail" placeholder="请输入联系邮箱" />
         </el-form-item>
+        <el-divider v-if="!isEdit">租户管理员</el-divider>
+        <el-form-item v-if="!isEdit" label="管理员账号" prop="adminAccount">
+          <el-input v-model="form.adminAccount" placeholder="请输入管理员账号" />
+        </el-form-item>
+        <el-form-item v-if="!isEdit" label="管理员姓名" prop="adminName">
+          <el-input v-model="form.adminName" placeholder="请输入管理员姓名" />
+        </el-form-item>
+        <el-form-item v-if="!isEdit" label="联系方式" prop="adminContact">
+          <el-input v-model="form.adminContact" placeholder="请输入管理员手机号或邮箱" />
+        </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
             <el-radio
@@ -234,6 +244,27 @@ export default {
         ],
         tenantCode: [
           { required: true, message: '租户编码不能为空', trigger: 'blur' }
+        ],
+        adminAccount: [
+          { validator: (rule, value, callback) => {
+            if (this.isEdit) return callback()
+            if (!value) return callback(new Error('管理员账号不能为空'))
+            callback()
+          }, trigger: 'blur' }
+        ],
+        adminName: [
+          { validator: (rule, value, callback) => {
+            if (this.isEdit) return callback()
+            if (!value) return callback(new Error('管理员姓名不能为空'))
+            callback()
+          }, trigger: 'blur' }
+        ],
+        adminContact: [
+          { validator: (rule, value, callback) => {
+            if (this.isEdit) return callback()
+            if (!value) return callback(new Error('管理员联系方式不能为空'))
+            callback()
+          }, trigger: 'blur' }
         ]
       }
     }
@@ -275,6 +306,9 @@ export default {
         contactName: undefined,
         contactPhone: undefined,
         contactEmail: undefined,
+        adminAccount: undefined,
+        adminName: undefined,
+        adminContact: undefined,
         status: '0',
         remark: undefined,
         packIds: []

@@ -54,5 +54,20 @@ public class SysTenant extends BaseEntity {
 
     @TableField(exist = false)
     private List<Long> packIds;
+
+    /**
+     * 新增租户时创建管理员所需账号
+     */
+    @TableField(exist = false)
+    private String adminAccount;
+
+    @TableField(exist = false)
+    private String adminName;
+
+    /**
+     * 管理员联系方式（手机号或邮箱）
+     */
+    @TableField(exist = false)
+    private String adminContact;
 }
 

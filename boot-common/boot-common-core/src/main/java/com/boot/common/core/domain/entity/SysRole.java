@@ -26,6 +26,11 @@ public class SysRole extends BaseEntity {
     private Long roleId;
 
     /**
+     * 租户ID（0为平台角色）
+     */
+    private String tenantId;
+
+    /**
      * 角色名称
      */
     @Excel(name = "角色名称")
@@ -36,6 +41,11 @@ public class SysRole extends BaseEntity {
      */
     @Excel(name = "角色权限")
     private String roleKey;
+
+    /**
+     * 是否租户/平台管理员角色（0否 1是）
+     */
+    private String isAdmin;
 
     /**
      * 角色排序
@@ -116,6 +126,14 @@ public class SysRole extends BaseEntity {
 
     @NotBlank(message = "角色名称不能为空")
     @Size(min = 0, max = 30, message = "角色名称长度不能超过30个字符")
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
     public String getRoleName() {
         return roleName;
     }
@@ -132,6 +150,14 @@ public class SysRole extends BaseEntity {
 
     public void setRoleKey(String roleKey) {
         this.roleKey = roleKey;
+    }
+
+    public String getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(String isAdmin) {
+        this.isAdmin = isAdmin;
     }
 
     @NotNull(message = "显示顺序不能为空")
