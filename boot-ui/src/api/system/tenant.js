@@ -43,38 +43,3 @@ export function delTenant(tenantIds) {
   })
 }
 
-// 查询某租户已分配的租户菜单
-export function listTenantMenuPackByTenant(tenantId) {
-  return request({
-    url: '/system/tenantMenuPack/listByTenant/' + tenantId,
-    method: 'get'
-  })
-}
-
-// 为租户分配租户菜单
-export function assignTenantMenuPack(data) {
-  return request({
-    url: '/system/tenantMenuPack/assign',
-    method: 'post',
-    data: data
-  })
-}
-
-// 为租户分配自定义菜单
-export function assignTenantMenus(data) {
-  return request({
-    url: '/system/tenant/assignMenus',
-    method: 'post',
-    data: data
-  })
-}
-
-// 查询租户菜单树及选中项
-export function tenantMenuTreeselect(tenantId) {
-  return request({
-    url: '/system/tenant/menuTreeselect/' + tenantId,
-    method: 'get'
-  })
-}
-
-

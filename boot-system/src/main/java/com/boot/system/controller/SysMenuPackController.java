@@ -1,6 +1,7 @@
 package com.boot.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaMode;
 import com.boot.common.core.domain.AjaxResult;
 import com.boot.common.core.enums.BusinessType;
 import com.boot.common.core.utils.StringUtils;
@@ -14,9 +15,11 @@ import com.boot.system.service.ISysMenuPackDetailService;
 import com.boot.system.service.ISysMenuPackService;
 import com.boot.system.service.ISysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 租户菜单管理（原菜单套餐）
@@ -45,6 +48,7 @@ public class SysMenuPackController extends BaseController {
                 .like(StringUtils.isNotBlank(query.getPackName()), SysMenuPack::getPackName, query.getPackName())
                 .eq(StringUtils.isNotBlank(query.getStatus()), SysMenuPack::getStatus, query.getStatus())
                 .list();
+        fillMenuDetail(list);
         return getDataTable(list);
     }
 
@@ -58,9 +62,32 @@ public class SysMenuPackController extends BaseController {
         List<SysMenuPackDetail> details = menuPackDetailService.lambdaQuery()
                 .eq(SysMenuPackDetail::getPackId, packId)
                 .list();
+        List<Long> menuIds = details.stream().map(SysMenuPackDetail::getMenuId).collect(Collectors.toList());
+        pack.setMenuIds(menuIds);
+        pack.setMenuCount(menuIds.size());
+        if (!CollectionUtils.isEmpty(menuIds)) {
+            pack.setMenuNameList(menuIds.stream()
+                    .map(menuService::selectMenuById)
+                    .filter(java.util.Objects::nonNull)
+                    .map(SysMenu::getMenuName)
+                    .collect(Collectors.toList()));
+        }
         AjaxResult ajax = AjaxResult.success(pack);
-        ajax.put("menuIds", details.stream().map(SysMenuPackDetail::getMenuId).toArray(Long[]::new));
+        ajax.put("menuIds", menuIds.toArray(new Long[0]));
         return ajax;
+    }
+
+    /**
+     * 提供给租户管理的租户菜单下拉
+     */
+    @SaCheckPermission(value = {"system:menuPack:list", "system:tenant:list"}, mode = SaMode.OR)
+    @GetMapping("/simpleList")
+    public AjaxResult simpleList(@RequestParam(value = "status", required = false) String status) {
+        List<SysMenuPack> list = menuPackService.lambdaQuery()
+                .eq(StringUtils.isNotBlank(status), SysMenuPack::getStatus, status)
+                .list();
+        fillMenuDetail(list);
+        return AjaxResult.success(list);
     }
 
     /**
@@ -163,6 +190,37 @@ public class SysMenuPackController extends BaseController {
 
         public void setMenuIds(Long[] menuIds) {
             this.menuIds = menuIds;
+        }
+    }
+
+    private void fillMenuDetail(List<SysMenuPack> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return;
+        }
+        List<Long> packIds = list.stream().map(SysMenuPack::getPackId).collect(Collectors.toList());
+        List<SysMenuPackDetail> details = menuPackDetailService.lambdaQuery()
+                .in(SysMenuPackDetail::getPackId, packIds)
+                .list();
+        Map<Long, List<Long>> detailMap = details.stream()
+                .collect(Collectors.groupingBy(SysMenuPackDetail::getPackId,
+                        Collectors.mapping(SysMenuPackDetail::getMenuId, Collectors.toList())));
+        Map<Long, SysMenu> menuCache = new HashMap<>();
+        for (SysMenuPack pack : list) {
+            List<Long> menuIds = detailMap.getOrDefault(pack.getPackId(), Collections.emptyList());
+            pack.setMenuIds(menuIds);
+            pack.setMenuCount(menuIds.size());
+            if (!CollectionUtils.isEmpty(menuIds)) {
+                List<String> names = new ArrayList<>();
+                for (Long menuId : menuIds) {
+                    SysMenu menu = menuCache.computeIfAbsent(menuId, menuService::selectMenuById);
+                    if (menu != null) {
+                        names.add(menu.getMenuName());
+                    }
+                }
+                pack.setMenuNameList(names);
+            } else {
+                pack.setMenuNameList(Collections.emptyList());
+            }
         }
     }
 }

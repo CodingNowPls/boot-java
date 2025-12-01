@@ -8,27 +8,15 @@ import com.boot.common.log.annotation.Log;
 import com.boot.common.core.enums.BusinessType;
 import com.boot.common.mybatis.page.TableDataInfo;
 import com.boot.common.web.controller.BaseController;
-import com.boot.common.core.domain.TreeSelect;
-import com.boot.common.core.domain.entity.SysMenu;
 import com.boot.system.domain.SysTenant;
 import com.boot.system.domain.SysTenantMenuPack;
-import com.boot.system.domain.SysMenuPack;
-import com.boot.system.domain.SysMenuPackDetail;
 import com.boot.system.service.ISysTenantService;
 import com.boot.system.service.ISysTenantMenuPackService;
-import com.boot.system.service.ISysMenuPackService;
-import com.boot.system.service.ISysMenuPackDetailService;
-import com.boot.system.service.ISysMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -42,16 +30,7 @@ public class SysTenantController extends BaseController {
     private ISysTenantService sysTenantService;
 
     @Autowired
-    private ISysMenuPackService menuPackService;
-
-    @Autowired
-    private ISysMenuPackDetailService menuPackDetailService;
-
-    @Autowired
     private ISysTenantMenuPackService tenantMenuPackService;
-
-    @Autowired
-    private ISysMenuService menuService;
 
     /**
      * 查询租户列表
@@ -75,6 +54,16 @@ public class SysTenantController extends BaseController {
     @GetMapping(value = "/{tenantId}")
     public AjaxResult getInfo(@PathVariable("tenantId") String tenantId) {
         SysTenant tenant = sysTenantService.getById(tenantId);
+        if (tenant == null) {
+            return AjaxResult.error("租户不存在");
+        }
+        List<Long> packIds = tenantMenuPackService.lambdaQuery()
+                .eq(SysTenantMenuPack::getTenantId, tenantId)
+                .list()
+                .stream()
+                .map(SysTenantMenuPack::getPackId)
+                .collect(Collectors.toList());
+        tenant.setPackIds(packIds);
         return AjaxResult.success(tenant);
     }
 
@@ -115,7 +104,11 @@ public class SysTenantController extends BaseController {
         }
         tenant.setDelFlag("0");
         tenant.setCreateBy(getUserName());
-        return toAjax(sysTenantService.save(tenant));
+        boolean saved = sysTenantService.save(tenant);
+        if (saved) {
+            assignTenantMenuPacks(tenant.getTenantId(), tenant.getPackIds());
+        }
+        return toAjax(saved);
     }
 
     /**
@@ -132,7 +125,11 @@ public class SysTenantController extends BaseController {
             // 平台/默认租户允许修改名称等基础信息，但不允许修改为停用/删除可在前端或这里再细化
         }
         tenant.setUpdateBy(getUserName());
-        return toAjax(sysTenantService.updateById(tenant));
+        boolean updated = sysTenantService.updateById(tenant);
+        if (updated && tenant.getPackIds() != null) {
+            assignTenantMenuPacks(tenant.getTenantId(), tenant.getPackIds());
+        }
+        return toAjax(updated);
     }
 
     /**
@@ -150,171 +147,21 @@ public class SysTenantController extends BaseController {
         return toAjax(sysTenantService.removeBatchByIds(java.util.Arrays.asList(tenantIds)));
     }
 
-    private String buildTenantPackCode(String tenantId) {
-        return "tenant_custom_" + tenantId;
-    }
-
-    /**
-     * 查询租户已分配的菜单ID列表
-     */
-    @SaCheckPermission("system:tenant:query")
-    @GetMapping("/menuIds/{tenantId}")
-    public AjaxResult getTenantMenuIds(@PathVariable("tenantId") String tenantId) {
-        return AjaxResult.success(loadTenantMenuIds(tenantId));
-    }
-
-    /**
-     * 仿角色授权获取菜单树，过滤租户管理自身菜单
-     */
-    @SaCheckPermission("system:tenant:query")
-    @GetMapping("/menuTreeselect/{tenantId}")
-    public AjaxResult tenantMenuTreeselect(@PathVariable("tenantId") String tenantId) {
-        List<SysMenu> menus = menuService.selectMenuList(getUserId());
-        List<TreeSelect> treeSelects = menuService.buildMenuTreeSelect(filterTenantManageMenus(menus));
-        List<Long> checkedKeys = loadTenantMenuIds(tenantId);
-        AjaxResult ajax = AjaxResult.success();
-        ajax.put("menus", treeSelects);
-        ajax.put("checkedKeys", checkedKeys);
-        return ajax;
-    }
-
-    /**
-     * 为租户设置菜单（级联选择）
-     */
-    @SaCheckPermission("system:tenant:edit")
-    @Log(title = "租户菜单设置", businessType = BusinessType.GRANT)
-    @PostMapping("/assignMenus")
-    public AjaxResult assignMenus(@RequestBody TenantAssignMenuRequest request) {
-        if (request == null || StringUtils.isBlank(request.getTenantId())) {
-            return AjaxResult.error("租户ID不能为空");
-        }
-        SysTenant tenant = sysTenantService.getById(request.getTenantId());
-        if (tenant == null) {
-            return AjaxResult.error("租户不存在");
-        }
-        String packCode = buildTenantPackCode(request.getTenantId());
-        SysMenuPack pack = menuPackService.lambdaQuery()
-                .eq(SysMenuPack::getPackCode, packCode)
-                .one();
-        if (pack == null) {
-            pack = new SysMenuPack();
-            pack.setPackName(tenant.getTenantName() + "菜单");
-            pack.setPackCode(packCode);
-            pack.setStatus("0");
-            pack.setCreateBy(getUserName());
-            menuPackService.save(pack);
-        } else {
-            pack.setUpdateBy(getUserName());
-            menuPackService.updateById(pack);
-        }
-        Long packId = pack.getPackId();
-        // 更新套餐明细
-        menuPackDetailService.lambdaUpdate()
-                .eq(SysMenuPackDetail::getPackId, packId)
-                .remove();
-        if (!CollectionUtils.isEmpty(request.getMenuIds())) {
-            for (Long menuId : request.getMenuIds()) {
-                SysMenuPackDetail detail = new SysMenuPackDetail();
-                detail.setPackId(packId);
-                detail.setMenuId(menuId);
-                menuPackDetailService.save(detail);
-            }
-        }
-        // 重新绑定租户与套餐
-        tenantMenuPackService.lambdaUpdate()
-                .eq(SysTenantMenuPack::getTenantId, request.getTenantId())
-                .remove();
-        SysTenantMenuPack relation = new SysTenantMenuPack();
-        relation.setTenantId(request.getTenantId());
-        relation.setPackId(packId);
-        relation.setCreateBy(getUserName());
-        tenantMenuPackService.save(relation);
-        return AjaxResult.success();
-    }
-
-    private List<Long> loadTenantMenuIds(String tenantId) {
+    private void assignTenantMenuPacks(String tenantId, List<Long> packIds) {
         if (StringUtils.isBlank(tenantId)) {
-            return Collections.emptyList();
-        }
-        String packCode = buildTenantPackCode(tenantId);
-        SysMenuPack pack = menuPackService.lambdaQuery()
-                .eq(SysMenuPack::getPackCode, packCode)
-                .one();
-        if (pack == null) {
-            return Collections.emptyList();
-        }
-        return menuPackDetailService.lambdaQuery()
-                .eq(SysMenuPackDetail::getPackId, pack.getPackId())
-                .list()
-                .stream()
-                .map(SysMenuPackDetail::getMenuId)
-                .collect(Collectors.toList());
-    }
-
-    private List<SysMenu> filterTenantManageMenus(List<SysMenu> menus) {
-        if (CollectionUtils.isEmpty(menus)) {
-            return menus;
-        }
-        Map<Long, List<SysMenu>> childrenMap = menus.stream()
-                .collect(Collectors.groupingBy(SysMenu::getParentId, HashMap::new, Collectors.toList()));
-        Set<Long> excludeIds = new HashSet<>();
-        for (SysMenu menu : menus) {
-            if (isTenantManageMenu(menu)) {
-                excludeIds.add(menu.getMenuId());
-                markDescendants(menu.getMenuId(), childrenMap, excludeIds);
-            }
-        }
-        return menus.stream()
-                .filter(menu -> !excludeIds.contains(menu.getMenuId()))
-                .collect(Collectors.toList());
-    }
-
-    private void markDescendants(Long menuId, Map<Long, List<SysMenu>> childrenMap, Set<Long> excludeIds) {
-        List<SysMenu> children = childrenMap.get(menuId);
-        if (CollectionUtils.isEmpty(children)) {
             return;
         }
-        for (SysMenu child : children) {
-            if (excludeIds.add(child.getMenuId())) {
-                markDescendants(child.getMenuId(), childrenMap, excludeIds);
+        tenantMenuPackService.lambdaUpdate()
+                .eq(SysTenantMenuPack::getTenantId, tenantId)
+                .remove();
+        if (!CollectionUtils.isEmpty(packIds)) {
+            for (Long packId : packIds) {
+                SysTenantMenuPack relation = new SysTenantMenuPack();
+                relation.setTenantId(tenantId);
+                relation.setPackId(packId);
+                relation.setCreateBy(getUserName());
+                tenantMenuPackService.save(relation);
             }
-        }
-    }
-
-    private boolean isTenantManageMenu(SysMenu menu) {
-        String perms = menu.getPerms();
-        if (StringUtils.isNotBlank(perms)) {
-            if (perms.startsWith("system:tenant") || perms.startsWith("system:menuPack") || perms.startsWith("system:tenantMenuPack")) {
-                return true;
-            }
-        }
-        String component = menu.getComponent();
-        if (StringUtils.isNotBlank(component) &&
-                (component.contains("/system/tenant") || component.contains("/system/menuPack"))) {
-            return true;
-        }
-        String path = menu.getPath();
-        return StringUtils.isNotBlank(path) && (path.contains("tenant") || path.contains("menuPack"));
-    }
-
-    public static class TenantAssignMenuRequest {
-        private String tenantId;
-        private List<Long> menuIds;
-
-        public String getTenantId() {
-            return tenantId;
-        }
-
-        public void setTenantId(String tenantId) {
-            this.tenantId = tenantId;
-        }
-
-        public List<Long> getMenuIds() {
-            return menuIds;
-        }
-
-        public void setMenuIds(List<Long> menuIds) {
-            this.menuIds = menuIds;
         }
     }
 }

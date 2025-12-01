@@ -116,50 +116,48 @@
 
     <!-- 添加或修改租户菜单对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-        <el-row :gutter="20">
-          <el-col :span="10">
-            <el-form-item label="租户菜单名称" prop="packName">
-              <el-input v-model="form.packName" placeholder="请输入租户菜单名称" />
-            </el-form-item>
-            <el-form-item label="租户菜单编码" prop="packCode">
-              <el-input v-model="form.packCode" placeholder="请输入租户菜单编码" />
-            </el-form-item>
-            <el-form-item label="状态" prop="status">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in dict.type.sys_normal_disable"
-                  :key="dict.value"
-                  :label="dict.value"
-                >{{ dict.label }}</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item label="备注" prop="remark">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="14">
-            <el-form-item label="菜单权限">
-              <div style="margin-bottom: 10px;">
-                <el-checkbox v-model="menuExpand" @change="handleCheckedTreeExpand($event)">
-                  展开/折叠
-                </el-checkbox>
-                <el-checkbox v-model="menuNodeAll" @change="handleCheckedTreeNodeAll($event)">
-                  全选/全不选
-                </el-checkbox>
-              </div>
-              <el-tree
-                ref="menuTree"
-                :data="menuTree"
-                :props="defaultProps"
-                class="tree-border"
-                node-key="id"
-                show-checkbox
-                default-expand-all
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
+      <el-form ref="form" :model="form" :rules="rules" label-width="110px">
+        <el-form-item label="租户菜单名称" prop="packName">
+          <el-input v-model="form.packName" placeholder="请输入租户菜单名称" />
+        </el-form-item>
+        <el-form-item label="租户菜单编码" prop="packCode">
+          <el-input v-model="form.packCode" placeholder="请输入租户菜单编码" />
+        </el-form-item>
+        <el-form-item label="菜单权限">
+          <div class="menu-toolbar">
+            <el-checkbox v-model="menuExpand" @change="handleCheckedTreeExpand($event)">
+              展开/折叠
+            </el-checkbox>
+            <el-checkbox v-model="menuNodeAll" @change="handleCheckedTreeNodeAll($event)">
+              全选/全不选
+            </el-checkbox>
+            <el-checkbox v-model="menuCheckStrictly" @change="handleCheckedTreeConnect($event)">
+              父子联动
+            </el-checkbox>
+          </div>
+          <el-tree
+            ref="menuTree"
+            :check-strictly="!menuCheckStrictly"
+            :data="menuTree"
+            :props="defaultProps"
+            class="tree-border"
+            empty-text="加载中，请稍候"
+            node-key="menuId"
+            show-checkbox
+          />
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="form.status">
+            <el-radio
+              v-for="dict in dict.type.sys_normal_disable"
+              :key="dict.value"
+              :label="dict.value"
+            >{{ dict.label }}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -169,14 +167,25 @@
 
     <!-- 分配菜单对话框 -->
     <el-dialog :title="'分配菜单 - ' + (form.packName || '')" :visible.sync="openAssign" width="600px" append-to-body>
+      <div class="menu-toolbar">
+        <el-checkbox v-model="assignExpand" @change="handleAssignTreeExpand">
+          展开/折叠
+        </el-checkbox>
+        <el-checkbox v-model="assignNodeAll" @change="handleAssignTreeNodeAll">
+          全选/全不选
+        </el-checkbox>
+        <el-checkbox v-model="assignCheckStrictly" @change="handleAssignTreeConnect">
+          父子联动
+        </el-checkbox>
+      </div>
       <el-tree
-        ref="menuTree"
+        ref="menuTreeAssign"
+        :check-strictly="!assignCheckStrictly"
         :data="menuTree"
         :props="defaultProps"
         class="tree-border"
-        node-key="id"
+        node-key="menuId"
         show-checkbox
-        default-expand-all
       />
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitAssignMenus">确 定</el-button>
@@ -218,6 +227,10 @@ export default {
       menuTree: [],
       menuExpand: false,
       menuNodeAll: false,
+      menuCheckStrictly: true,
+      assignExpand: false,
+      assignNodeAll: false,
+      assignCheckStrictly: true,
       defaultProps: {
         children: 'children',
         label: 'menuName'
@@ -260,6 +273,7 @@ export default {
       this.menuTree = []
       this.menuExpand = false
       this.menuNodeAll = false
+      this.menuCheckStrictly = true
       this.resetForm('form')
     },
     cancel() {
@@ -299,7 +313,7 @@ export default {
     submitForm() {
       this.$refs['form'].validate(valid => {
         if (!valid) return
-        const checkedKeys = this.$refs.menuTree ? this.$refs.menuTree.getCheckedKeys() : []
+        const checkedKeys = this.getTreeAllCheckedKeys('menuTree')
         const payload = {
           ...this.form
         }
@@ -339,17 +353,36 @@ export default {
       })
     },
     handleCheckedTreeExpand(value) {
-      const treeList = this.menuTree
-      if (!this.$refs.menuTree) return
-      treeList.forEach(node => {
-        if (this.$refs.menuTree.store.nodesMap[node.id]) {
-          this.$refs.menuTree.store.nodesMap[node.id].expanded = value
-        }
+      const tree = this.$refs.menuTree
+      if (!tree || !tree.store) return
+      const nodesMap = tree.store.nodesMap || {}
+      Object.keys(nodesMap).forEach(key => {
+        nodesMap[key].expanded = value
       })
     },
     handleCheckedTreeNodeAll(value) {
-      if (!this.$refs.menuTree) return
-      this.$refs.menuTree.setCheckedNodes(value ? this.menuTree : [])
+      const tree = this.$refs.menuTree
+      if (!tree) return
+      tree.setCheckedNodes(value ? this.menuTree : [])
+    },
+    handleCheckedTreeConnect(value) {
+      this.menuCheckStrictly = value ? true : false
+    },
+    handleAssignTreeExpand(value) {
+      const tree = this.$refs.menuTreeAssign
+      if (!tree || !tree.store) return
+      const nodesMap = tree.store.nodesMap || {}
+      Object.keys(nodesMap).forEach(key => {
+        nodesMap[key].expanded = value
+      })
+    },
+    handleAssignTreeNodeAll(value) {
+      const tree = this.$refs.menuTreeAssign
+      if (!tree) return
+      tree.setCheckedNodes(value ? this.menuTree : [])
+    },
+    handleAssignTreeConnect(value) {
+      this.assignCheckStrictly = value ? true : false
     },
     handleDelete(row) {
       const packIds = row.packId || this.ids
@@ -364,6 +397,9 @@ export default {
       const packId = row.packId
       if (!packId) return
       this.form = row
+      this.assignExpand = false
+      this.assignNodeAll = false
+      this.assignCheckStrictly = true
       // 加载菜单树
       const resMenu = await listMenu({ status: '0', isSys: '0' })
       this.menuTree = this.handleTree(resMenu.data, 'menuId')
@@ -371,22 +407,41 @@ export default {
       const resPack = await getMenuPack(packId)
       const checked = resPack.menuIds || []
       this.$nextTick(() => {
-        if (this.$refs.menuTree) {
-          this.$refs.menuTree.setCheckedKeys(checked)
+        if (this.$refs.menuTreeAssign) {
+          this.$refs.menuTreeAssign.setCheckedKeys(checked)
         }
       })
       this.openAssign = true
     },
     submitAssignMenus() {
       if (!this.form.packId) return
-      const checkedKeys = this.$refs.menuTree.getCheckedKeys()
+      const checkedKeys = this.getTreeAllCheckedKeys('menuTreeAssign')
       assignMenusToPack({ packId: this.form.packId, menuIds: checkedKeys }).then(() => {
         this.$modal.msgSuccess('分配成功')
         this.openAssign = false
       })
+    },
+    getTreeAllCheckedKeys(refName) {
+      const treeRef = this.$refs[refName]
+      if (!treeRef) return []
+      const checkedKeys = treeRef.getCheckedKeys ? treeRef.getCheckedKeys() : []
+      const halfCheckedKeys = treeRef.getHalfCheckedKeys ? treeRef.getHalfCheckedKeys() : []
+      return Array.from(new Set([...(checkedKeys || []), ...(halfCheckedKeys || [])]))
     }
   }
 }
 </script>
 
-
+<style scoped>
+.menu-toolbar {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 20px;
+}
+.mr5 {
+  margin-right: 5px;
+}
+.mb5 {
+  margin-bottom: 5px;
+}
+</style>

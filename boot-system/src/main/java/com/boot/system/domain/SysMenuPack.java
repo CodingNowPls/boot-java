@@ -5,8 +5,12 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.boot.common.core.domain.BaseEntity;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 租户菜单套餐
@@ -32,5 +36,14 @@ public class SysMenuPack extends BaseEntity {
      */
     @TableField("status")
     private String status;
+
+    @TableField(exist = false)
+    private List<Long> menuIds;
+
+    @TableField(exist = false)
+    private List<String> menuNameList = Collections.emptyList();
+
+    @TableField(exist = false)
+    private Integer menuCount = 0;
 }
 

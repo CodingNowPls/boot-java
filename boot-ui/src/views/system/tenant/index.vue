@@ -105,14 +105,6 @@
             @click="handleUpdate(scope.row)"
           >修改</el-button>
           <el-button
-            v-hasPermi="['system:tenant:edit']"
-            size="mini"
-            type="text"
-            icon="el-icon-setting"
-            :disabled="scope.row.tenantId === platformTenantId"
-            @click="handleAssignMenu(scope.row)"
-          >菜单</el-button>
-          <el-button
             v-hasPermi="['system:tenant:remove']"
             size="mini"
             type="text"
@@ -138,7 +130,7 @@
           <el-input v-model="form.tenantName" placeholder="请输入租户名称" />
         </el-form-item>
         <el-form-item label="租户编码" prop="tenantCode">
-          <el-input v-model="form.tenantCode" placeholder="请输入租户编码" />
+          <el-input v-model="form.tenantCode" placeholder="请输入租户编码" :disabled="isEdit" />
         </el-form-item>
         <el-form-item label="联系人" prop="contactName">
           <el-input v-model="form.contactName" placeholder="请输入联系人" />
@@ -161,6 +153,33 @@
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
         </el-form-item>
+        <el-form-item label="租户菜单">
+          <el-select
+            v-model="form.packIds"
+            multiple
+            clearable
+            filterable
+            placeholder="请选择租户菜单"
+            style="width: 100%;"
+            :loading="menuPackLoading"
+          >
+            <el-option
+              v-for="pack in menuPackOptions"
+              :key="pack.packId"
+              :label="pack.packName"
+              :value="pack.packId"
+            >
+              <div class="pack-option">
+                <span class="pack-name">{{ pack.packName }}</span>
+                <span class="pack-code" v-if="pack.packCode">({{ pack.packCode }})</span>
+              </div>
+              <div class="pack-option-desc" v-if="pack.menuNameList && pack.menuNameList.length">
+                {{ pack.menuNameList.slice(0,3).join('、') }}
+                <span v-if="pack.menuNameList.length > 3">等{{ pack.menuNameList.length }}个菜单</span>
+              </div>
+            </el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -168,35 +187,12 @@
       </div>
     </el-dialog>
 
-    <!-- 租户菜单分配对话框 -->
-    <el-dialog :title="'租户菜单设置 - ' + (currentTenant.tenantName || '')" :visible.sync="openAssign" width="600px" append-to-body>
-      <div v-loading="menuLoading">
-        <div class="mb10">
-          <el-checkbox v-model="menuExpand" @change="handleMenuTreeExpand">展开/折叠</el-checkbox>
-          <el-checkbox v-model="menuNodeAll" @change="handleMenuTreeNodeAll">全选/全不选</el-checkbox>
-          <el-checkbox v-model="menuCheckStrictly" @change="handleMenuTreeConnect">父子联动</el-checkbox>
-        </div>
-        <el-tree
-          ref="menuTree"
-          :check-strictly="!menuCheckStrictly"
-          :data="menuOptions"
-          :props="menuTreeProps"
-          class="tree-border"
-          node-key="id"
-          show-checkbox
-          empty-text="加载中，请稍候"
-        />
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitAssignMenu" :loading="assignLoading">确 定</el-button>
-        <el-button @click="openAssign = false">取 消</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { listTenant, getTenant, addTenant, updateTenant, delTenant, assignTenantMenus, tenantMenuTreeselect } from '@/api/system/tenant'
+import { listTenant, getTenant, addTenant, updateTenant, delTenant } from '@/api/system/tenant'
+import { listMenuPackSimple } from '@/api/system/menuPack'
 
 export default {
   name: 'Tenant',
@@ -210,7 +206,6 @@ export default {
       title: '',
       open: false,
       isEdit: false,
-      openAssign: false,
       ids: [],
       single: true,
       multiple: true,
@@ -223,21 +218,8 @@ export default {
         status: undefined
       },
       form: {},
-      currentTenant: {},
-      assignForm: {
-        tenantId: undefined,
-        menuIds: []
-      },
-      assignLoading: false,
-      menuOptions: [],
-      menuTreeProps: {
-        children: 'children',
-        label: 'label'
-      },
-      menuLoading: false,
-      menuExpand: false,
-      menuNodeAll: false,
-      menuCheckStrictly: true,
+      menuPackOptions: [],
+      menuPackLoading: false,
       rules: {
         tenantName: [
           { required: true, message: '租户名称不能为空', trigger: 'blur' }
@@ -281,7 +263,8 @@ export default {
         contactPhone: undefined,
         contactEmail: undefined,
         status: '0',
-        remark: undefined
+        remark: undefined,
+        packIds: []
       }
       this.resetForm('form')
     },
@@ -289,20 +272,26 @@ export default {
       this.open = false
       this.reset()
     },
-    handleAdd() {
+    async handleAdd() {
       this.reset()
       this.isEdit = false
+      await this.loadMenuPackOptions()
       this.open = true
       this.title = '新增租户'
     },
-    handleUpdate(row) {
+    async handleUpdate(row) {
       const tenantId = row.tenantId || this.ids[0]
       if (!tenantId) {
         return
       }
       this.reset()
+      await this.loadMenuPackOptions()
       getTenant(tenantId).then(res => {
-        this.form = res.data
+        const data = res.data || {}
+        this.form = {
+          ...data,
+          packIds: data.packIds || []
+        }
         this.isEdit = true
         this.open = true
         this.title = '修改租户'
@@ -335,71 +324,30 @@ export default {
         this.getList()
       }).catch(() => {})
     },
-    async handleAssignMenu(row) {
-      const tenantId = row.tenantId
-      if (!tenantId || tenantId === this.platformTenantId) {
-        if (tenantId === this.platformTenantId) {
-          this.$modal.msgWarning('平台租户菜单不可配置')
-        }
-        return
-      }
-      this.currentTenant = row
-      this.assignForm = {
-        tenantId,
-        menuIds: []
-      }
-      this.menuLoading = true
+    async loadMenuPackOptions() {
+      this.menuPackLoading = true
       try {
-        const res = await tenantMenuTreeselect(tenantId)
-        this.menuOptions = res.menus || []
-        this.assignForm.menuIds = res.checkedKeys || []
-        this.openAssign = true
-        this.$nextTick(() => {
-          if (this.$refs.menuTree) {
-            this.$refs.menuTree.setCheckedKeys(this.assignForm.menuIds)
-          }
-        })
+        const res = await listMenuPackSimple({ status: '0' })
+        this.menuPackOptions = res.data || []
       } finally {
-        this.menuLoading = false
+        this.menuPackLoading = false
       }
-    },
-    submitAssignMenu() {
-      if (!this.assignForm.tenantId) return
-      const checkedKeys = this.$refs.menuTree ? this.$refs.menuTree.getCheckedKeys() : []
-      const halfCheckedKeys = this.$refs.menuTree ? this.$refs.menuTree.getHalfCheckedKeys() : []
-      const menuIds = Array.from(new Set([...(checkedKeys || []), ...(halfCheckedKeys || [])]))
-      this.assignLoading = true
-      assignTenantMenus({
-        tenantId: this.assignForm.tenantId,
-        menuIds: menuIds
-      }).then(() => {
-        this.$modal.msgSuccess('租户菜单设置成功')
-        this.openAssign = false
-      }).finally(() => {
-        this.assignLoading = false
-      })
-    },
-    handleMenuTreeExpand(value) {
-      this.menuExpand = value
-      if (!this.$refs.menuTree) return
-      const treeList = this.menuOptions
-      for (let i = 0; i < treeList.length; i++) {
-        const node = this.$refs.menuTree.store.nodesMap[treeList[i].id]
-        if (node) {
-          node.expanded = value
-        }
-      }
-    },
-    handleMenuTreeNodeAll(value) {
-      this.menuNodeAll = value
-      if (!this.$refs.menuTree) return
-      this.$refs.menuTree.setCheckedNodes(value ? this.menuOptions : [])
-    },
-    handleMenuTreeConnect(value) {
-      this.menuCheckStrictly = value ? true : false
     }
   }
 }
 </script>
 
-
+<style scoped>
+.pack-code {
+  color: #909399;
+  margin-left: 4px;
+}
+.pack-option {
+  display: flex;
+  align-items: center;
+}
+.pack-option-desc {
+  font-size: 12px;
+  color: #909399;
+}
+</style>

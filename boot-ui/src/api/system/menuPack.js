@@ -52,4 +52,13 @@ export function assignMenusToPack(data) {
   })
 }
 
+// 查询全部租户菜单（用于下拉）
+export function listMenuPackSimple(params) {
+  return request({
+    url: '/system/menuPack/simpleList',
+    method: 'get',
+    params: params
+  })
+}
+
 

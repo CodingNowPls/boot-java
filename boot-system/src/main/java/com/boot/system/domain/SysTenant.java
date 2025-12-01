@@ -8,6 +8,8 @@ import com.boot.common.core.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 /**
  * 租户实体
  *
@@ -49,5 +51,8 @@ public class SysTenant extends BaseEntity {
      */
     @TableField("del_flag")
     private String delFlag;
+
+    @TableField(exist = false)
+    private List<Long> packIds;
 }
 
