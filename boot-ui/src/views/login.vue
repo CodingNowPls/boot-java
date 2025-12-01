@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { getCodeImg } from "@/api/login";
+import { getCodeImg, getLoginConfig, getTenantList } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from '@/utils/jsencrypt'
 import { getConfig } from '@/api/system/config'
@@ -78,7 +78,10 @@ export default {
         password: "",
         rememberMe: false,
         code: "",
-        uuid: ""
+        uuid: "",
+        // 多租户相关
+        tenantId: "",
+        isAdminLogin: false
       },
       loginRules: {
         userName: [
@@ -94,7 +97,18 @@ export default {
       captchaEnabled: true,
       // 注册开关
       register: false,
-      redirect: undefined
+      redirect: undefined,
+      // 登录配置（租户模式）
+      loginConfig: {
+        showTenantSelect: false,
+        tenantMode: 'auto',     // auto/single/multi
+        defaultTenantId: '0',   // 默认/平台租户ID（字符串）
+        platformTenantId: '0',
+        tenantCount: 0,
+        tenantList: []
+      },
+      tenantList: [],
+      showTenantSelect: false
     };
   },
   watch: {
@@ -109,12 +123,12 @@ export default {
     this.getConfig();
     this.getCode();
     this.getCookie();
-
+    this.loadLoginConfig();
   },
   methods: {
     getConfig() {
       getConfig(this.registerConfigId).then(res => {
-          this.register = res.data.configValue == 'true' ? true : false;
+        this.register = res.data.configValue == 'true' ? true : false;
       })
     },
     getCode() {
@@ -131,15 +145,69 @@ export default {
       const userName = Cookies.get("userName");
       const password = Cookies.get("password");
       const rememberMe = Cookies.get('rememberMe')
-      this.loginForm = {
+      this.loginForm = Object.assign({}, this.loginForm, {
         userName: userName === undefined ? this.loginForm.userName : userName,
         password: password === undefined ? this.loginForm.password : decrypt(password),
         rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
-      };
+      });
+    },
+    async loadLoginConfig() {
+      try {
+        const res = await getLoginConfig();
+        this.loginConfig = res.data || this.loginConfig;
+        // 自动判断租户模式
+        if (this.loginConfig.tenantMode === 'auto') {
+          this.loginConfig.tenantMode = this.loginConfig.tenantCount > 1 ? 'multi' : 'single';
+        }
+        // 管理后台登录不展示租户下拉
+        if (this.loginForm.isAdminLogin) {
+          this.showTenantSelect = false;
+          return;
+        }
+        if (this.loginConfig.tenantMode === 'multi') {
+          // 多租户模式：必须显示租户选择
+          this.showTenantSelect = true;
+          if (this.loginForm.userName) {
+            await this.loadTenantList();
+          }
+        } else {
+          // 单租户模式：根据配置决定是否显示下拉
+          this.showTenantSelect = !!this.loginConfig.showTenantSelect;
+          this.loginForm.tenantId = this.loginConfig.defaultTenantId || '0';
+          this.tenantList = this.showTenantSelect
+            ? (this.loginConfig.tenantList && this.loginConfig.tenantList.length
+              ? this.loginConfig.tenantList
+              : [{
+                  tenantId: this.loginForm.tenantId,
+                  tenantName: '默认租户'
+                }])
+            : [];
+        }
+      } catch (e) {
+        // 配置异常时，保持默认单租户配置
+        this.loginForm.tenantId = this.loginConfig.defaultTenantId || '0';
+        this.showTenantSelect = false;
+      }
+    },
+    async loadTenantList() {
+      if (!this.loginForm.userName) {
+        return;
+      }
+      const res = await getTenantList(this.loginForm.userName, this.loginForm.isAdminLogin);
+      this.tenantList = res.data || [];
+      // 如果当前未选择租户且有列表，则默认选第一个
+      if (!this.loginForm.tenantId && this.tenantList.length > 0) {
+        this.loginForm.tenantId = this.tenantList[0].tenantId;
+      }
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+      this.$refs.loginForm.validate(async valid => {
         if (valid) {
+          // 管理后台登录不需要租户；业务后台多租户模式下必须选择租户
+          if (!this.loginForm.isAdminLogin && this.showTenantSelect && !this.loginForm.tenantId) {
+            this.$message.error('请选择租户');
+            return;
+          }
           this.loading = true;
           if (this.loginForm.rememberMe) {
             Cookies.set("userName", this.loginForm.userName, { expires: 1440 });

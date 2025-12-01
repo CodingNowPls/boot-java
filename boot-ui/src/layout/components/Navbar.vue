@@ -9,6 +9,28 @@
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
+        <!-- 当前租户显示/切换 -->
+        <el-dropdown
+          v-if="tenantName"
+          class="right-menu-item tenant-display"
+          trigger="click"
+          @command="handleTenantCommand"
+        >
+          <span class="el-dropdown-link">
+            <span class="tenant-label">当前租户：</span>
+            <span class="tenant-name">{{ tenantName }}</span>
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item
+              v-for="item in tenantOptions"
+              :key="item.tenantId"
+              :command="item.tenantId"
+            >
+              <span>{{ item.tenantName }}</span>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
         <search id="header-search" class="right-menu-item"/>
         <el-tooltip :content="messageContent" effect="dark" placement="bottom">
           <el-badge :value="messageCount" class="right-menu-item hover-effect" :class="{'badge-custom':messageCount>0}">
@@ -52,6 +74,7 @@ import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
 import { EventSourcePolyfill } from 'event-source-polyfill'
 import { getToken } from '@/utils/auth'
+import { getTenantList, switchTenant } from '@/api/login'
 
 export default {
   components: {
@@ -67,7 +90,10 @@ export default {
     ...mapGetters([
       'sidebar',
       'avatar',
-      'device'
+      'device',
+      'tenantId',
+      'tenantName',
+      'name'
     ]),
     setting: {
       get() {
@@ -91,11 +117,12 @@ export default {
       messageContent: '',//通知内容
       messageCount: 0,//通知数量
       intervalId: null,
-      eventSource: null
+      eventSource: null,
+      tenantOptions: []
     }
   },
   created() {
-
+    this.loadTenantOptions()
   },
   mounted() {
     // 启动轮询
@@ -135,6 +162,31 @@ export default {
     },
 
     createSse() {
+    },
+    async loadTenantOptions() {
+      try {
+        if (!this.name) {
+          return
+        }
+        const res = await getTenantList(this.name, false)
+        this.tenantOptions = res.data || []
+      } catch (e) {
+        // ignore
+      }
+    },
+    async handleTenantCommand(tenantId) {
+      if (!tenantId || tenantId === this.tenantId) {
+        return
+      }
+      try {
+        await switchTenant(tenantId)
+        this.$modal.msgSuccess('切换租户成功，即将刷新页面')
+        setTimeout(() => {
+          window.location.reload()
+        }, 600)
+      } catch (e) {
+        // ignore
+      }
     }
   }
 }
@@ -200,6 +252,18 @@ export default {
         &:hover {
           background: rgba(0, 0, 0, .025)
         }
+      }
+    }
+
+    .tenant-display {
+      font-size: 14px;
+      color: #606266;
+      .tenant-label {
+        margin-right: 2px;
+      }
+      .tenant-name {
+        font-weight: 500;
+        color: #409EFF;
       }
     }
 

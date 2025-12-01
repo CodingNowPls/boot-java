@@ -8,8 +8,14 @@ const user = {
     avatar: '',
     roles: [],
     permissions: [],
-    userId:'',
-    nickName:''
+    userId: '',
+    nickName: '',
+    // 多租户相关
+    tenantId: '',
+    tenantName: '',
+    isAdminLogin: false,
+    tenantMode: 'auto',
+    tenantList: []
   },
 
   mutations: {
@@ -33,6 +39,21 @@ const user = {
     },
     SET_NICK_NAME: (state, nickName) => {
       state.nickName = nickName
+    },
+    SET_TENANT_ID: (state, tenantId) => {
+      state.tenantId = tenantId
+    },
+    SET_TENANT_NAME: (state, tenantName) => {
+      state.tenantName = tenantName
+    },
+    SET_IS_ADMIN_LOGIN: (state, isAdminLogin) => {
+      state.isAdminLogin = isAdminLogin
+    },
+    SET_TENANT_MODE: (state, tenantMode) => {
+      state.tenantMode = tenantMode
+    },
+    SET_TENANT_LIST: (state, tenantList) => {
+      state.tenantList = tenantList
     }
   },
 
@@ -43,13 +64,17 @@ const user = {
       const password = userInfo.password
       const code = userInfo.code
       const uuid = userInfo.uuid
+      const tenantId = userInfo.tenantId
+      const isAdminLogin = userInfo.isAdminLogin
       return new Promise((resolve, reject) => {
-        login(userName, password, code, uuid).then(res => {
-          //后台刚好是1440分钟，前端减少上几秒钟
-          let seconds = (1440 * 60 - 10) //1440分钟 减去10秒
+        login(userName, password, code, uuid, tenantId, isAdminLogin).then(res => {
+          // 后台刚好是1440分钟，前端减少上几秒钟
+          let seconds = (1440 * 60 - 10) // 1440分钟 减去10秒
           let expires = new Date(new Date() * 1 + seconds * 1000);
-          setToken(res.token,expires)
+          setToken(res.token, expires)
           commit('SET_TOKEN', res.token)
+          // 登录后记录本次是否为管理后台登录
+          commit('SET_IS_ADMIN_LOGIN', !!isAdminLogin)
           resolve()
         }).catch(error => {
           reject(error)
@@ -73,6 +98,24 @@ const user = {
           commit('SET_NICK_NAME', user.nickName);
           commit('SET_USER_ID', user.userId);
           commit('SET_AVATAR', avatar)
+          // 兼容后端返回的租户信息（如果已返回）
+          if (res.tenantId) {
+            commit('SET_TENANT_ID', res.tenantId)
+          } else if (user.tenantId) {
+            commit('SET_TENANT_ID', user.tenantId)
+          }
+          if (res.tenantName) {
+            commit('SET_TENANT_NAME', res.tenantName)
+          }
+          if (typeof res.isAdminLogin !== 'undefined') {
+            commit('SET_IS_ADMIN_LOGIN', res.isAdminLogin)
+          }
+          if (res.tenantMode) {
+            commit('SET_TENANT_MODE', res.tenantMode)
+          }
+          if (Array.isArray(res.tenantList)) {
+            commit('SET_TENANT_LIST', res.tenantList)
+          }
           resolve(res)
         }).catch(error => {
           reject(error)
@@ -87,6 +130,9 @@ const user = {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
           commit('SET_PERMISSIONS', [])
+          commit('SET_TENANT_ID', '')
+          commit('SET_TENANT_NAME', '')
+          commit('SET_TENANT_LIST', [])
           removeToken()
           resolve()
         }).catch(error => {
@@ -99,6 +145,9 @@ const user = {
     FedLogOut({ commit }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
+        commit('SET_TENANT_ID', '')
+        commit('SET_TENANT_NAME', '')
+        commit('SET_TENANT_LIST', [])
         removeToken()
         resolve()
       })
