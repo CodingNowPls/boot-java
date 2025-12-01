@@ -184,11 +184,6 @@ tenant:
   column: tenant_id
   # 排除表
   excludes:
-    - sys_tenant #租户表
-    - sys_menu_pack #所有的菜单包
-    - sys_menu_pack_detail # 租户菜单包含的菜单详情
-    - sys_tenant_menu_pack # 租户分配的菜单包
-    - sys_user_tenant
     - gen_table
     - gen_table_column
     - qrtz_blob_triggers
@@ -202,23 +197,6 @@ tenant:
     - qrtz_simple_triggers
     - qrtz_simprop_triggers
     - qrtz_triggers
-    - sys_config
-    - sys_dict_data
-    - sys_dict_type
-    - sys_job
-    - sys_job_log
-    - sys_logininfor
-    - sys_menu
-    - sys_notice
-    - sys_oper_log
-    - sys_role_dept
-    - sys_role_menu
-    - sys_user
-    - sys_user_post
-    - sys_user_role
-
-
-
 # FlowLong Config
 flowlong:
   remind:

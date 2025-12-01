@@ -62,7 +62,7 @@ public class SysTenantController extends BaseController {
     @SaCheckPermission("system:tenant:list")
     @GetMapping("/list")
     public TableDataInfo list(SysTenant tenant) {
-        startPage();
+        startMpPage(SysTenant.class);
         List<SysTenant> list = sysTenantService.lambdaQuery()
                 .like(StringUtils.isNotBlank(tenant.getTenantName()), SysTenant::getTenantName, tenant.getTenantName())
                 .eq(StringUtils.isNotBlank(tenant.getStatus()), SysTenant::getStatus, tenant.getStatus())
@@ -163,6 +163,9 @@ public class SysTenantController extends BaseController {
         boolean updated = sysTenantService.updateById(tenant);
         if (updated && tenant.getPackIds() != null) {
             assignTenantMenuPacks(tenant.getTenantId(), tenant.getPackIds());
+            if (!Constants.PLATFORM_TENANT_ID.equals(tenant.getTenantId())) {
+                syncTenantAdminMenus(tenant.getTenantId(), tenant.getPackIds());
+            }
         }
         return toAjax(updated);
     }
@@ -296,5 +299,28 @@ public class SysTenantController extends BaseController {
         relation.setDisabled("0");
         relation.setCreateBy(getUserName());
         userTenantService.save(relation);
+    }
+
+    private void syncTenantAdminMenus(String tenantId, List<Long> packIds) {
+        if (StringUtils.isBlank(tenantId)) {
+            return;
+        }
+        List<Long> menuIds = resolveMenuIdsByPackIds(packIds);
+        SysRole query = new SysRole();
+        query.setTenantId(tenantId);
+        query.setIsAdmin("1");
+        query.getParams().put("dataScope", "");
+        List<SysRole> adminRoles = roleService.selectRoleList(query);
+        if (CollectionUtils.isEmpty(adminRoles)) {
+            return;
+        }
+        Long[] menuIdArray = menuIds.toArray(new Long[0]);
+        for (SysRole adminRole : adminRoles) {
+            SysRole update = new SysRole();
+            update.setRoleId(adminRole.getRoleId());
+            update.setMenuIds(menuIdArray);
+            update.setUpdateBy(getUserName());
+            roleService.updateRole(update);
+        }
     }
 }

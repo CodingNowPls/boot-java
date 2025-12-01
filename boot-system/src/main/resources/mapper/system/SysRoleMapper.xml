@@ -47,6 +47,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<if test="roleKey != null and roleKey != ''">
 			AND r.role_key like concat('%', #{roleKey}, '%')
 		</if>
+		<if test="tenantId != null and tenantId != ''">
+			AND r.tenant_id = #{tenantId}
+		</if>
+		<if test="isAdmin != null and isAdmin != ''">
+			AND r.is_admin = #{isAdmin}
+		</if>
 		<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
 			and date_format(r.create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
 		</if>
