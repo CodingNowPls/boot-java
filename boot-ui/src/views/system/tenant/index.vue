@@ -109,6 +109,7 @@
             size="mini"
             type="text"
             icon="el-icon-setting"
+            :disabled="scope.row.tenantId === platformTenantId"
             @click="handleAssignMenu(scope.row)"
           >菜单</el-button>
           <el-button
@@ -213,6 +214,7 @@ export default {
       ids: [],
       single: true,
       multiple: true,
+      platformTenantId: '0',
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -335,7 +337,12 @@ export default {
     },
     async handleAssignMenu(row) {
       const tenantId = row.tenantId
-      if (!tenantId) return
+      if (!tenantId || tenantId === this.platformTenantId) {
+        if (tenantId === this.platformTenantId) {
+          this.$modal.msgWarning('平台租户菜单不可配置')
+        }
+        return
+      }
       this.currentTenant = row
       this.assignForm = {
         tenantId,
