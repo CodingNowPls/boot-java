@@ -38,6 +38,9 @@ public class SysMenuServiceImpl implements ISysMenuService {
     @Autowired
     private SysRoleMenuMapper roleMenuMapper;
 
+    @Autowired
+    private com.boot.system.service.ISysUserService userService;
+
     /**
      * 根据用户查询系统菜单列表
      *
@@ -58,11 +61,52 @@ public class SysMenuServiceImpl implements ISysMenuService {
     @Override
     public List<SysMenu> selectMenuList(SysMenu menu, Long userId) {
         List<SysMenu> menuList = null;
-        // 管理员显示所有菜单信息
-        if (SysUser.isAdmin(userId)) {
-            menuList = menuMapper.selectMenuList(menu);
+        // 判断是否是管理员（平台管理员或租户管理员）
+        if (userId != null && isAdminUser(userId)) {
+            // 管理员用户
+            SysUser user = userService.selectUserById(userId);
+            if (user != null) {
+                String tenantId = user.getTenantId();
+                // 平台管理员（tenant_id='0'）可以看到所有菜单
+                if (Constants.PLATFORM_TENANT_ID.equals(tenantId) || StringUtils.isEmpty(tenantId)) {
+                    menuList = menuMapper.selectMenuList(menu);
+                } else {
+                    // 租户管理员：如果指定了tenantId，使用指定的；否则查询系统菜单和租户菜单
+                    if (menu.getTenantId() != null && !menu.getTenantId().isEmpty()) {
+                        menuList = menuMapper.selectMenuList(menu);
+                    } else {
+                        // 查询系统菜单和租户菜单
+                        SysMenu systemMenuQuery = new SysMenu();
+                        systemMenuQuery.setTenantId(Constants.PLATFORM_TENANT_ID);
+                        List<SysMenu> systemMenus = menuMapper.selectMenuList(systemMenuQuery);
+                        
+                        SysMenu tenantMenuQuery = new SysMenu();
+                        tenantMenuQuery.setTenantId(tenantId);
+                        List<SysMenu> tenantMenus = menuMapper.selectMenuList(tenantMenuQuery);
+                        
+                        menuList = new ArrayList<>();
+                        if (systemMenus != null) {
+                            menuList.addAll(systemMenus);
+                        }
+                        if (tenantMenus != null) {
+                            menuList.addAll(tenantMenus);
+                        }
+                    }
+                }
+            } else {
+                // 如果用户不存在，使用原来的逻辑
+                if (SysUser.isAdmin(userId)) {
+                    menuList = menuMapper.selectMenuList(menu);
+                } else {
+                    menu.getParams().put("userId", userId);
+                    menuList = menuMapper.selectMenuListByUserId(menu);
+                }
+            }
         } else {
-            menu.getParams().put("userId", userId);
+            // 普通用户，通过角色菜单关联查询
+            if (userId != null) {
+                menu.getParams().put("userId", userId);
+            }
             menuList = menuMapper.selectMenuListByUserId(menu);
         }
         return menuList;
@@ -107,18 +151,64 @@ public class SysMenuServiceImpl implements ISysMenuService {
     /**
      * 根据用户ID查询菜单
      *
-     * @param userId 用户名称
+     * @param userId 用户ID
      * @return 菜单列表
      */
     @Override
     public List<SysMenu> selectMenuTreeByUserId(Long userId) {
         List<SysMenu> menus = null;
-        if (SecurityUtils.isAdmin(userId)) {
-            menus = menuMapper.selectMenuTreeAll();
+        // 判断是否是管理员（平台管理员或租户管理员）
+        if (isAdminUser(userId)) {
+            // 管理员用户
+            SysUser user = userService.selectUserById(userId);
+            if (user != null) {
+                String tenantId = user.getTenantId();
+                // 平台管理员（tenant_id='0'）可以看到所有菜单
+                if (Constants.PLATFORM_TENANT_ID.equals(tenantId) || StringUtils.isEmpty(tenantId)) {
+                    menus = menuMapper.selectMenuTreeAll();
+                } else {
+                    // 租户管理员只能看到自己租户的菜单
+                    menus = menuMapper.selectMenuTreeByTenantId(tenantId);
+                }
+            } else {
+                // 如果用户不存在，使用原来的逻辑
+                if (SecurityUtils.isAdmin(userId)) {
+                    menus = menuMapper.selectMenuTreeAll();
+                } else {
+                    menus = menuMapper.selectMenuTreeByUserId(userId);
+                }
+            }
         } else {
+            // 普通用户，通过角色菜单关联查询
             menus = menuMapper.selectMenuTreeByUserId(userId);
         }
         return getChildPerms(menus, 0);
+    }
+
+    /**
+     * 判断用户是否是管理员（平台管理员或租户管理员）
+     * @param userId 用户ID
+     * @return true-管理员，false-普通用户
+     */
+    private boolean isAdminUser(Long userId) {
+        if (userId == null) {
+            return false;
+        }
+        // 平台管理员（userId == 1L）
+        if (SecurityUtils.isAdmin(userId)) {
+            return true;
+        }
+        // 检查用户是否有管理员角色
+        SysUser user = userService.selectUserById(userId);
+        if (user == null) {
+            return false;
+        }
+        // 查询用户的角色，判断是否有管理员角色
+        List<SysRole> roles = roleMapper.selectRolesByUserId(userId);
+        if (roles != null && !roles.isEmpty()) {
+            return roles.stream().anyMatch(role -> "1".equals(role.getIsAdmin()));
+        }
+        return false;
     }
 
     /**

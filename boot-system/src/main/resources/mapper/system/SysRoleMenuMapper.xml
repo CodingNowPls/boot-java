@@ -24,6 +24,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach> 
  	</delete>
 	
+	<delete id="deleteRoleMenuByMenuIds" parameterType="Long">
+ 		delete from sys_role_menu where menu_id in
+ 		<foreach collection="array" item="menuId" open="(" separator="," close=")">
+ 			#{menuId}
+        </foreach> 
+ 	</delete>
+	
 	<insert id="batchRoleMenu">
 		insert into sys_role_menu(role_id, menu_id) values
 		<foreach item="item" index="index" collection="list" separator=",">

@@ -35,6 +35,14 @@ public interface SysRoleMenuMapper {
     public int deleteRoleMenu(Long[] ids);
 
     /**
+     * 根据菜单ID批量删除角色菜单关联信息
+     *
+     * @param menuIds 菜单ID数组
+     * @return 结果
+     */
+    public int deleteRoleMenuByMenuIds(Long[] menuIds);
+
+    /**
      * 批量新增角色菜单信息
      *
      * @param roleMenuList 角色菜单列表

@@ -66,6 +66,14 @@ public interface SysMenuMapper {
     public List<SysMenu> selectMenuTreeByUserId(Long userId);
 
     /**
+     * 根据租户ID查询菜单树
+     *
+     * @param tenantId 租户ID
+     * @return 菜单列表
+     */
+    public List<SysMenu> selectMenuTreeByTenantId(String tenantId);
+
+    /**
      * 根据角色ID查询菜单树信息
      *
      * @param roleId            角色ID

@@ -21,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -55,6 +56,9 @@ public class SysTenantController extends BaseController {
     @Autowired
     private ISysConfigService configService;
 
+    @Autowired
+    private com.boot.system.mapper.SysRoleMenuMapper roleMenuMapper;
+
     /**
      * 查询租户列表
      */
@@ -68,7 +72,7 @@ public class SysTenantController extends BaseController {
                 .eq(StringUtils.isNotBlank(tenant.getTenantCode()), SysTenant::getTenantCode, tenant.getTenantCode())
                 .list();
         return getDataTable(list);
-    }
+     }
 
     /**
      * 获取租户详细信息
@@ -159,9 +163,6 @@ public class SysTenantController extends BaseController {
         boolean updated = sysTenantService.updateById(tenant);
         if (updated && tenant.getPackIds() != null) {
             assignTenantMenuPacks(tenant.getTenantId(), tenant.getPackIds());
-            if (!Constants.PLATFORM_TENANT_ID.equals(tenant.getTenantId())) {
-                syncTenantAdminMenus(tenant.getTenantId(), tenant.getPackIds());
-            }
         }
         return toAjax(updated);
     }
@@ -192,81 +193,142 @@ public class SysTenantController extends BaseController {
             // 平台租户固定菜单，不允许调整
             return;
         }
-        // 先删除该租户的所有菜单
-        // 查询该租户的所有菜单ID
-        SysMenu queryMenu = new SysMenu();
-        queryMenu.setTenantId(tenantId);
-        List<SysMenu> tenantMenus = menuService.selectMenuList(queryMenu, null);
-        if (!CollectionUtils.isEmpty(tenantMenus)) {
-            for (SysMenu menu : tenantMenus) {
-                menuService.deleteMenuById(menu.getMenuId());
-            }
-        }
+        // 先删除该租户的所有菜单（切换到目标租户上下文让拦截器生效）
+        runWithTenantContext(tenantId, () -> deleteTenantMenusInternal(tenantId));
         if (!CollectionUtils.isEmpty(packIds)) {
             // 从菜单套餐详情中获取菜单ID列表
             List<Long> menuIds = resolveMenuIdsByPackIds(packIds);
             if (!CollectionUtils.isEmpty(menuIds)) {
-                // 复制菜单到租户（需要处理菜单树结构）
-                copyMenusToTenant(menuIds, tenantId);
+                // 复制菜单到租户（需要处理菜单树结构），返回新创建的菜单ID列表
+                List<Long> newMenuIds = copyMenusToTenant(menuIds, tenantId);
+                // 同步更新租户管理员的菜单权限
+                if (!CollectionUtils.isEmpty(newMenuIds)) {
+                    runWithTenantContext(tenantId, () -> syncTenantAdminMenus(tenantId, newMenuIds));
+                }
             }
         }
     }
 
     /**
-     * 复制菜单到租户（处理菜单树结构）
+     * 删除指定租户下的菜单及其角色关联，要求调用方已切换到对应租户上下文
      */
-    private void copyMenusToTenant(List<Long> menuIds, String tenantId) {
-        // 查询所有需要复制的菜单（包括父菜单）
-        Set<Long> allMenuIds = new HashSet<>(menuIds);
-        // 查找所有父菜单
-        for (Long menuId : menuIds) {
-            SysMenu menu = menuService.selectMenuById(menuId);
-            if (menu != null && menu.getParentId() != null && menu.getParentId() != 0) {
-                collectParentMenus(menu.getParentId(), allMenuIds);
-            }
+    private void deleteTenantMenusInternal(String tenantId) {
+        SysMenu queryMenu = new SysMenu();
+        queryMenu.setTenantId(tenantId);
+        List<SysMenu> tenantMenus = menuMapper.selectMenuList(queryMenu);
+        if (CollectionUtils.isEmpty(tenantMenus)) {
+            return;
         }
-        // 创建菜单ID映射（原菜单ID -> 新菜单ID）
-        java.util.Map<Long, Long> menuIdMap = new java.util.HashMap<>();
-        // 按parent_id排序，先插入父菜单
-        List<SysMenu> menusToCopy = allMenuIds.stream()
-                .map(menuService::selectMenuById)
-                .filter(menu -> menu != null)
-                .sorted((m1, m2) -> {
-                    // 父菜单在前
-                    if (m1.getParentId() == null || m1.getParentId() == 0) {
-                        return -1;
-                    }
-                    if (m2.getParentId() == null || m2.getParentId() == 0) {
-                        return 1;
-                    }
-                    return 0;
-                })
+        List<Long> menuIdsToDelete = tenantMenus.stream()
+                .map(SysMenu::getMenuId)
                 .collect(Collectors.toList());
-        // 复制菜单
-        for (SysMenu sourceMenu : menusToCopy) {
-            SysMenu newMenu = new SysMenu();
-            newMenu.setMenuName(sourceMenu.getMenuName());
-            newMenu.setParentId(sourceMenu.getParentId() != null && sourceMenu.getParentId() != 0 
-                    ? menuIdMap.get(sourceMenu.getParentId()) : sourceMenu.getParentId());
-            newMenu.setOrderNum(sourceMenu.getOrderNum());
-            newMenu.setPath(sourceMenu.getPath());
-            newMenu.setComponent(sourceMenu.getComponent());
-            newMenu.setQuery(sourceMenu.getQuery());
-            newMenu.setIsFrame(sourceMenu.getIsFrame());
-            newMenu.setFrameEmbedFlag(sourceMenu.getFrameEmbedFlag());
-            newMenu.setIsCache(sourceMenu.getIsCache());
-            newMenu.setMenuType(sourceMenu.getMenuType());
-            newMenu.setVisible(sourceMenu.getVisible());
-            newMenu.setStatus(sourceMenu.getStatus());
-            newMenu.setPerms(sourceMenu.getPerms());
-            newMenu.setIcon(sourceMenu.getIcon());
-            newMenu.setRemark(sourceMenu.getRemark());
-            newMenu.setTenantId(tenantId);
-            newMenu.setCreateBy(getUserName());
-            menuService.insertMenu(newMenu);
-            // 保存菜单ID映射
-            menuIdMap.put(sourceMenu.getMenuId(), newMenu.getMenuId());
+        if (!menuIdsToDelete.isEmpty()) {
+            roleMenuMapper.deleteRoleMenuByMenuIds(menuIdsToDelete.toArray(new Long[0]));
         }
+        tenantMenus.sort((m1, m2) -> {
+            boolean child1 = m1.getParentId() != null && m1.getParentId() != 0;
+            boolean child2 = m2.getParentId() != null && m2.getParentId() != 0;
+            if (child1 == child2) {
+                return 0;
+            }
+            return child1 ? -1 : 1;
+        });
+        for (SysMenu menu : tenantMenus) {
+            menuService.deleteMenuById(menu.getMenuId());
+        }
+    }
+
+    /**
+     * 复制菜单到租户（处理菜单树结构）
+     * @return 新创建的菜单ID列表（只返回用户选择的菜单对应的新菜单ID，不包括父菜单）
+     */
+    private List<Long> copyMenusToTenant(List<Long> menuIds, String tenantId) {
+        if (CollectionUtils.isEmpty(menuIds)) {
+            return Collections.emptyList();
+        }
+        Set<Long> allMenuIds = new HashSet<>(menuIds);
+        List<SysMenu> menusToCopy = new java.util.ArrayList<>();
+        // 读取模板菜单需要在平台租户上下文中执行
+        runWithTenantContext(Constants.PLATFORM_TENANT_ID, () -> {
+            for (Long menuId : menuIds) {
+                SysMenu menu = menuService.selectMenuById(menuId);
+                if (menu != null && menu.getParentId() != null && menu.getParentId() != 0) {
+                    collectParentMenus(menu.getParentId(), allMenuIds);
+                }
+            }
+            menusToCopy.addAll(allMenuIds.stream()
+                    .map(menuService::selectMenuById)
+                    .filter(menu -> menu != null)
+                    .sorted((m1, m2) -> {
+                        boolean parent1 = (m1.getParentId() == null || m1.getParentId() == 0);
+                        boolean parent2 = (m2.getParentId() == null || m2.getParentId() == 0);
+                        if (parent1 == parent2) {
+                            Integer order1 = m1.getOrderNum() == null ? 0 : m1.getOrderNum();
+                            Integer order2 = m2.getOrderNum() == null ? 0 : m2.getOrderNum();
+                            return order1.compareTo(order2);
+                        }
+                        return parent1 ? -1 : 1;
+                    })
+                    .collect(Collectors.toList()));
+        });
+        if (CollectionUtils.isEmpty(menusToCopy)) {
+            return Collections.emptyList();
+        }
+        java.util.Map<Long, Long> menuIdMap = new java.util.HashMap<>();
+        // 写入租户菜单时切换到目标租户
+        runWithTenantContext(tenantId, () -> {
+            for (SysMenu sourceMenu : menusToCopy) {
+                SysMenu newMenu = new SysMenu();
+                newMenu.setMenuName(sourceMenu.getMenuName());
+                Long tempParentId = null;
+                if (sourceMenu.getParentId() != null && sourceMenu.getParentId() != 0) {
+                    if (allMenuIds.contains(sourceMenu.getParentId())) {
+                        tempParentId = 0L;
+                    } else {
+                        tempParentId = sourceMenu.getParentId();
+                    }
+                }
+                newMenu.setParentId(tempParentId);
+                newMenu.setOrderNum(sourceMenu.getOrderNum());
+                newMenu.setPath(sourceMenu.getPath());
+                newMenu.setComponent(sourceMenu.getComponent());
+                newMenu.setQuery(sourceMenu.getQuery());
+                newMenu.setIsFrame(sourceMenu.getIsFrame());
+                newMenu.setFrameEmbedFlag(sourceMenu.getFrameEmbedFlag());
+                newMenu.setIsCache(sourceMenu.getIsCache());
+                newMenu.setMenuType(sourceMenu.getMenuType());
+                newMenu.setVisible(sourceMenu.getVisible());
+                newMenu.setStatus(sourceMenu.getStatus());
+                newMenu.setPerms(sourceMenu.getPerms());
+                newMenu.setIcon(sourceMenu.getIcon());
+                newMenu.setRemark(sourceMenu.getRemark());
+                newMenu.setTenantId(tenantId);
+                newMenu.setCreateBy(getUserName());
+                menuService.insertMenu(newMenu);
+                menuIdMap.put(sourceMenu.getMenuId(), newMenu.getMenuId());
+            }
+            for (SysMenu sourceMenu : menusToCopy) {
+                Long newMenuId = menuIdMap.get(sourceMenu.getMenuId());
+                if (newMenuId == null) {
+                    continue;
+                }
+                if (sourceMenu.getParentId() != null && sourceMenu.getParentId() != 0
+                        && allMenuIds.contains(sourceMenu.getParentId())) {
+                    Long mappedParentId = menuIdMap.get(sourceMenu.getParentId());
+                    if (mappedParentId != null) {
+                        SysMenu updateMenu = new SysMenu();
+                        updateMenu.setMenuId(newMenuId);
+                        updateMenu.setParentId(mappedParentId);
+                        updateMenu.setUpdateBy(getUserName());
+                        menuService.updateMenu(updateMenu);
+                    }
+                }
+            }
+        });
+        return menuIds.stream()
+                .map(menuIdMap::get)
+                .filter(id -> id != null)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -304,7 +366,6 @@ public class SysTenantController extends BaseController {
     }
 
     private Long createTenantAdminRole(SysTenant tenant) {
-        List<Long> menuIds = resolveMenuIdsByPackIds(tenant.getPackIds());
         SysRole role = new SysRole();
         role.setTenantId(tenant.getTenantId());
         role.setRoleName(tenant.getTenantName() + "管理员");
@@ -313,7 +374,7 @@ public class SysTenantController extends BaseController {
         role.setStatus("0");
         role.setDelFlag("0");
         role.setCreateBy(getUserName());
-        role.setMenuIds(menuIds.toArray(new Long[0]));
+        // 先创建角色，菜单权限会在 assignTenantMenuPacks 中通过 syncTenantAdminMenus 设置
         int insert = roleService.insertRole(role);
         if (insert <= 0 || role.getRoleId() == null) {
             throw new ServiceException("创建租户管理员角色失败");
@@ -374,11 +435,15 @@ public class SysTenantController extends BaseController {
         // 用户已通过tenant_id直接关联租户，不需要额外的关联表
     }
 
-    private void syncTenantAdminMenus(String tenantId, List<Long> packIds) {
-        if (StringUtils.isBlank(tenantId)) {
+    /**
+     * 同步租户管理员的菜单权限
+     * @param tenantId 租户ID
+     * @param menuIds 菜单ID列表（租户菜单的新ID）
+     */
+    private void syncTenantAdminMenus(String tenantId, List<Long> menuIds) {
+        if (StringUtils.isBlank(tenantId) || CollectionUtils.isEmpty(menuIds)) {
             return;
         }
-        List<Long> menuIds = resolveMenuIdsByPackIds(packIds);
         SysRole query = new SysRole();
         query.setTenantId(tenantId);
         query.setIsAdmin("1");
@@ -394,6 +459,21 @@ public class SysTenantController extends BaseController {
             update.setMenuIds(menuIdArray);
             update.setUpdateBy(getUserName());
             roleService.updateRole(update);
+        }
+    }
+
+    /**
+     * 在指定租户上下文中执行逻辑，自动恢复原租户
+     */
+    private void runWithTenantContext(String tenantId, Runnable task) {
+        String originalTenantId = SecurityUtils.getCurrentTenantId();
+        try {
+            if (StringUtils.isNotBlank(tenantId)) {
+                SecurityUtils.setCurrentTenantId(tenantId);
+            }
+            task.run();
+        } finally {
+            SecurityUtils.setCurrentTenantId(originalTenantId);
         }
     }
 }

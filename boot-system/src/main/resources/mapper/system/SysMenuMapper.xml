@@ -49,25 +49,41 @@
 		<if test="tenantId != null and tenantId != ''">
 			AND tenant_id = #{tenantId}
 		</if>
-		<if test="tenantId == null or tenantId == ''">
-			AND (tenant_id IS NULL OR tenant_id = '0')
-		</if>
+		<!-- 如果没有指定tenantId，MyBatis-Plus租户拦截器会自动添加tenant_id过滤条件 -->
+		<!-- 但为了兼容性，这里不做额外限制，让拦截器处理 -->
 		</where>
 		order by parent_id, order_num
 	</select>
 	
 	<select id="selectMenuTreeAll" resultMap="SysMenuResult">
 		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame,m.frame_embed_flag, m.is_cache, m.menu_type, m.tenant_id, m.icon, m.order_num, m.create_time
-		from sys_menu m where m.menu_type in ('M', 'C') and m.status = 0
+		from sys_menu m 
+		where m.menu_type in ('M', 'C') and m.status = 0
+		<!-- 平台管理员可以看到所有菜单（系统菜单 + 租户菜单），MyBatis-Plus租户拦截器会自动处理 -->
+		order by m.parent_id, m.order_num
+	</select>
+	
+	<select id="selectMenuTreeByTenantId" parameterType="String" resultMap="SysMenuResult">
+		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame,m.frame_embed_flag, m.is_cache, m.menu_type, m.tenant_id, m.icon, m.order_num, m.create_time
+		from sys_menu m 
+		where m.menu_type in ('M', 'C') 
+		  and m.status = 0
+		  and (
+		  	-- 租户管理员可以看到系统菜单（tenant_id='0'）和自己租户的菜单
+		  	m.tenant_id = '0' 
+		  	OR m.tenant_id IS NULL
+		  	OR m.tenant_id = #{tenantId}
+		  )
 		order by m.parent_id, m.order_num
 	</select>
 	
 	<select id="selectMenuListByUserId" parameterType="SysMenu" resultMap="SysMenuResult">
 		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame,m.frame_embed_flag, m.is_cache, m.menu_type, m.tenant_id, m.icon, m.order_num, m.create_time
 		from sys_menu m
-		left join sys_role_menu rm on m.menu_id = rm.menu_id
-		left join sys_user_role ur on rm.role_id = ur.role_id
-		left join sys_role ro on ur.role_id = ro.role_id
+		inner join sys_role_menu rm on m.menu_id = rm.menu_id
+		inner join sys_user_role ur on rm.role_id = ur.role_id and ur.user_id = #{params.userId}
+		inner join sys_role ro on ur.role_id = ro.role_id
+		inner join sys_user u on ur.user_id = u.user_id
 		where ur.user_id = #{params.userId}
 		<if test="menuName != null and menuName != ''">
             AND m.menu_name like concat('%', #{menuName}, '%')
@@ -81,17 +97,35 @@
 		<if test="tenantId != null and tenantId != ''">
             AND m.tenant_id = #{tenantId}
 		</if>
+		<if test="tenantId == null or tenantId == ''">
+			-- 如果没有指定tenantId，根据用户所属租户过滤
+			AND (
+				-- 平台用户（tenant_id='0'）可以看到所有菜单（系统菜单 + 租户菜单）
+				(u.tenant_id = '0' OR u.tenant_id IS NULL)
+				-- 或者租户用户只能看到自己租户的菜单
+				OR (u.tenant_id != '0' AND u.tenant_id IS NOT NULL AND m.tenant_id = u.tenant_id)
+			)
+		</if>
 		order by m.parent_id, m.order_num
 	</select>
     
-    <select id="selectMenuTreeByUserId" parameterType="Long" resultMap="SysMenuResult">
+    <select id="selectMenuTreeByUserId" resultMap="SysMenuResult">
 		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.`query`, m.visible, m.status, ifnull(m.perms,'') as perms, m.is_frame,m.frame_embed_flag, m.is_cache, m.menu_type, m.tenant_id, m.icon, m.order_num, m.create_time
 		from sys_menu m
-			 left join sys_role_menu rm on m.menu_id = rm.menu_id
-			 left join sys_user_role ur on rm.role_id = ur.role_id
-			 left join sys_role ro on ur.role_id = ro.role_id
-			 left join sys_user u on ur.user_id = u.user_id
-		where u.user_id = #{userId} and m.menu_type in ('M', 'C') and m.status = 0  AND ro.status = 0
+			 inner join sys_role_menu rm on m.menu_id = rm.menu_id
+			 inner join sys_user_role ur on rm.role_id = ur.role_id and ur.user_id = #{userId}
+			 inner join sys_role ro on ur.role_id = ro.role_id
+			 inner join sys_user u on ur.user_id = u.user_id
+		where u.user_id = #{userId} 
+		  and m.menu_type in ('M', 'C') 
+		  and m.status = 0  
+		  and ro.status = 0
+		  and (
+		  	-- 平台用户（tenant_id='0'）可以看到所有菜单（系统菜单 + 租户菜单）
+		  	(u.tenant_id = '0' OR u.tenant_id IS NULL)
+		  	-- 或者租户用户只能看到自己租户的菜单
+		  	OR (u.tenant_id != '0' AND u.tenant_id IS NOT NULL AND m.tenant_id = u.tenant_id)
+		  )
 		order by m.parent_id, m.order_num
 	</select>
 	
@@ -119,7 +153,16 @@
 			 left join sys_role_menu rm on m.menu_id = rm.menu_id
 			 left join sys_user_role ur on rm.role_id = ur.role_id
 			 left join sys_role r on r.role_id = ur.role_id
-		where m.status = '0' and r.status = '0' and ur.user_id = #{userId}
+			 left join sys_user u on ur.user_id = u.user_id
+		where m.status = '0' 
+		  and r.status = '0' 
+		  and ur.user_id = #{userId}
+		  and (
+		  	-- 平台用户（tenant_id='0'）可以看到所有菜单（系统菜单 + 租户菜单）
+		  	(u.tenant_id = '0' OR u.tenant_id IS NULL)
+		  	-- 或者租户用户只能看到自己租户的菜单
+		  	OR (u.tenant_id != '0' AND u.tenant_id IS NOT NULL AND m.tenant_id = u.tenant_id)
+		  )
 	</select>
 	
 	<select id="selectMenuPermsByRoleId" parameterType="Long" resultType="String">
