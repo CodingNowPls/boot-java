@@ -84,19 +84,9 @@ public class SysUser extends BaseEntity {
     private String userType;
 
     /**
-     * 是否系统用户（0否 1是）
+     * 租户ID（0为默认租户）
      */
-    private String isSys;
-
-    /**
-     * 管理后台最后一次登录的租户ID
-     */
-    private String adminLoginTenantId;
-
-    /**
-     * 业务后台最后一次登录的租户ID
-     */
-    private String businessLoginTenantId;
+    private String tenantId;
 
     /**
      * 帐号状态（0正常 1停用）

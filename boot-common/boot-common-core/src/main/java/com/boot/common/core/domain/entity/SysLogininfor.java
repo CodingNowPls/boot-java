@@ -22,6 +22,11 @@ public class SysLogininfor extends BaseEntity {
     private Long infoId;
 
     /**
+     * 租户ID
+     */
+    private String tenantId;
+
+    /**
      * 用户账号
      */
     @Excel(name = "用户账号")

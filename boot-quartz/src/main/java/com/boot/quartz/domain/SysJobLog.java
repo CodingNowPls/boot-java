@@ -22,6 +22,11 @@ public class SysJobLog extends BaseEntity {
     private Long jobLogId;
 
     /**
+     * 租户ID
+     */
+    private String tenantId;
+
+    /**
      * 任务名称
      */
     @Excel(name = "任务名称")

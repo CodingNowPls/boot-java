@@ -19,6 +19,11 @@ public class SysUserRole {
      */
     private Long roleId;
 
+    /**
+     * 租户ID
+     */
+    private String tenantId;
+
     public Long getUserId() {
         return userId;
     }

@@ -97,9 +97,9 @@ public class SysMenu extends BaseEntity {
     private String perms;
 
     /**
-     * 是否系统菜单（0业务菜单 1系统菜单）
+     * 租户ID（0或NULL为系统菜单，其他为租户菜单）
      */
-    private String isSys;
+    private String tenantId;
 
     /**
      * 菜单图标

@@ -19,6 +19,11 @@ public class SysRoleDept {
      */
     private Long deptId;
 
+    /**
+     * 租户ID
+     */
+    private String tenantId;
+
     public Long getRoleId() {
         return roleId;
     }

@@ -19,9 +19,7 @@ import com.boot.common.core.utils.StringUtils;
 import com.boot.common.core.utils.ip.IpUtils;
 import com.boot.common.core.utils.sign.RsaUtils;
 import com.boot.system.domain.SysTenant;
-import com.boot.system.domain.SysUserTenant;
 import com.boot.system.service.ISysTenantService;
-import com.boot.system.service.ISysUserTenantService;
 import com.boot.system.service.impl.UserSaServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -55,9 +53,6 @@ public class SysLoginServiceImpl implements SysLoginService {
 
     @Autowired
     private ISysTenantService tenantService;
-
-    @Autowired
-    private ISysUserTenantService userTenantService;
 
     private static final String STATUS_NORMAL = "0";
     private static final String DEFAULT_TENANT_NAME = "默认租户";
@@ -186,55 +181,79 @@ public class SysLoginServiceImpl implements SysLoginService {
 
     private TenantInfo determineTenant(SysUser user, String requestedTenantId, boolean adminLogin) {
         if (adminLogin) {
-            return buildTenantInfo(Constants.ADMIN_DEFAULT_TENANT_ID);
+            // 管理后台登录使用平台租户
+            return buildTenantInfo(Constants.PLATFORM_TENANT_ID);
         }
-        List<SysTenant> availableTenants = getAvailableTenants(user.getUserId());
+        
+        // 获取用户所属的租户ID
+        String userTenantId = user.getTenantId();
+        if (StringUtils.isEmpty(userTenantId)) {
+            // 如果用户没有设置tenant_id，使用默认租户
+            userTenantId = Constants.DEFAULT_TENANT_ID;
+        }
+        
+        // 如果用户请求了租户ID，验证是否与用户所属租户一致
         if (StringUtils.isNotEmpty(requestedTenantId)) {
-            SysTenant matchedTenant = findTenant(availableTenants, requestedTenantId);
-            if (matchedTenant != null) {
-                return buildTenantInfo(matchedTenant);
+            // 验证请求的租户ID是否与用户所属租户一致
+            if (!userTenantId.equals(requestedTenantId)) {
+                throw new ServiceException("当前用户无权访问该租户，用户所属租户为：" + userTenantId);
             }
-            if (CollectionUtils.isEmpty(availableTenants) && Constants.DEFAULT_TENANT_ID.equals(requestedTenantId)) {
-                return buildTenantInfo(Constants.DEFAULT_TENANT_ID);
+            // 验证租户是否存在且可用
+            SysTenant tenant = tenantService.getById(requestedTenantId);
+            if (tenant == null) {
+                throw new ServiceException("租户不存在：" + requestedTenantId);
             }
-            throw new ServiceException("当前用户无权访问该租户或租户已被禁用");
+            if (!STATUS_NORMAL.equals(tenant.getStatus())) {
+                throw new ServiceException("租户已被停用：" + requestedTenantId);
+            }
+            if (!STATUS_NORMAL.equals(tenant.getDelFlag())) {
+                throw new ServiceException("租户已被删除：" + requestedTenantId);
+            }
+            return buildTenantInfo(tenant);
         }
-        if (CollectionUtils.isEmpty(availableTenants)) {
-            return buildTenantInfo(Constants.DEFAULT_TENANT_ID);
+        
+        // 如果用户没有请求租户ID，使用用户所属的租户
+        SysTenant userTenant = tenantService.getById(userTenantId);
+        if (userTenant != null && STATUS_NORMAL.equals(userTenant.getStatus()) && STATUS_NORMAL.equals(userTenant.getDelFlag())) {
+            return buildTenantInfo(userTenant);
         }
-        if (availableTenants.size() == 1) {
-            return buildTenantInfo(availableTenants.get(0));
-        }
-        String lastTenantId = user.getBusinessLoginTenantId();
-        if (StringUtils.isNotEmpty(lastTenantId)) {
-            SysTenant lastTenant = findTenant(availableTenants, lastTenantId);
-            if (lastTenant != null) {
-                return buildTenantInfo(lastTenant);
+        
+        // 如果用户的租户不存在或已禁用，尝试使用默认租户
+        if (!Constants.DEFAULT_TENANT_ID.equals(userTenantId)) {
+            SysTenant defaultTenant = tenantService.getById(Constants.DEFAULT_TENANT_ID);
+            if (defaultTenant != null && STATUS_NORMAL.equals(defaultTenant.getStatus()) && STATUS_NORMAL.equals(defaultTenant.getDelFlag())) {
+                return buildTenantInfo(defaultTenant);
             }
         }
-        return buildTenantInfo(availableTenants.get(0));
+        
+        // 如果默认租户也不可用，抛出异常
+        throw new ServiceException("用户所属租户不可用，请联系管理员");
     }
 
+    /**
+     * 获取用户可用的租户列表
+     * 现在用户直接通过sys_user.tenant_id关联租户，一个用户只能属于一个租户
+     */
     private List<SysTenant> getAvailableTenants(Long userId) {
-        List<SysUserTenant> relations = userTenantService.lambdaQuery()
-                .eq(SysUserTenant::getUserId, userId)
-                .eq(SysUserTenant::getDisabled, STATUS_NORMAL)
-                .list();
-        if (CollectionUtils.isEmpty(relations)) {
+        SysUser user = userService.selectUserById(userId);
+        if (user == null) {
             return Collections.emptyList();
         }
-        List<String> tenantIds = relations.stream()
-                .map(SysUserTenant::getTenantId)
-                .distinct()
-                .collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(tenantIds)) {
-            return Collections.emptyList();
+        String tenantId = user.getTenantId();
+        if (StringUtils.isEmpty(tenantId)) {
+            // 如果没有设置tenant_id，使用默认租户
+            tenantId = Constants.DEFAULT_TENANT_ID;
         }
-        return tenantService.lambdaQuery()
-                .in(SysTenant::getTenantId, tenantIds)
-                .eq(SysTenant::getStatus, STATUS_NORMAL)
-                .eq(SysTenant::getDelFlag, STATUS_NORMAL)
-                .list();
+        SysTenant tenant = tenantService.getById(tenantId);
+        if (tenant != null && STATUS_NORMAL.equals(tenant.getStatus()) && STATUS_NORMAL.equals(tenant.getDelFlag())) {
+            return Collections.singletonList(tenant);
+        }
+        // 如果租户不存在或已禁用，返回默认租户
+        SysTenant defaultTenant = tenantService.getById(Constants.DEFAULT_TENANT_ID);
+        if (defaultTenant != null) {
+            return Collections.singletonList(defaultTenant);
+        }
+        return Collections.emptyList();
     }
 
     private SysTenant findTenant(List<SysTenant> tenants, String tenantId) {
@@ -247,18 +266,14 @@ public class SysLoginServiceImpl implements SysLoginService {
                 .orElse(null);
     }
 
+    /**
+     * 更新最后登录租户
+     * 现在用户直接通过sys_user.tenant_id关联租户，不需要额外记录
+     * 如果用户的tenant_id与登录的tenant_id不一致，可以在这里更新（但通常不需要）
+     */
     private void updateLastLoginTenant(SysUser user, String tenantId, boolean adminLogin) {
-        if (user == null || StringUtils.isEmpty(tenantId)) {
-            return;
-        }
-        SysUser update = new SysUser();
-        update.setUserId(user.getUserId());
-        if (adminLogin) {
-            update.setAdminLoginTenantId(tenantId);
-        } else {
-            update.setBusinessLoginTenantId(tenantId);
-        }
-        userService.updateUserProfile(update);
+        // 用户已通过tenant_id直接关联租户，不需要额外记录最后登录租户
+        // 如果未来需要记录最后登录租户，可以在这里添加逻辑
     }
 
     private TenantInfo buildTenantInfo(SysTenant tenant) {

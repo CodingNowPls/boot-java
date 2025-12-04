@@ -19,6 +19,11 @@ public class SysRoleMenu {
      */
     private Long menuId;
 
+    /**
+     * 租户ID
+     */
+    private String tenantId;
+
     public Long getRoleId() {
         return roleId;
     }

@@ -158,8 +158,9 @@ public class SysMenuPackController extends BaseController {
                 if (menu == null) {
                     return AjaxResult.error("菜单ID不存在：" + menuId);
                 }
-                if (!"0".equals(menu.getIsSys())) {
-                    return AjaxResult.error("仅允许选择业务菜单，非法菜单：" + menu.getMenuName());
+                // 仅允许选择业务菜单（tenant_id为'0'或NULL的系统菜单）
+                if (menu.getTenantId() != null && !"0".equals(menu.getTenantId())) {
+                    return AjaxResult.error("仅允许选择系统菜单，非法菜单：" + menu.getMenuName());
                 }
             }
             for (Long menuId : request.getMenuIds()) {

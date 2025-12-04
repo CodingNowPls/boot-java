@@ -17,9 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="status" column="status"/>
 		<result property="delFlag" column="del_flag"/>
 		<result property="userType" column="user_type"/>
-        <result property="isSys" column="is_sys"/>
-        <result property="adminLoginTenantId" column="admin_login_tenant_id"/>
-        <result property="businessLoginTenantId" column="business_login_tenant_id"/>
+        <result property="tenantId" column="tenant_id"/>
 		<result property="loginIp" column="login_ip"/>
 		<result property="loginDate" column="login_date"/>
 		<result property="createBy" column="create_by"/>
@@ -69,9 +67,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			   u.create_time,
 			   u.remark,
 			   u.user_type,
-               u.is_sys,
-               u.admin_login_tenant_id,
-               u.business_login_tenant_id,
+               u.tenant_id,
 			   d.dept_id,
 			   d.parent_id,
 			   d.ancestors,
@@ -220,9 +216,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<if test="createBy != null and createBy != ''">create_by,</if>
 		<if test="remark != null and remark != ''">remark,</if>
 		<if test="userType != null and userType != ''">user_type,</if>
-        <if test="isSys != null and isSys != ''">is_sys,</if>
-        <if test="adminLoginTenantId != null and adminLoginTenantId != ''">admin_login_tenant_id,</if>
-        <if test="businessLoginTenantId != null and businessLoginTenantId != ''">business_login_tenant_id,</if>
+        <if test="tenantId != null and tenantId != ''">tenant_id,</if>
 		create_time
 		)values(
 		<if test="userId != null and userId != ''">#{userId},</if>
@@ -238,9 +232,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<if test="createBy != null and createBy != ''">#{createBy},</if>
 		<if test="remark != null and remark != ''">#{remark},</if>
 		<if test="userType != null and userType != ''">#{userType},</if>
-        <if test="isSys != null and isSys != ''">#{isSys},</if>
-        <if test="adminLoginTenantId != null and adminLoginTenantId != ''">#{adminLoginTenantId},</if>
-        <if test="businessLoginTenantId != null and businessLoginTenantId != ''">#{businessLoginTenantId},</if>
+        <if test="tenantId != null and tenantId != ''">#{tenantId},</if>
 		sysdate()
 		)
 	</insert>
@@ -262,10 +254,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
 			<if test="remark != null">remark = #{remark},</if>
 			<if test="userType != null">user_type = #{userType},</if>
-            <if test="isSys != null">is_sys = #{isSys},</if>
-            <if test="adminLoginTenantId != null">admin_login_tenant_id = #{adminLoginTenantId},</if>
-            <if test="businessLoginTenantId != null">business_login_tenant_id = #{businessLoginTenantId},</if>
-			<if test="remark != null">remark = #{remark},</if>
+            <if test="tenantId != null">tenant_id = #{tenantId},</if>
 			update_time = sysdate()
 		</set>
  		where user_id = #{userId}

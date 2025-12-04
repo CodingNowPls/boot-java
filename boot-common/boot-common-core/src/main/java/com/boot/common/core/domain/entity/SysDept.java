@@ -25,6 +25,11 @@ public class SysDept extends BaseEntity {
     private Long deptId;
 
     /**
+     * 租户ID（0为默认租户）
+     */
+    private String tenantId;
+
+    /**
      * 父部门ID
      */
     private Long parentId;

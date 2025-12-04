@@ -25,6 +25,11 @@ public class SysPost extends BaseEntity {
     private Long postId;
 
     /**
+     * 租户ID（0为默认租户）
+     */
+    private String tenantId;
+
+    /**
      * 岗位编码
      */
     @Excel(name = "岗位编码")

@@ -283,7 +283,7 @@ export default {
     handleAdd() {
       this.reset()
       // 预先加载菜单树（只加载业务菜单）
-      listMenu({ status: '0', isSys: '0' }).then(res => {
+      listMenu({ status: '0' }).then(res => {
         this.menuTree = this.handleTree(res.data, 'menuId')
       })
       this.open = true
@@ -295,7 +295,7 @@ export default {
       this.reset()
       // 加载菜单树 + 已勾选菜单
       Promise.all([
-        listMenu({ status: '0', isSys: '0' }),
+        listMenu({ status: '0' }),
         getMenuPack(packId)
       ]).then(([resMenu, resPack]) => {
         this.menuTree = this.handleTree(resMenu.data, 'menuId')
@@ -401,7 +401,7 @@ export default {
       this.assignNodeAll = false
       this.assignCheckStrictly = true
       // 加载菜单树
-      const resMenu = await listMenu({ status: '0', isSys: '0' })
+      const resMenu = await listMenu({ status: '0' })
       this.menuTree = this.handleTree(resMenu.data, 'menuId')
       // 加载已勾选菜单
       const resPack = await getMenuPack(packId)

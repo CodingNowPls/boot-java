@@ -19,6 +19,11 @@ public class SysUserPost {
      */
     private Long postId;
 
+    /**
+     * 租户ID
+     */
+    private String tenantId;
+
     public Long getUserId() {
         return userId;
     }

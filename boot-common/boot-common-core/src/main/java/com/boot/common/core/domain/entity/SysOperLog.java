@@ -22,6 +22,11 @@ public class SysOperLog extends BaseEntity {
     private Long operId;
 
     /**
+     * 租户ID
+     */
+    private String tenantId;
+
+    /**
      * 操作模块
      */
     @Excel(name = "操作模块")

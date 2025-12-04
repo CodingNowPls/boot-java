@@ -12,7 +12,6 @@ import com.boot.common.core.utils.StringUtils;
 import com.boot.common.security.service.TokenService;
 import com.boot.common.security.utils.SecurityUtils;
 import com.boot.system.domain.SysTenant;
-import com.boot.system.domain.SysUserTenant;
 import com.boot.system.domain.vo.LoginConfigVO;
 import com.boot.system.domain.vo.TenantVO;
 import com.boot.system.service.*;
@@ -58,8 +57,6 @@ public class SysLoginController {
     private ISysTenantService tenantService;
     @Autowired
     private ISysUserService userService;
-    @Autowired
-    private ISysUserTenantService userTenantService;
 
     /**
      * 登录方法
@@ -151,21 +148,10 @@ public class SysLoginController {
         SysUser user = loginUser.getUser();
         // 管理后台登录始终使用平台租户，不支持切换
         // 这里只处理业务后台租户切换
-        List<SysUserTenant> relations = userTenantService.lambdaQuery()
-                .eq(SysUserTenant::getUserId, user.getUserId())
-                .eq(SysUserTenant::getDisabled, "0")
-                .list();
-        if (CollectionUtils.isEmpty(relations)) {
-            // 没有关系时仅允许切换到默认租户
+        // 用户直接通过tenant_id关联租户，检查用户是否属于该租户
+        if (user.getTenantId() == null || !user.getTenantId().equals(tenantId)) {
+            // 如果用户不属于该租户，检查是否是默认租户
             if (!Constants.DEFAULT_TENANT_ID.equals(tenantId)) {
-                return AjaxResult.error("当前用户不属于该租户");
-            }
-        } else {
-            List<String> tenantIds = relations.stream()
-                    .map(SysUserTenant::getTenantId)
-                    .distinct()
-                    .collect(Collectors.toList());
-            if (!tenantIds.contains(tenantId)) {
                 return AjaxResult.error("当前用户不属于该租户");
             }
         }
@@ -176,11 +162,7 @@ public class SysLoginController {
         // 更新登录上下文中的租户信息
         loginUser.setTenantId(tenant.getTenantId());
         loginUser.setTenantName(tenant.getTenantName());
-        // 记录业务后台最后登录租户
-        SysUser update = new SysUser();
-        update.setUserId(user.getUserId());
-        update.setBusinessLoginTenantId(tenant.getTenantId());
-        userService.updateUserProfile(update);
+        // 用户已通过tenant_id直接关联租户，不需要额外记录
         // 刷新缓存中的 LoginUser
         tokenService.setLoginUser(loginUser);
         return AjaxResult.success();
@@ -222,31 +204,16 @@ public class SysLoginController {
         if (user == null) {
             return Collections.emptyList();
         }
-        List<SysUserTenant> relations = userTenantService.lambdaQuery()
-                .eq(SysUserTenant::getUserId, user.getUserId())
-                .eq(SysUserTenant::getDisabled, "0")
-                .list();
-        if (CollectionUtils.isEmpty(relations)) {
+        // 用户直接通过tenant_id关联租户
+        String userTenantId = user.getTenantId();
+        if (StringUtils.isBlank(userTenantId)) {
+            userTenantId = Constants.DEFAULT_TENANT_ID;
+        }
+        SysTenant tenant = tenantService.getById(userTenantId);
+        if (tenant == null || !"0".equals(tenant.getStatus()) || !"0".equals(tenant.getDelFlag())) {
             return Collections.singletonList(buildTenantVO(Constants.DEFAULT_TENANT_ID));
         }
-        List<String> tenantIds = relations.stream()
-                .map(SysUserTenant::getTenantId)
-                .distinct()
-                .collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(tenantIds)) {
-            return Collections.singletonList(buildTenantVO(Constants.DEFAULT_TENANT_ID));
-        }
-        List<SysTenant> tenants = tenantService.lambdaQuery()
-                .in(SysTenant::getTenantId, tenantIds)
-                .eq(SysTenant::getStatus, "0")
-                .eq(SysTenant::getDelFlag, "0")
-                .list();
-        if (CollectionUtils.isEmpty(tenants)) {
-            return Collections.singletonList(buildTenantVO(Constants.DEFAULT_TENANT_ID));
-        }
-        return tenants.stream()
-                .map(tenant -> new TenantVO(tenant.getTenantId(), tenant.getTenantName()))
-                .collect(Collectors.toList());
+        return Collections.singletonList(new TenantVO(tenant.getTenantId(), tenant.getTenantName()));
     }
 
     private List<TenantVO> buildAllActiveTenants() {

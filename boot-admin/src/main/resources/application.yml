@@ -182,10 +182,12 @@ tenant:
   defaultTenantId: '0'
   # 租户字段名
   column: tenant_id
-  # 排除表
+  # 排除表（不需要租户过滤的表）
   excludes:
+    # 代码生成相关表
     - gen_table
     - gen_table_column
+    # Quartz定时任务相关表
     - qrtz_blob_triggers
     - qrtz_calendars
     - qrtz_cron_triggers
@@ -197,6 +199,24 @@ tenant:
     - qrtz_simple_triggers
     - qrtz_simprop_triggers
     - qrtz_triggers
+    # 系统配置表
+    - sys_config
+    # 菜单套餐表（全局共享，作为菜单分配模板）
+    - sys_menu_pack
+    - sys_menu_pack_detail
+    # 租户表本身
+    - sys_tenant
+    # 系统管理表（暂时全局共享）
+    - sys_job
+    - sys_notice
+    - sys_dict_data
+    - sys_dict_type
+    # 报表相关表（暂时全局共享）
+    - rep_demo_dxtj
+    - rep_demo_employee
+    - rep_demo_gongsi
+    - rep_demo_jianpiao
+    - rep_demo_xiaoshou
 # FlowLong Config
 flowlong:
   remind:
