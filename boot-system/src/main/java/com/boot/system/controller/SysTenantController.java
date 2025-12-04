@@ -200,11 +200,12 @@ public class SysTenantController extends BaseController {
             List<Long> menuIds = resolveMenuIdsByPackIds(packIds);
             if (!CollectionUtils.isEmpty(menuIds)) {
                 // 复制菜单到租户（需要处理菜单树结构），返回新创建的菜单ID列表
-                List<Long> newMenuIds = copyMenusToTenant(menuIds, tenantId);
-                // 同步更新租户管理员的菜单权限
-                if (!CollectionUtils.isEmpty(newMenuIds)) {
-                    runWithTenantContext(tenantId, () -> syncTenantAdminMenus(tenantId, newMenuIds));
-                }
+                //TODO  代码有问题
+                //List<Long> newMenuIds = copyMenusToTenant(menuIds, tenantId);
+                //// 同步更新租户管理员的菜单权限
+                //if (!CollectionUtils.isEmpty(newMenuIds)) {
+                //    runWithTenantContext(tenantId, () -> syncTenantAdminMenus(tenantId, newMenuIds));
+                //}
             }
         }
     }
@@ -239,6 +240,7 @@ public class SysTenantController extends BaseController {
     }
 
     /**
+     * TODO  代码有问题
      * 复制菜单到租户（处理菜单树结构）
      * @return 新创建的菜单ID列表（只返回用户选择的菜单对应的新菜单ID，不包括父菜单）
      */
@@ -248,7 +250,7 @@ public class SysTenantController extends BaseController {
         }
         Set<Long> allMenuIds = new HashSet<>(menuIds);
         List<SysMenu> menusToCopy = new java.util.ArrayList<>();
-        // 读取模板菜单需要在平台租户上下文中执行
+        // 读取模板菜单需要在平台租户上下文中执行，先把所有需要的父菜单补全出来
         runWithTenantContext(Constants.PLATFORM_TENANT_ID, () -> {
             for (Long menuId : menuIds) {
                 SysMenu menu = menuService.selectMenuById(menuId);
@@ -259,6 +261,7 @@ public class SysTenantController extends BaseController {
             menusToCopy.addAll(allMenuIds.stream()
                     .map(menuService::selectMenuById)
                     .filter(menu -> menu != null)
+                    // 先按“是否顶级”再按 orderNum 排序，确保父菜单优先于子菜单插入
                     .sorted((m1, m2) -> {
                         boolean parent1 = (m1.getParentId() == null || m1.getParentId() == 0);
                         boolean parent2 = (m2.getParentId() == null || m2.getParentId() == 0);
@@ -275,54 +278,24 @@ public class SysTenantController extends BaseController {
             return Collections.emptyList();
         }
         java.util.Map<Long, Long> menuIdMap = new java.util.HashMap<>();
-        // 写入租户菜单时切换到目标租户
-        runWithTenantContext(tenantId, () -> {
-            for (SysMenu sourceMenu : menusToCopy) {
-                SysMenu newMenu = new SysMenu();
-                newMenu.setMenuName(sourceMenu.getMenuName());
-                Long tempParentId = null;
-                if (sourceMenu.getParentId() != null && sourceMenu.getParentId() != 0) {
-                    if (allMenuIds.contains(sourceMenu.getParentId())) {
-                        tempParentId = 0L;
-                    } else {
-                        tempParentId = sourceMenu.getParentId();
-                    }
-                }
-                newMenu.setParentId(tempParentId);
-                newMenu.setOrderNum(sourceMenu.getOrderNum());
-                newMenu.setPath(sourceMenu.getPath());
-                newMenu.setComponent(sourceMenu.getComponent());
-                newMenu.setQuery(sourceMenu.getQuery());
-                newMenu.setIsFrame(sourceMenu.getIsFrame());
-                newMenu.setFrameEmbedFlag(sourceMenu.getFrameEmbedFlag());
-                newMenu.setIsCache(sourceMenu.getIsCache());
-                newMenu.setMenuType(sourceMenu.getMenuType());
-                newMenu.setVisible(sourceMenu.getVisible());
-                newMenu.setStatus(sourceMenu.getStatus());
-                newMenu.setPerms(sourceMenu.getPerms());
-                newMenu.setIcon(sourceMenu.getIcon());
-                newMenu.setRemark(sourceMenu.getRemark());
-                newMenu.setTenantId(tenantId);
-                newMenu.setCreateBy(getUserName());
-                menuService.insertMenu(newMenu);
-                menuIdMap.put(sourceMenu.getMenuId(), newMenu.getMenuId());
+        // 按父子结构构建树：父菜单 -> 子菜单列表
+        java.util.Map<Long, List<SysMenu>> childrenMap = new java.util.HashMap<>();
+        List<SysMenu> rootNodes = new ArrayList<>();
+        for (SysMenu menu : menusToCopy) {
+            Long pid = menu.getParentId();
+            if (pid != null && pid != 0L && allMenuIds.contains(pid)) {
+                childrenMap.computeIfAbsent(pid, k -> new ArrayList<>()).add(menu);
+            } else {
+                // 顶级节点，或者父级是系统菜单（不在 allMenuIds 中）
+                rootNodes.add(menu);
             }
-            for (SysMenu sourceMenu : menusToCopy) {
-                Long newMenuId = menuIdMap.get(sourceMenu.getMenuId());
-                if (newMenuId == null) {
-                    continue;
-                }
-                if (sourceMenu.getParentId() != null && sourceMenu.getParentId() != 0
-                        && allMenuIds.contains(sourceMenu.getParentId())) {
-                    Long mappedParentId = menuIdMap.get(sourceMenu.getParentId());
-                    if (mappedParentId != null) {
-                        SysMenu updateMenu = new SysMenu();
-                        updateMenu.setMenuId(newMenuId);
-                        updateMenu.setParentId(mappedParentId);
-                        updateMenu.setUpdateBy(getUserName());
-                        menuService.updateMenu(updateMenu);
-                    }
-                }
+        }
+
+        // 在目标租户上下文中，按树结构递归插入，保证父菜单先于子菜单插入
+        runWithTenantContext(tenantId, () -> {
+            for (SysMenu root : rootNodes) {
+                Long targetParentId = (root.getParentId() == null ? 0L : root.getParentId());
+                copyMenuNodeRecursive(root, targetParentId, tenantId, menuIdMap, childrenMap);
             }
         });
         return menuIds.stream()
@@ -345,6 +318,50 @@ public class SysTenantController extends BaseController {
         SysMenu parentMenu = menuService.selectMenuById(parentId);
         if (parentMenu != null && parentMenu.getParentId() != null && parentMenu.getParentId() != 0) {
             collectParentMenus(parentMenu.getParentId(), menuIds);
+        }
+    }
+
+    /**
+     * 按树结构递归复制菜单节点：先插入父节点，再插入子节点，这样子节点可以拿到新父ID
+     *
+     * @param sourceMenu     源菜单
+     * @param targetParentId 目标 parent_id（顶级为 0，或者挂在系统菜单下时为原父ID）
+     * @param tenantId       目标租户ID
+     * @param menuIdMap      原菜单ID -> 新菜单ID 映射
+     * @param childrenMap    父菜单ID -> 子菜单列表
+     */
+    private void copyMenuNodeRecursive(SysMenu sourceMenu,
+                                       Long targetParentId,
+                                       String tenantId,
+                                       java.util.Map<Long, Long> menuIdMap,
+                                       java.util.Map<Long, List<SysMenu>> childrenMap) {
+        SysMenu newMenu = new SysMenu();
+        newMenu.setMenuName(sourceMenu.getMenuName());
+        newMenu.setParentId(targetParentId);
+        newMenu.setOrderNum(sourceMenu.getOrderNum());
+        newMenu.setPath(sourceMenu.getPath());
+        newMenu.setComponent(sourceMenu.getComponent());
+        newMenu.setQuery(sourceMenu.getQuery());
+        newMenu.setIsFrame(sourceMenu.getIsFrame());
+        newMenu.setFrameEmbedFlag(sourceMenu.getFrameEmbedFlag());
+        newMenu.setIsCache(sourceMenu.getIsCache());
+        newMenu.setMenuType(sourceMenu.getMenuType());
+        newMenu.setVisible(sourceMenu.getVisible());
+        newMenu.setStatus(sourceMenu.getStatus());
+        newMenu.setPerms(sourceMenu.getPerms());
+        newMenu.setIcon(sourceMenu.getIcon());
+        newMenu.setRemark(sourceMenu.getRemark());
+        newMenu.setTenantId(tenantId);
+        newMenu.setCreateBy(getUserName());
+        menuService.insertMenu(newMenu);
+
+        Long newMenuId = newMenu.getMenuId();
+        menuIdMap.put(sourceMenu.getMenuId(), newMenuId);
+
+        List<SysMenu> children = childrenMap.getOrDefault(sourceMenu.getMenuId(), Collections.emptyList());
+        for (SysMenu child : children) {
+            // 子节点一律挂到新父节点下
+            copyMenuNodeRecursive(child, newMenuId, tenantId, menuIdMap, childrenMap);
         }
     }
 
